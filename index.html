@@ -1,172 +1,324 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>نقرة الملك 👑</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap');
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body {
-            margin: 0; height: 100vh; display: flex; flex-direction: column;
-            align-items: center; justify-content: space-around;
-            font-family: 'Cairo', sans-serif; overflow: hidden; user-select: none;
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%; animation: gradientBG 15s ease infinite;
-        }
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>King Tap - Live & Save Edition</title>
+  <style>
+    /* التنسيقات البصرية الرهيبة التي تحبها */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #0A0A0F; color: #fff; min-height: 100vh; overflow-x: hidden; }
+    .orb { position:fixed; border-radius:50%; pointer-events:none; animation:float 4s ease-in-out infinite alternate; }
+    .orb1 { width:350px; height:350px; background:rgba(255,215,0,0.06); top:-100px; right:-100px; }
+    .orb2 { width:280px; height:280px; background:rgba(124,58,237,0.07); bottom:60px; left:-80px; }
+    @keyframes float { from{transform:translate(0,0)} to{transform:translate(30px,-20px)} }
 
-        .reset-btn {
-            position: fixed; top: 10px; left: 10px;
-            padding: 5px 10px; background: rgba(220, 38, 38, 0.4);
-            color: white; border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 5px; font-size: 0.6rem; cursor: pointer;
-            transition: 0.3s; z-index: 1000;
-        }
+    .save-bar { position:fixed; top:0; left:0; right:0; height:42px; background:#0F0F1A; border-bottom:1px solid #1A1A2E; display:flex; align-items:center; justify-content:space-between; padding:0 14px; z-index:200; }
+    .save-left { display:flex; align-items:center; gap:8px; }
+    .game-logo { font-size:15px; font-weight:700; color:#FFD700; }
+    .save-status { display:flex; align-items:center; gap:5px; font-size:11px; color:#555577; }
+    .save-dot { width:7px; height:7px; border-radius:50%; background:#555577; transition: 0.2s; }
+    .save-dot.active { background:#10B981; box-shadow: 0 0 8px #10B981; }
 
-        .info-bar {
-            width: 90%; background: rgba(0,0,0,0.6); padding: 15px;
-            border-radius: 20px; text-align: center; border: 2px solid #fbbf24; color: white;
-        }
-        #score { font-size: 3.5rem; color: #fbbf24; margin: 0; line-height: 1; }
-        .timer { font-size: 0.8rem; color: #ddd; }
+    .sbar-btn { background:#1E1E2E; border:1px solid #2A2A40; border-radius:8px; padding:4px 9px; color:#9999BB; font-size:11px; cursor:pointer; }
+    .toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:#1E1E2E; border:1px solid #FFD700; border-radius:12px; padding:10px 18px; font-size:13px; opacity:0; transition:0.3s; z-index:999; }
+    .toast.show { opacity:1; }
 
-        .main-btn {
-            width: 200px; height: 200px; border-radius: 50%;
-            background: radial-gradient(circle, #fcd34d, #b45309);
-            border: 8px solid #78350f; cursor: pointer;
-            box-shadow: 0 15px 0 #451a03, 0 20px 40px rgba(0,0,0,0.4);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 6rem; transition: transform 0.05s;
-        }
-        .main-btn:active { transform: translateY(10px); box-shadow: 0 5px 0 #451a03; }
+    .tab-bar { position:fixed; bottom:0; left:0; right:0; display:flex; background:#0F0F1A; border-top:1px solid #1A1A2E; z-index:100; }
+    .tab-btn { flex:1; display:flex; flex-direction:column; align-items:center; padding:10px; background:none; border:none; color:#555577; font-size:11px; cursor:pointer; }
+    .tab-btn.active { color:#FFD700; }
+    .screen { display:none; padding:60px 16px 90px; min-height:100vh; }
+    .screen.active { display:block; }
 
-        .open-shop-btn {
-            padding: 15px 40px; background: #fbbf24; color: #000;
-            border: none; border-radius: 50px; font-weight: 900;
-            font-size: 1.2rem; cursor: pointer;
-        }
+    #screen-home { display:flex; flex-direction:column; align-items:center; gap:20px; padding-top:80px; }
+    .coin-count { font-size:52px; font-weight:700; color:#FFD700; }
+    .coin-btn { position:relative; width:200px; height:200px; border-radius:50%; background:#FFD700; border:none; cursor:pointer; box-shadow:0 0 60px rgba(255,215,0,0.5); display:flex; align-items:center; justify-content:center; outline:none; -webkit-tap-highlight-color: transparent; transition: 0.1s; }
+    .coin-btn:active { transform: scale(0.92); }
+    .coin-btn.active-bot { box-shadow: 0 0 80px #9F67FF; animation: pulse 0.5s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(0.95); } 100% { transform: scale(1); } }
+    
+    .float-text { position:fixed; font-size:22px; font-weight:700; color:#FFD700; pointer-events:none; z-index:999; animation:floatUp 0.9s ease forwards; }
+    @keyframes floatUp { 0%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(-80px)} }
 
-        .shop-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 100; flex-direction: column; align-items: center; padding-top: 50px;
-        }
-        .shop-content { width: 90%; max-width: 400px; }
-        .upgrade-card {
-            background: #1e293b; margin: 10px 0; padding: 15px;
-            border-radius: 15px; display: flex; justify-content: space-between;
-            align-items: center; border: 1px solid #334155;
-        }
-        .buy-btn { background: #fbbf24; color: #000; border: none; padding: 10px; border-radius: 10px; font-weight: bold; }
+    .upgrade-card { display:flex; align-items:center; gap:14px; background:#1E1E2E; border-radius:16px; padding:14px; border:1px solid #2A2A40; margin-bottom:10px; cursor:pointer; transition: 0.2s; }
+    .upgrade-card.affordable { border-color:#FFD700; }
+    .upgrade-card.active-now { border-color:#9F67FF; background:rgba(159,103,255,0.1); pointer-events:none; opacity: 0.6; }
+    .upgrade-icon { width:52px; height:52px; border-radius:14px; background:#1C1C28; display:flex; align-items:center; justify-content:center; font-size:26px; }
+    .upgrade-info { flex:1; }
+    .timer-bar { height:4px; background:#1C1C28; border-radius:2px; margin-top:8px; overflow:hidden; display:none; }
+    .timer-fill { height:100%; background:#9F67FF; width:100%; }
+    .level-badge { font-size: 10px; background: #2A2A40; padding: 2px 6px; border-radius: 4px; color: #999; }
 
-        .floating { position: absolute; color: white; font-size: 2.5rem; font-weight: 900; animation: floatUp 0.7s forwards; pointer-events: none; }
-        @keyframes floatUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-150px); opacity: 0; } }
-    </style>
+    .stat-card { background:#1E1E2E; border-radius:16px; padding:16px; border:1px solid #2A2A40; margin-bottom:16px; }
+    .stat-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #1C1C28; font-size:14px; }
+    .reset-btn { width:100%; background:rgba(239,68,68,0.1); border:1px solid #EF4444; color:#EF4444; padding:14px; border-radius:14px; cursor:pointer; }
+  </style>
 </head>
-<body onload="init()">
+<body>
 
-    <button class="reset-btn" onclick="resetGame()">إعادة اللعب ⚠️</button>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
 
-    <audio id="snd-tap" src="https://www.myinstants.com/media/sounds/coin-drop-1.mp3"></audio>
-    <audio id="snd-buy" src="https://www.myinstants.com/media/sounds/duck-quack_1.mp3"></audio>
-
-    <div class="info-bar">
-        <div id="score">0</div>
-        <div class="timer">وقت اللعب: <span id="game-time">00:00</span></div>
-        <div style="font-size:0.8rem">القوة: <span id="pwr-display">3500</span> ⚔️</div>
+<div class="save-bar">
+  <div class="save-left">
+    <span class="game-logo">👑 King Tap</span>
+    <div class="save-status">
+      <div class="save-dot" id="save-dot"></div>
+      <span id="save-label">المزامنة فورية</span>
     </div>
+  </div>
+  <div class="save-actions">
+    <button class="sbar-btn" onclick="openImport()">📥</button>
+    <button class="sbar-btn" onclick="openExport()">📤</button>
+  </div>
+</div>
 
-    <div class="main-btn" onclick="handleTap(event)">🪙</div>
+<div id="screen-home" class="screen active">
+  <div class="coin-count" id="coin-display">0</div>
+  <div style="color:#9999BB; margin-bottom:10px;">عملة ذهبية</div>
+  <div id="active-status" style="height:20px; color:#9F67FF; font-weight:bold; font-size:14px;"></div>
+  <button class="coin-btn" id="coin-btn" onclick="clickCoin(event)">
+    <div style="font-size:70px">★</div>
+  </button>
+  <div style="margin-top:20px; display:flex; flex-direction:column; align-items:center; gap:10px;">
+    <div>🖱️ قوة النقرة: <span id="cpc-display" style="color:#FFD700; font-weight:bold;">1</span></div>
+  </div>
+</div>
 
-    <button class="open-shop-btn" onclick="toggleShop(true)">🛒 المتجر</button>
+<div id="screen-upgrades" class="screen">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2>المتجر الملكي</h2>
+    <div style="color:#FFD700; font-weight:bold;">🪙 <span id="upgrades-coin-display">0</span></div>
+  </div>
+  <div id="upgrades-list"></div>
+</div>
 
-    <div id="shop" class="shop-overlay">
-        <h2 style="color:#fbbf24">متجر الأساطير</h2>
-        <div class="shop-content" id="shop-items"></div>
-        <button onclick="toggleShop(false)" style="margin-top:20px; background:white; padding:10px 30px; border-radius:10px; border:none;">عودة</button>
-    </div>
+<div id="screen-stats" class="screen">
+  <div class="stat-card">
+    <h3 style="margin-bottom:10px; color:#555577">إحصائيات التقدم</h3>
+    <div class="stat-row"><span>الرصيد المتوفر:</span><span id="s-coins" style="color:#FFD700">0</span></div>
+    <div class="stat-row"><span>إجمالي الأرباح التاريخية:</span><span id="s-total">0</span></div>
+    <div class="stat-row"><span>عدد النقرات اليدوية:</span><span id="s-clicks">0</span></div>
+    <div class="stat-row"><span>قوة النقرة الحالية:</span><span id="s-cpc">1</span></div>
+    <div class="stat-row"><span>مرات تفعيل المساعدين:</span><span id="s-used-bots">0</span></div>
+  </div>
+  <button class="reset-btn" onclick="resetGame()">🔄 تصفير اللعبة بالكامل</button>
+</div>
 
-    <script>
-        // القيم المعدلة لاستعادة حقك
-        let gold = 0, pwr = 1, seconds = 0;
-        let upgrades = [
-            { name: "خنجر خشبي", cost: 50, gain: 2, req: 0 },
-            { name: "سيف فولاذي", cost: 500, gain: 10, req: 1000 },
-            { name: "فأس ذهبي", cost: 5000, gain: 50, req: 10000 },
-            { name: "درع المليار", cost: 100000, gain: 500, req: 50000 }
-        ];
+<nav class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('home', this)">🖱️<br>النقر</button>
+  <button class="tab-btn" onclick="switchTab('upgrades', this)">⚡<br>المتجر</button>
+  <button class="tab-btn" onclick="switchTab('stats', this)">📊<br>الإحصائيات</button>
+</nav>
 
-        function init() {
-            load();
-            setInterval(() => { seconds++; updateTimer(); }, 1000);
-            render();
-        }
+<div class="toast" id="toast"></div>
 
-        function handleTap(e) {
-            gold += pwr;
-            document.getElementById('snd-tap').currentTime = 0;
-            document.getElementById('snd-tap').play().catch(()=>{});
-            
-            const f = document.createElement('div');
-            f.className = 'floating'; f.innerText = `+${pwr}`;
-            f.style.left = e.pageX + 'px'; f.style.top = e.pageY + 'px';
-            document.body.appendChild(f);
-            setTimeout(()=>f.remove(), 700);
+<script>
+// مفتاح تخزين فريد جديد لضمان الاستقرار
+const DB_KEY = 'KING_TAP_LIVE_STABLE_VERSION';
 
-            render(); save();
-        }
+const UPGRADES_DEF = [
+  { id:"finger", name:"إصبع قوي", desc:"يزيد قوة نقرتك الدائمة", icon:"🖐️", baseCost:15, mult:1.6, type:"permanent", cpc:1 },
+  { id:"robot", name:"روبوت", desc:"ينقر تلقائياً لـ 5 ثواني", icon:"🤖", baseCost:100, mult:1.4, type:"temp", duration:5, speed:100 },
+  { id:"mine", name:"منجم", desc:"ينقر تلقائياً لـ 10 ثواني", icon:"⛏️", baseCost:500, mult:1.4, type:"temp", duration:10, speed:80 },
+  { id:"bank", name:"بنك", desc:"ينقر تلقائياً لـ 15 ثانية", icon:"🏦", baseCost:2000, mult:1.5, type:"temp", duration:15, speed:60 },
+  { id:"wizard", name:"ساحر", desc:"ينقر تلقائياً لـ 20 ثانية", icon:"🧙", baseCost:10000, mult:1.5, type:"temp", duration:20, speed:40 },
+  { id:"dragon", name:"تنين", desc:"ينقر تلقائياً لـ 25 ثانية", icon:"🐉", baseCost:50000, mult:1.6, type:"temp", duration:25, speed:20 }
+];
 
-        function buy(i) {
-            if (gold >= upgrades[i].cost) {
-                gold -= upgrades[i].cost;
-                pwr += upgrades[i].gain;
-                upgrades[i].cost = Math.floor(upgrades[i].cost * 2);
-                document.getElementById('snd-buy').play().catch(()=>{});
-                render(); save();
-            }
-        }
+let state = {
+  coins: 0, totalCoins: 0, coinsPerClick: 1, clickCount: 0, usedBotsCount: 0,
+  upgrades: { finger:0, robot:0, mine:0, bank:0, wizard:0, dragon:0 }
+};
 
-        function resetGame() {
-            if(confirm("هل تريد تصفير العداد؟")) {
-                localStorage.removeItem('billion_game');
-                gold = 0; pwr = 1; location.reload();
-            }
-        }
+let activeBotInterval = false;
 
-        function toggleShop(show) { document.getElementById('shop').style.display = show ? 'flex' : 'none'; }
+// وظيفة الحفظ الفوري
+function instantSave() {
+  localStorage.setItem(DB_KEY, JSON.stringify(state));
+  const dot = document.getElementById('save-dot');
+  dot.classList.add('active');
+  setTimeout(() => dot.classList.remove('active'), 150);
+}
 
-        function updateTimer() {
-            let m = Math.floor(seconds / 60), s = seconds % 60;
-            document.getElementById('game-time').innerText = `${m}:${s < 10 ? '0' + s : s}`;
-        }
+function loadGame() {
+  const saved = localStorage.getItem(DB_KEY);
+  if (saved) {
+    state = JSON.parse(saved);
+  }
+}
 
-        function render() {
-            document.getElementById('score').innerText = Math.floor(gold);
-            document.getElementById('pwr-display').innerText = pwr;
-            let html = "";
-            upgrades.forEach((u, i) => {
-                html += `
-                    <div class="upgrade-card" style="${gold < u.req ? 'opacity:0.3' : ''}">
-                        <div style="color:white">
-                            <b>${u.name}</b><br>
-                            <small>${u.cost} 💰 | +${u.gain} قوة</small>
-                        </div>
-                        <button class="buy-btn" onclick="buy(${i})" ${gold < u.cost ? 'disabled' : ''}>تطوير</button>
-                    </div>
-                `;
-            });
-            document.getElementById('shop-items').innerHTML = html;
-        }
+function getCost(id) {
+  const def = UPGRADES_DEF.find(d => d.id === id);
+  const level = state.upgrades[id] || 0;
+  return Math.floor(def.baseCost * Math.pow(def.mult, level));
+}
 
-        function save() { localStorage.setItem('billion_game', JSON.stringify({gold, pwr, upgrades, seconds})); }
-        function load() {
-            const d = JSON.parse(localStorage.getItem('billion_game'));
-            if(d) {
-                gold = d.gold; pwr = d.pwr; seconds = d.seconds || 0;
-                if(d.upgrades) upgrades = d.upgrades;
-            }
-        }
-    </script>
+function clickCoin(e, isAuto = false) {
+  state.coins += state.coinsPerClick;
+  state.totalCoins += state.coinsPerClick;
+  if(!isAuto) state.clickCount++;
+
+  updateUI();
+  instantSave(); // حفظ كل نقرة
+
+  const x = isAuto ? (window.innerWidth / 2 + (Math.random()*60 - 30)) : e.clientX;
+  const y = isAuto ? (window.innerHeight / 2 + (Math.random()*60 - 30)) : e.clientY;
+  showFloat(x, y, `+${state.coinsPerClick}`, isAuto ? "#9F67FF" : "#FFD700");
+}
+
+function activateBot(id) {
+  const def = UPGRADES_DEF.find(d => d.id === id);
+  const currentCost = getCost(id);
+  if (state.coins < currentCost || activeBotInterval) return;
+
+  state.coins -= currentCost;
+  state.upgrades[id]++; 
+  state.usedBotsCount++;
+  
+  renderUpgrades();
+  updateUI();
+  instantSave();
+
+  const statusText = document.getElementById('active-status');
+  const coinBtn = document.getElementById('coin-btn');
+  const card = document.getElementById(`card-${id}`);
+  const timerBar = card.querySelector('.timer-bar');
+  const timerFill = card.querySelector('.timer-fill');
+
+  activeBotInterval = true; 
+  statusText.textContent = `نشط: ${def.name}...`;
+  coinBtn.classList.add('active-bot');
+  card.classList.add('active-now');
+  timerBar.style.display = 'block';
+
+  let timeLeft = def.duration * 1000;
+  const clicker = setInterval(() => clickCoin(null, true), def.speed);
+
+  const timer = setInterval(() => {
+    timeLeft -= 100;
+    timerFill.style.width = `${(timeLeft / (def.duration * 1000)) * 100}%`;
+
+    if (timeLeft <= 0) {
+      clearInterval(clicker);
+      clearInterval(timer);
+      activeBotInterval = false;
+      statusText.textContent = "";
+      coinBtn.classList.remove('active-bot');
+      card.classList.remove('active-now');
+      timerBar.style.display = 'none';
+      instantSave();
+      renderUpgrades(); // لإعادة تفعيل البطاقات
+    }
+  }, 100);
+}
+
+function buyPermanent(id) {
+  const cost = getCost(id);
+  const def = UPGRADES_DEF.find(d => d.id === id);
+  if (state.coins >= cost) {
+    state.coins -= cost;
+    state.upgrades[id]++;
+    state.coinsPerClick += def.cpc;
+    renderUpgrades();
+    updateUI();
+    instantSave();
+    showToast("تمت الترقية!");
+  }
+}
+
+function updateUI() {
+  document.getElementById('coin-display').textContent = Math.floor(state.coins).toLocaleString();
+  document.getElementById('cpc-display').textContent = state.coinsPerClick;
+  document.getElementById('upgrades-coin-display').textContent = Math.floor(state.coins).toLocaleString();
+  
+  document.getElementById('s-coins').textContent = Math.floor(state.coins).toLocaleString();
+  document.getElementById('s-total').textContent = Math.floor(state.totalCoins).toLocaleString();
+  document.getElementById('s-clicks').textContent = state.clickCount;
+  document.getElementById('s-cpc').textContent = state.coinsPerClick;
+  document.getElementById('s-used-bots').textContent = state.usedBotsCount;
+
+  UPGRADES_DEF.forEach(def => {
+    const card = document.getElementById(`card-${def.id}`);
+    if(!card) return;
+    const cost = getCost(def.id);
+    if (state.coins >= cost && !activeBotInterval) card.classList.add('affordable');
+    else card.classList.remove('affordable');
+    card.querySelector('.cost-val').textContent = cost.toLocaleString();
+  });
+}
+
+function renderUpgrades() {
+  const list = document.getElementById('upgrades-list');
+  list.innerHTML = '';
+  UPGRADES_DEF.forEach(def => {
+    const card = document.createElement('div');
+    card.className = 'upgrade-card';
+    card.id = `card-${def.id}`;
+    const cost = getCost(def.id);
+    const lvl = state.upgrades[def.id] || 0;
+    card.onclick = () => def.type === "temp" ? activateBot(def.id) : buyPermanent(def.id);
+    card.innerHTML = `
+      <div class="upgrade-icon">${def.icon}</div>
+      <div class="upgrade-info">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-weight:700">${def.name}</span>
+            <span class="level-badge">${lvl}</span>
+        </div>
+        <div style="font-size:11px; color:#555577">${def.desc}</div>
+        <div class="timer-bar"><div class="timer-fill"></div></div>
+      </div>
+      <div style="font-weight:700; color:#FFD700">🪙 <span class="cost-val">${cost.toLocaleString()}</span></div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function showFloat(x, y, txt, color) {
+  const span = document.createElement('div');
+  span.className = 'float-text';
+  span.style.left = `${x}px`; span.style.top = `${y}px`;
+  span.style.color = color; span.textContent = txt;
+  document.body.appendChild(span);
+  setTimeout(() => span.remove(), 800);
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`screen-${name}`).classList.add('active');
+  btn.classList.add('active');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function resetGame() {
+  if(confirm("سيتم مسح كل التقدم، هل أنت متأكد؟")) {
+    localStorage.removeItem(DB_KEY);
+    location.reload();
+  }
+}
+
+function openExport() { prompt("انسخ كود الحفظ:", btoa(JSON.stringify(state))); }
+function openImport() {
+  const code = prompt("الصق كود الحفظ:");
+  if(code) {
+    try {
+      state = JSON.parse(atob(code));
+      instantSave();
+      location.reload();
+    } catch(e) { alert("خطأ!"); }
+  }
+}
+
+// الانطلاق
+loadGame();
+renderUpgrades();
+updateUI();
+</script>
 </body>
 </html>

@@ -3,67 +3,394 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>King Tap - Live & Save Edition</title>
+  <title>King Tap - Royal Edition ✨</title>
   <style>
-    /* التنسيقات البصرية الرهيبة التي تحبها */
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #0A0A0F; color: #fff; min-height: 100vh; overflow-x: hidden; }
-    .orb { position:fixed; border-radius:50%; pointer-events:none; animation:float 4s ease-in-out infinite alternate; }
-    .orb1 { width:350px; height:350px; background:rgba(255,215,0,0.06); top:-100px; right:-100px; }
-    .orb2 { width:280px; height:280px; background:rgba(124,58,237,0.07); bottom:60px; left:-80px; }
-    @keyframes float { from{transform:translate(0,0)} to{transform:translate(30px,-20px)} }
-
-    .save-bar { position:fixed; top:0; left:0; right:0; height:42px; background:#0F0F1A; border-bottom:1px solid #1A1A2E; display:flex; align-items:center; justify-content:space-between; padding:0 14px; z-index:200; }
+    body { 
+      font-family: 'Segoe UI', Tahoma, sans-serif; 
+      background: linear-gradient(135deg, #0A0A1A 0%, #1A1A3A 50%, #0F0F2A 100%);
+      color: #fff; 
+      min-height: 100vh; 
+      overflow-x: hidden;
+      position: relative;
+    }
+    
+    .stars {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .star {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: #fff;
+      border-radius: 50%;
+      animation: twinkle 2s ease-in-out infinite;
+      opacity: 0.7;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+    
+    .orb { 
+      position:fixed; 
+      border-radius:50%; 
+      pointer-events:none; 
+      filter: blur(40px);
+      opacity: 0.4;
+    }
+    .orb1 { 
+      width:400px; height:400px; 
+      background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 70%); 
+      top:-150px; right:-100px; 
+      animation: float1 8s ease-in-out infinite alternate;
+    }
+    .orb2 {       width:320px; height:320px; 
+      background: radial-gradient(circle, rgba(159,103,255,0.25) 0%, transparent 70%); 
+      bottom:80px; left:-100px; 
+      animation: float2 10s ease-in-out infinite alternate;
+    }
+    .orb3 {
+      width:250px; height:250px;
+      background: radial-gradient(circle, rgba(0,212,255,0.2) 0%, transparent 70%);
+      top: 40%; right: 10%;
+      animation: float3 12s ease-in-out infinite alternate;
+    }
+    @keyframes float1 { from{transform:translate(0,0)} to{transform:translate(40px,30px)} }
+    @keyframes float2 { from{transform:translate(0,0)} to{transform:translate(-30px,-40px)} }
+    @keyframes float3 { from{transform:translate(0,0)} to{transform:translate(-20px,20px)} }
+    
+    .gold-dust {
+      position: fixed;
+      width: 3px; height: 3px;
+      background: #FFD700;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 2;
+      animation: dustFloat 6s linear infinite;
+      opacity: 0.6;
+    }
+    @keyframes dustFloat {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.6; }
+      100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+    }
+    
+    .save-bar { 
+      position:fixed; top:0; left:0; right:0; 
+      height:42px; 
+      background: rgba(15,15,26,0.9); 
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid rgba(255,215,0,0.2); 
+      display:flex; align-items:center; justify-content:space-between; 
+      padding:0 14px; z-index:200; 
+    }
     .save-left { display:flex; align-items:center; gap:8px; }
-    .game-logo { font-size:15px; font-weight:700; color:#FFD700; }
+    .game-logo { 
+      font-size:15px; font-weight:700; 
+      color:#FFD700; 
+      text-shadow: 0 0 10px rgba(255,215,0,0.5);
+    }
     .save-status { display:flex; align-items:center; gap:5px; font-size:11px; color:#555577; }
     .save-dot { width:7px; height:7px; border-radius:50%; background:#555577; transition: 0.2s; }
     .save-dot.active { background:#10B981; box-shadow: 0 0 8px #10B981; }
-
-    .sbar-btn { background:#1E1E2E; border:1px solid #2A2A40; border-radius:8px; padding:4px 9px; color:#9999BB; font-size:11px; cursor:pointer; }
-    .toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:#1E1E2E; border:1px solid #FFD700; border-radius:12px; padding:10px 18px; font-size:13px; opacity:0; transition:0.3s; z-index:999; }
+    .sbar-btn { 
+      background:#1E1E2E; border:1px solid #2A2A40; 
+      border-radius:8px; padding:4px 9px; 
+      color:#9999BB; font-size:11px; cursor:pointer; 
+      transition: 0.2s;
+    }
+    .sbar-btn:hover { border-color: #FFD700; color: #FFD700; }
+    
+    .toast { 
+      position:fixed; bottom:90px; left:50%; 
+      transform:translateX(-50%); 
+      background:#1E1E2E; border:1px solid #FFD700; 
+      border-radius:12px; padding:10px 18px; 
+      font-size:13px; opacity:0; transition:0.3s; z-index:999;
+      box-shadow: 0 4px 20px rgba(255,215,0,0.3);
+    }
     .toast.show { opacity:1; }
 
-    .tab-bar { position:fixed; bottom:0; left:0; right:0; display:flex; background:#0F0F1A; border-top:1px solid #1A1A2E; z-index:100; }
-    .tab-btn { flex:1; display:flex; flex-direction:column; align-items:center; padding:10px; background:none; border:none; color:#555577; font-size:11px; cursor:pointer; }
-    .tab-btn.active { color:#FFD700; }
-    .screen { display:none; padding:60px 16px 90px; min-height:100vh; }
+    .tab-bar { 
+      position:fixed; bottom:0; left:0; right:0; 
+      display:flex; 
+      background: rgba(15,15,26,0.95); 
+      backdrop-filter: blur(10px);
+      border-top:1px solid rgba(255,215,0,0.2); z-index:100; 
+    }
+    .tab-btn { 
+      flex:1; display:flex; flex-direction:column; align-items:center; 
+      padding:10px; background:none; border:none; 
+      color:#555577; font-size:11px; cursor:pointer; 
+      transition: 0.2s;
+    }
+    .tab-btn:hover { color: #FFD700; }
+    .tab-btn.active { color:#FFD700; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+    
+    .screen { 
+      display:none; 
+      padding:60px 16px 90px; 
+      min-height:100vh; 
+      position: relative; 
+      z-index: 10;
+      width: 100%;
+      max-width: 100%;
+    }
     .screen.active { display:block; }
 
     #screen-home { display:flex; flex-direction:column; align-items:center; gap:20px; padding-top:80px; }
-    .coin-count { font-size:52px; font-weight:700; color:#FFD700; }
-    .coin-btn { position:relative; width:200px; height:200px; border-radius:50%; background:#FFD700; border:none; cursor:pointer; box-shadow:0 0 60px rgba(255,215,0,0.5); display:flex; align-items:center; justify-content:center; outline:none; -webkit-tap-highlight-color: transparent; transition: 0.1s; }
-    .coin-btn:active { transform: scale(0.92); }
-    .coin-btn.active-bot { box-shadow: 0 0 80px #9F67FF; animation: pulse 0.5s infinite; }
+    .coin-count { 
+      font-size:52px; font-weight:700; color:#FFD700; 
+      text-shadow: 0 0 20px rgba(255,215,0,0.6), 0 0 40px rgba(255,215,0,0.3);      animation: coinGlow 2s ease-in-out infinite alternate;
+    }
+    @keyframes coinGlow {
+      from { text-shadow: 0 0 20px rgba(255,215,0,0.4); }
+      to { text-shadow: 0 0 30px rgba(255,215,0,0.8), 0 0 60px rgba(255,215,0,0.4); }
+    }
+    
+    .coin-btn { 
+      position:relative; 
+      width:200px; height:200px; 
+      border-radius:50%; 
+      background: linear-gradient(145deg, #FFD700, #FFA500); 
+      border: 3px solid rgba(255,255,255,0.3);
+      cursor:pointer; 
+      box-shadow: 0 0 60px rgba(255,215,0,0.5), inset 0 -5px 20px rgba(0,0,0,0.2); 
+      display:flex; align-items:center; justify-content:center; 
+      outline:none; 
+      -webkit-tap-highlight-color: transparent; 
+      overflow: visible;
+      margin: 20px auto;
+    }
+    .coin-btn:active { 
+      transform: scale(0.95);
+      box-shadow: 0 0 40px rgba(255,215,0,0.3), inset 0 -5px 20px rgba(0,0,0,0.2);
+    }
+    .coin-btn.active-bot { 
+      box-shadow: 0 0 80px #9F67FF, inset 0 -5px 20px rgba(0,0,0,0.2); 
+      animation: pulse 0.5s infinite; 
+      background: linear-gradient(145deg, #9F67FF, #7B4CD6);
+    }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(0.95); } 100% { transform: scale(1); } }
     
-    .float-text { position:fixed; font-size:22px; font-weight:700; color:#FFD700; pointer-events:none; z-index:999; animation:floatUp 0.9s ease forwards; }
-    @keyframes floatUp { 0%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(-80px)} }
+    .float-text { 
+      position:fixed; font-size:22px; font-weight:700; 
+      color:#FFD700; pointer-events:none; z-index:999; 
+      animation:floatUp 0.9s ease forwards; 
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    @keyframes floatUp { 
+      0%{opacity:1;transform:translateY(0)} 
+      100%{opacity:0;transform:translateY(-80px)} 
+    }
 
-    .upgrade-card { display:flex; align-items:center; gap:14px; background:#1E1E2E; border-radius:16px; padding:14px; border:1px solid #2A2A40; margin-bottom:10px; cursor:pointer; transition: 0.2s; }
-    .upgrade-card.affordable { border-color:#FFD700; }
-    .upgrade-card.active-now { border-color:#9F67FF; background:rgba(159,103,255,0.1); pointer-events:none; opacity: 0.6; }
-    .upgrade-icon { width:52px; height:52px; border-radius:14px; background:#1C1C28; display:flex; align-items:center; justify-content:center; font-size:26px; }
+    .particle {
+      position: fixed;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 998;
+      animation: particleFly 0.6s ease-out forwards;    }
+    @keyframes particleFly {
+      0% { opacity: 1; transform: translate(0, 0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+    }
+
+    .sparkle {
+      position: fixed;
+      width: 4px; height: 4px;
+      background: #FFD700;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 997;
+      box-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700;
+      animation: sparkleFade 0.5s ease-out forwards;
+    }
+    @keyframes sparkleFade {
+      0% { opacity: 1; transform: scale(1) translate(0, 0); }
+      100% { opacity: 0; transform: scale(0) translate(var(--sx), var(--sy)); }
+    }
+
+    .crown-popup {
+      position: fixed;
+      font-size: 36px;
+      pointer-events: none;
+      z-index: 1000;
+      animation: crownPop 0.6s ease forwards;
+      text-shadow: 0 0 20px rgba(255,215,0,0.8);
+    }
+    @keyframes crownPop {
+      0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+      30% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+      70% { transform: translate(-50%, -70px) scale(1); opacity: 1; }
+      100% { transform: translate(-50%, -100px) scale(0.8); opacity: 0; }
+    }
+
+    .combo-trail {
+      position: fixed;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 996;
+      animation: trailFade 0.8s ease-out forwards;
+    }
+    @keyframes trailFade {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0) translateY(-40px); }
+    }
+
+    .celebration {      position: fixed;
+      pointer-events: none;
+      z-index: 1001;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: celebrate 0.8s ease forwards;
+    }
+    @keyframes celebrate {
+      0% { transform: scale(0); opacity: 0; }
+      20% { transform: scale(1.2); opacity: 1; }
+      80% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0; }
+    }
+    .celebration-text {
+      font-size: 32px;
+      font-weight: 900;
+      background: linear-gradient(45deg, #FFD700, #FF6B00, #9F67FF, #00D4FF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: none;
+      animation: rainbow 1s linear infinite;
+    }
+    @keyframes rainbow {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+
+    .crystal {
+      position: fixed;
+      width: 10px; height: 10px;
+      background: linear-gradient(135deg, #00D4FF, #9F67FF, #FF69B4);
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      pointer-events: none;
+      z-index: 995;
+      animation: crystalFloat 0.7s ease-out forwards;
+      box-shadow: 0 0 15px rgba(159,103,255,0.6);
+    }
+    @keyframes crystalFloat {
+      0% { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1); }
+      100% { opacity: 0; transform: translate(var(--cx), var(--cy)) rotate(180deg) scale(0.3); }
+    }
+
+    .coin-spin {
+      position: fixed;
+      font-size: 24px;
+      pointer-events: none;
+      z-index: 994;
+      animation: spinFly 0.8s ease-out forwards;    }
+    @keyframes spinFly {
+      0% { opacity: 1; transform: translate(0, 0) rotateY(0deg) scale(1); }
+      100% { opacity: 0; transform: translate(var(--sx), -60px) rotateY(720deg) scale(0.3); }
+    }
+
+    .confetti {
+      position: fixed;
+      width: 8px; height: 12px;
+      pointer-events: none;
+      z-index: 993;
+      animation: confettiFall 1.2s ease-out forwards;
+    }
+    @keyframes confettiFall {
+      0% { opacity: 1; transform: translate(0, 0) rotate(0deg); }
+      100% { opacity: 0; transform: translate(var(--fx), var(--fy)) rotate(720deg); }
+    }
+
+    .upgrade-card { 
+      display:flex; align-items:center; gap:14px; 
+      background:#1E1E2E; border-radius:16px; padding:14px; 
+      border:1px solid #2A2A40; margin-bottom:10px; cursor:pointer; 
+      transition: 0.2s;
+    }
+    .upgrade-card.affordable { border-color:#FFD700; box-shadow: 0 0 15px rgba(255,215,0,0.2); }
+    .upgrade-card:hover { background: #252535; }
+    .upgrade-card.active-now { 
+      border-color:#9F67FF; background:rgba(159,103,255,0.15); 
+      pointer-events:none; opacity: 0.7; 
+      box-shadow: 0 0 20px rgba(159,103,255,0.3);
+    }
+    .upgrade-icon { 
+      width:52px; height:52px; border-radius:14px; 
+      background: linear-gradient(145deg, #2A2A40, #1C1C28); 
+      display:flex; align-items:center; justify-content:center; 
+      font-size:26px;
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+    }
     .upgrade-info { flex:1; }
     .timer-bar { height:4px; background:#1C1C28; border-radius:2px; margin-top:8px; overflow:hidden; display:none; }
-    .timer-fill { height:100%; background:#9F67FF; width:100%; }
-    .level-badge { font-size: 10px; background: #2A2A40; padding: 2px 6px; border-radius: 4px; color: #999; }
+    .timer-fill { height:100%; background: linear-gradient(90deg, #9F67FF, #00D4FF); width:100%; }
+    .level-badge { font-size: 10px; background: linear-gradient(145deg, #2A2A40, #1C1C28); padding: 2px 6px; border-radius: 4px; color: #FFD700; border: 1px solid #FFD700; }
 
-    .stat-card { background:#1E1E2E; border-radius:16px; padding:16px; border:1px solid #2A2A40; margin-bottom:16px; }
+    .stat-card { 
+      background:#1E1E2E; border-radius:16px; padding:16px; 
+      border:1px solid #2A2A40; margin-bottom:16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
     .stat-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #1C1C28; font-size:14px; }
-    .reset-btn { width:100%; background:rgba(239,68,68,0.1); border:1px solid #EF4444; color:#EF4444; padding:14px; border-radius:14px; cursor:pointer; }
+    .reset-btn {       width:100%; background:rgba(239,68,68,0.1); 
+      border:1px solid #EF4444; color:#EF4444; 
+      padding:14px; border-radius:14px; cursor:pointer;
+      transition: 0.2s;
+    }
+    .reset-btn:hover { background: rgba(239,68,68,0.2); }
+    
+    .controls-toggle {
+      position: fixed;
+      top: 55px;
+      left: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 150;
+    }
+    .control-btn {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: #1E1E2E;
+      border: 1px solid #2A2A40;
+      color: #9999BB;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+    }
+    .control-btn:hover { border-color: #FFD700; color: #FFD700; }
+    .control-btn.muted { color: #EF4444; border-color: #EF4444; }
   </style>
 </head>
 <body>
 
+<div class="stars" id="stars"></div>
 <div class="orb orb1"></div>
 <div class="orb orb2"></div>
+<div class="orb orb3"></div>
+<div id="gold-dust-container"></div>
+
+<div class="controls-toggle">
+  <button class="control-btn" id="sound-toggle" onclick="toggleSound()" title="تشغيل/كتم الصوت">🔊</button>
+  <button class="control-btn" id="effects-toggle" onclick="toggleEffects()" title="تشغيل/إيقاف المؤثرات">✨</button>
+</div>
 
 <div class="save-bar">
   <div class="save-left">
     <span class="game-logo">👑 King Tap</span>
-    <div class="save-status">
-      <div class="save-dot" id="save-dot"></div>
+    <div class="save-status">      <div class="save-dot" id="save-dot"></div>
       <span id="save-label">المزامنة فورية</span>
     </div>
   </div>
@@ -77,17 +404,18 @@
   <div class="coin-count" id="coin-display">0</div>
   <div style="color:#9999BB; margin-bottom:10px;">عملة ذهبية</div>
   <div id="active-status" style="height:20px; color:#9F67FF; font-weight:bold; font-size:14px;"></div>
-  <button class="coin-btn" id="coin-btn" onclick="clickCoin(event)">
+  <button class="coin-btn" id="coin-btn">
     <div style="font-size:70px">★</div>
   </button>
   <div style="margin-top:20px; display:flex; flex-direction:column; align-items:center; gap:10px;">
     <div>🖱️ قوة النقرة: <span id="cpc-display" style="color:#FFD700; font-weight:bold;">1</span></div>
+    <div id="combo-display" style="height:20px; color:#9F67FF; font-size:14px; font-weight:bold;"></div>
   </div>
 </div>
 
 <div id="screen-upgrades" class="screen">
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-    <h2>المتجر الملكي</h2>
+    <h2>🏪 المتجر الملكي</h2>
     <div style="color:#FFD700; font-weight:bold;">🪙 <span id="upgrades-coin-display">0</span></div>
   </div>
   <div id="upgrades-list"></div>
@@ -95,7 +423,7 @@
 
 <div id="screen-stats" class="screen">
   <div class="stat-card">
-    <h3 style="margin-bottom:10px; color:#555577">إحصائيات التقدم</h3>
+    <h3 style="margin-bottom:10px; color:#555577">📊 إحصائيات التقدم</h3>
     <div class="stat-row"><span>الرصيد المتوفر:</span><span id="s-coins" style="color:#FFD700">0</span></div>
     <div class="stat-row"><span>إجمالي الأرباح التاريخية:</span><span id="s-total">0</span></div>
     <div class="stat-row"><span>عدد النقرات اليدوية:</span><span id="s-clicks">0</span></div>
@@ -112,110 +440,599 @@
 </nav>
 
 <div class="toast" id="toast"></div>
-
 <script>
-// مفتاح تخزين فريد جديد لضمان الاستقرار
-const DB_KEY = 'KING_TAP_LIVE_STABLE_VERSION';
+// ========== 🎵 نظام الصوت ==========
+const SoundManager = {
+  ctx: null,
+  enabled: true,
+  
+  init() {
+    if (!this.ctx) {
+      try {
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      } catch(e) { console.log('Audio not supported'); }
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  },
+  
+  playClick(pitch = 1) {
+    if (!this.enabled || !this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.frequency.value = 880 * pitch;
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.08);
+  },
+  
+  playCrystal() {
+    if (!this.enabled || !this.ctx) return;
+    for(let i=0; i<3; i++) {
+      setTimeout(() => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.frequency.value = 1200 + Math.random() * 400;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.15);
+      }, i * 30);
+    }
+  },
+    playCoinSpin() {
+    if (!this.enabled || !this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1000, this.ctx.currentTime + 0.2);
+    osc.type = 'triangle';
+    gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.25);
+  },
+  
+  playCrown() {
+    if (!this.enabled || !this.ctx) return;
+    const notes = [523, 659, 784];
+    notes.forEach((freq, i) => {
+      setTimeout(() => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.frequency.value = freq;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.12);
+      }, i * 80);
+    });
+  },
+  
+  playCelebration() {
+    if (!this.enabled || !this.ctx) return;
+    const melody = [523, 659, 784, 1047];
+    melody.forEach((freq, i) => {
+      setTimeout(() => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.frequency.value = freq;
+        osc.type = 'square';
+        gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.15);
+      }, i * 100);    });
+  },
+  
+  playBuy() {
+    if (!this.enabled || !this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.15);
+    osc.type = 'triangle';
+    gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.2);
+  },
+  
+  playBotStart() {
+    if (!this.enabled || !this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.frequency.setValueAtTime(330, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(660, this.ctx.currentTime + 0.3);
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.35);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.35);
+  },
+  
+  playBotEnd() {
+    if (!this.enabled || !this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.frequency.setValueAtTime(660, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(330, this.ctx.currentTime + 0.25);
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.3);
+  },
+  
+  playError() {
+    if (!this.enabled || !this.ctx) return;    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(110, this.ctx.currentTime + 0.15);
+    osc.type = 'sawtooth';
+    gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.2);
+  },
+  
+  playUpgrade() {
+    if (!this.enabled || !this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.frequency.setValueAtTime(523, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1047, this.ctx.currentTime + 0.1);
+    osc.frequency.exponentialRampToValueAtTime(1568, this.ctx.currentTime + 0.2);
+    osc.type = 'square';
+    gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.25);
+  },
+  
+  playBigBoom() {
+    if (!this.enabled || !this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(50, this.ctx.currentTime + 0.3);
+    osc.type = 'sawtooth';
+    gain.gain.setValueAtTime(0.4, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.4);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.4);
+  },
+  
+  toggle() {
+    this.enabled = !this.enabled;
+    return this.enabled;
+  }
+};
+// ========== ✨ نظام المؤثرات ==========
+const EffectsManager = {
+  enabled: true,
+  comboCount: 0,
+  comboTimer: null,
+  colors: ['#FFD700', '#FFA500', '#FF6B00', '#9F67FF', '#00D4FF', '#FF69B4', '#00FFA3'],
+  trailColors: ['#FFD700', '#FF6B00', '#9F67FF', '#00D4FF', '#FF69B4'],
+  
+  createParticles(x, y, count = 8, isBig = false) {
+    if (!this.enabled) return;
+    for (let i = 0; i < count; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      const angle = (Math.PI * 2 * i) / count + Math.random() * 0.5;
+      const velocity = isBig ? 100 + Math.random() * 80 : 50 + Math.random() * 50;
+      const tx = Math.cos(angle) * velocity;
+      const ty = Math.sin(angle) * velocity - 40;
+      particle.style.left = x + 'px';
+      particle.style.top = y + 'px';
+      particle.style.background = this.colors[Math.floor(Math.random() * this.colors.length)];
+      particle.style.setProperty('--tx', tx + 'px');
+      particle.style.setProperty('--ty', ty + 'px');
+      particle.style.width = isBig ? '14px' : '9px';
+      particle.style.height = isBig ? '14px' : '9px';
+      document.body.appendChild(particle);
+      setTimeout(function() { particle.remove(); }, 600);
+    }
+  },
+  
+  createSparkles(x, y, count = 6) {
+    if (!this.enabled) return;
+    for (let i = 0; i < count; i++) {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle';
+      sparkle.style.left = x + 'px';
+      sparkle.style.top = y + 'px';
+      sparkle.style.setProperty('--sx', ((Math.random() - 0.5) * 80) + 'px');
+      sparkle.style.setProperty('--sy', ((Math.random() - 0.5) * 80 - 50) + 'px');
+      sparkle.style.background = this.colors[Math.floor(Math.random() * 4)];
+      document.body.appendChild(sparkle);
+      setTimeout(function() { sparkle.remove(); }, 500);
+    }
+    if (SoundManager.enabled) SoundManager.playCrystal();
+  },
+  
+  showCrown(x, y) {
+    if (!this.enabled) return;
+    const crown = document.createElement('div');
+    crown.className = 'crown-popup';
+    crown.textContent = '👑';    crown.style.left = x + 'px';
+    crown.style.top = y + 'px';
+    document.body.appendChild(crown);
+    if (SoundManager.enabled) SoundManager.playCrown();
+    setTimeout(function() { crown.remove(); }, 600);
+  },
+  
+  createComboTrail(x, y) {
+    if (!this.enabled || this.comboCount < 3) return;
+    const trail = document.createElement('div');
+    trail.className = 'combo-trail';
+    trail.style.left = x + 'px';
+    trail.style.top = y + 'px';
+    trail.style.background = this.trailColors[this.comboCount % this.trailColors.length];
+    trail.style.boxShadow = '0 0 10px ' + trail.style.background;
+    document.body.appendChild(trail);
+    setTimeout(function() { trail.remove(); }, 800);
+  },
+  
+  createCoinSpins(x, y, count = 2) {
+    if (!this.enabled) return;
+    for (let i = 0; i < count; i++) {
+      const coin = document.createElement('div');
+      coin.className = 'coin-spin';
+      coin.textContent = '🪙';
+      coin.style.left = x + 'px';
+      coin.style.top = y + 'px';
+      coin.style.setProperty('--sx', ((Math.random() - 0.5) * 100) + 'px');
+      document.body.appendChild(coin);
+      setTimeout(function() { coin.remove(); }, 800);
+    }
+    if (SoundManager.enabled) SoundManager.playCoinSpin();
+  },
+  
+  createCrystals(x, y, count = 4) {
+    if (!this.enabled) return;
+    for (let i = 0; i < count; i++) {
+      const crystal = document.createElement('div');
+      crystal.className = 'crystal';
+      crystal.style.left = x + 'px';
+      crystal.style.top = y + 'px';
+      crystal.style.setProperty('--cx', ((Math.random() - 0.5) * 120) + 'px');
+      crystal.style.setProperty('--cy', (-80 - Math.random() * 60) + 'px');
+      document.body.appendChild(crystal);
+      setTimeout(function() { crystal.remove(); }, 700);
+    }
+  },
+  
+  createCelebration(x, y) {
+    if (!this.enabled) return;    
+    const celebration = document.createElement('div');
+    celebration.className = 'celebration';
+    celebration.style.left = x + 'px';
+    celebration.style.top = (y - 50) + 'px';
+    celebration.innerHTML = '<div class="celebration-text">✨ رائع! ✨</div>';
+    document.body.appendChild(celebration);
+    setTimeout(function() { celebration.remove(); }, 800);
+    
+    for (let i = 0; i < 15; i++) {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.style.left = x + 'px';
+      confetti.style.top = y + 'px';
+      confetti.style.background = this.colors[Math.floor(Math.random() * this.colors.length)];
+      confetti.style.setProperty('--fx', ((Math.random() - 0.5) * 200) + 'px');
+      confetti.style.setProperty('--fy', (150 + Math.random() * 100) + 'px');
+      confetti.style.transform = 'rotate(' + (Math.random() * 360) + 'deg)';
+      document.body.appendChild(confetti);
+      setTimeout(function() { confetti.remove(); }, 1200);
+    }
+    
+    if (SoundManager.enabled) SoundManager.playCelebration();
+  },
+  
+  updateCombo(x, y) {
+    this.comboCount++;
+    var comboDisplay = document.getElementById('combo-display');
+    if (comboDisplay) {
+      comboDisplay.textContent = this.comboCount > 1 ? 'كومبو: ' + this.comboCount + '🔥' : '';
+    }
+    
+    if (this.comboCount >= 3) this.showCrown(x, y);
+    if (this.comboCount >= 5) this.createComboTrail(x, y);
+    if (this.comboCount >= 10) this.createCoinSpins(x, y);
+    if (this.comboCount >= 20) this.createCrystals(x, y);
+    if (this.comboCount >= 50) this.createCelebration(x, y);
+    
+    var self = this;
+    if (this.comboTimer) clearTimeout(this.comboTimer);
+    this.comboTimer = setTimeout(function() {
+      self.comboCount = 0;
+      var cd = document.getElementById('combo-display');
+      if (cd) cd.textContent = '';
+    }, 2000);
+  },
+  
+  createBigExplosion(x, y) {
+    if (!this.enabled) return;
+    this.createParticles(x, y, 20, true);    this.createSparkles(x, y, 10);
+    if (SoundManager.enabled) SoundManager.playBigBoom();
+  },
+  
+  toggle() {
+    this.enabled = !this.enabled;
+    return this.enabled;
+  },
+  
+  resetCombo() {
+    this.comboCount = 0;
+    if (this.comboTimer) clearTimeout(this.comboTimer);
+    var cd = document.getElementById('combo-display');
+    if (cd) cd.textContent = '';
+  }
+};
 
-const UPGRADES_DEF = [
+// ========== 🌌 خلفية النجوم ==========
+function createStars() {
+  var container = document.getElementById('stars');
+  for (var i = 0; i < 50; i++) {
+    var star = document.createElement('div');
+    star.className = 'star';
+    star.style.left = (Math.random() * 100) + '%';
+    star.style.top = (Math.random() * 100) + '%';
+    star.style.animationDelay = (Math.random() * 2) + 's';
+    star.style.width = star.style.height = (1 + Math.random() * 2) + 'px';
+    container.appendChild(star);
+  }
+}
+
+// ========== ✨ غبار الذهب ==========
+function createGoldDust() {
+  var container = document.getElementById('gold-dust-container');
+  for (var i = 0; i < 15; i++) {
+    var dust = document.createElement('div');
+    dust.className = 'gold-dust';
+    dust.style.left = (Math.random() * 100) + '%';
+    dust.style.animationDelay = (Math.random() * 6) + 's';
+    dust.style.animationDuration = (4 + Math.random() * 4) + 's';
+    container.appendChild(dust);
+  }
+}
+
+// ========== متغيرات اللعبة ==========
+var DB_KEY = 'KING_TAP_LIVE_STABLE_VERSION';
+
+var UPGRADES_DEF = [
   { id:"finger", name:"إصبع قوي", desc:"يزيد قوة نقرتك الدائمة", icon:"🖐️", baseCost:15, mult:1.6, type:"permanent", cpc:1 },
-  { id:"robot", name:"روبوت", desc:"ينقر تلقائياً لـ 5 ثواني", icon:"🤖", baseCost:100, mult:1.4, type:"temp", duration:5, speed:100 },
-  { id:"mine", name:"منجم", desc:"ينقر تلقائياً لـ 10 ثواني", icon:"⛏️", baseCost:500, mult:1.4, type:"temp", duration:10, speed:80 },
+  { id:"robot", name:"روبوت", desc:"ينقر تلقائياً لـ 5 ثواني", icon:"🤖", baseCost:100, mult:1.4, type:"temp", duration:5, speed:100 },  { id:"mine", name:"منجم", desc:"ينقر تلقائياً لـ 10 ثواني", icon:"⛏️", baseCost:500, mult:1.4, type:"temp", duration:10, speed:80 },
   { id:"bank", name:"بنك", desc:"ينقر تلقائياً لـ 15 ثانية", icon:"🏦", baseCost:2000, mult:1.5, type:"temp", duration:15, speed:60 },
   { id:"wizard", name:"ساحر", desc:"ينقر تلقائياً لـ 20 ثانية", icon:"🧙", baseCost:10000, mult:1.5, type:"temp", duration:20, speed:40 },
   { id:"dragon", name:"تنين", desc:"ينقر تلقائياً لـ 25 ثانية", icon:"🐉", baseCost:50000, mult:1.6, type:"temp", duration:25, speed:20 }
 ];
 
-let state = {
+var state = {
   coins: 0, totalCoins: 0, coinsPerClick: 1, clickCount: 0, usedBotsCount: 0,
-  upgrades: { finger:0, robot:0, mine:0, bank:0, wizard:0, dragon:0 }
+  upgrades: { finger:0, robot:0, mine:0, bank:0, wizard:0, dragon:0 },
+  soundEnabled: true,
+  effectsEnabled: true
 };
 
-let activeBotInterval = false;
+var activeBot = false;
 
-// وظيفة الحفظ الفوري
-function instantSave() {
-  localStorage.setItem(DB_KEY, JSON.stringify(state));
-  const dot = document.getElementById('save-dot');
-  dot.classList.add('active');
-  setTimeout(() => dot.classList.remove('active'), 150);
+// ========== وظائف التحكم ==========
+function toggleSound() {
+  SoundManager.init();
+  var enabled = SoundManager.toggle();
+  state.soundEnabled = enabled;
+  document.getElementById('sound-toggle').textContent = enabled ? '🔊' : '🔇';
+  document.getElementById('sound-toggle').classList.toggle('muted', !enabled);
+  instantSave();
+  showToast(enabled ? '✅ تم تشغيل الصوت' : '🔇 تم كتم الصوت');
 }
 
+function toggleEffects() {
+  var enabled = EffectsManager.toggle();
+  state.effectsEnabled = enabled;
+  document.getElementById('effects-toggle').textContent = enabled ? '✨' : '💫';
+  document.getElementById('effects-toggle').classList.toggle('muted', !enabled);
+  if (!enabled) EffectsManager.resetCombo();
+  instantSave();
+  showToast(enabled ? '✅ تم تشغيل المؤثرات' : '💫 تم إيقاف المؤثرات');
+}
+
+function initSoundOnFirstClick() {
+  SoundManager.init();
+  if (state.soundEnabled) SoundManager.playClick();
+}
+
+// ========== الحفظ والتحميل ==========
+function instantSave() {
+  try {
+    localStorage.setItem(DB_KEY, JSON.stringify(state));
+    var dot = document.getElementById('save-dot');
+    dot.classList.add('active');
+    setTimeout(function() { dot.classList.remove('active'); }, 150);
+  } catch(e) {}
+}
 function loadGame() {
-  const saved = localStorage.getItem(DB_KEY);
-  if (saved) {
-    state = JSON.parse(saved);
+  try {
+    var saved = localStorage.getItem(DB_KEY);
+    if (saved) {
+      var parsed = JSON.parse(saved);
+      for (var key in parsed) {
+        if (state.hasOwnProperty(key)) {
+          state[key] = parsed[key];
+        }
+      }
+    }
+  } catch(e) {}
+  
+  if (!state.soundEnabled) {
+    SoundManager.enabled = false;
+    document.getElementById('sound-toggle').textContent = '🔇';
+    document.getElementById('sound-toggle').classList.add('muted');
+  }
+  if (!state.effectsEnabled) {
+    EffectsManager.enabled = false;
+    document.getElementById('effects-toggle').textContent = '💫';
+    document.getElementById('effects-toggle').classList.add('muted');
   }
 }
 
 function getCost(id) {
-  const def = UPGRADES_DEF.find(d => d.id === id);
-  const level = state.upgrades[id] || 0;
+  var def = null;
+  for (var i = 0; i < UPGRADES_DEF.length; i++) {
+    if (UPGRADES_DEF[i].id === id) {
+      def = UPGRADES_DEF[i];
+      break;
+    }
+  }
+  var level = state.upgrades[id] || 0;
   return Math.floor(def.baseCost * Math.pow(def.mult, level));
 }
 
-function clickCoin(e, isAuto = false) {
+// ========== النقر على العملة ==========
+function clickCoin(e, isAuto) {
+  if (isAuto === undefined) isAuto = false;
+  
   state.coins += state.coinsPerClick;
   state.totalCoins += state.coinsPerClick;
-  if(!isAuto) state.clickCount++;
+  if (!isAuto) state.clickCount++;
 
   updateUI();
-  instantSave(); // حفظ كل نقرة
+  instantSave();
 
-  const x = isAuto ? (window.innerWidth / 2 + (Math.random()*60 - 30)) : e.clientX;
-  const y = isAuto ? (window.innerHeight / 2 + (Math.random()*60 - 30)) : e.clientY;
-  showFloat(x, y, `+${state.coinsPerClick}`, isAuto ? "#9F67FF" : "#FFD700");
+  if (!isAuto && EffectsManager.enabled) {    var btn = document.getElementById('coin-btn');
+    var rect = btn.getBoundingClientRect();
+    var x = e ? e.clientX : (rect.left + rect.width/2);
+    var y = e ? e.clientY : (rect.top + rect.height/2);
+    
+    EffectsManager.createParticles(x, y, 8);
+    EffectsManager.createSparkles(x, y, 5);
+    EffectsManager.updateCombo(x, y);
+    
+    if (state.coinsPerClick >= 10) {
+      EffectsManager.createCrystals(x, y, 3);
+    }
+    
+    if (state.coinsPerClick >= 50) {
+      EffectsManager.createBigExplosion(x, y);
+      EffectsManager.createCelebration(x, y);
+    }
+  }
+
+  if (SoundManager.enabled) {
+    SoundManager.playClick(isAuto ? 0.85 : 1);
+  }
+
+  var floatX = isAuto ? (window.innerWidth / 2 + (Math.random()*60 - 30)) : (e ? e.clientX : window.innerWidth/2);
+  var floatY = isAuto ? (window.innerHeight / 2 + (Math.random()*60 - 30)) : (e ? e.clientY : window.innerHeight/2);
+  showFloat(floatX, floatY, '+' + state.coinsPerClick, isAuto ? "#9F67FF" : "#FFD700");
 }
 
+// ========== تفعيل البوت ==========
 function activateBot(id) {
-  const def = UPGRADES_DEF.find(d => d.id === id);
-  const currentCost = getCost(id);
-  if (state.coins < currentCost || activeBotInterval) return;
+  var def = null;
+  for (var i = 0; i < UPGRADES_DEF.length; i++) {
+    if (UPGRADES_DEF[i].id === id) {
+      def = UPGRADES_DEF[i];
+      break;
+    }
+  }
+  
+  var currentCost = getCost(id);
+  if (state.coins < currentCost || activeBot) {
+    if (SoundManager.enabled) SoundManager.playError();
+    return;
+  }
 
   state.coins -= currentCost;
   state.upgrades[id]++; 
   state.usedBotsCount++;
   
   renderUpgrades();
-  updateUI();
-  instantSave();
+  updateUI();  instantSave();
 
-  const statusText = document.getElementById('active-status');
-  const coinBtn = document.getElementById('coin-btn');
-  const card = document.getElementById(`card-${id}`);
-  const timerBar = card.querySelector('.timer-bar');
-  const timerFill = card.querySelector('.timer-fill');
+  if (SoundManager.enabled) SoundManager.playBotStart();
+  if (EffectsManager.enabled) {
+    EffectsManager.createParticles(window.innerWidth/2, window.innerHeight/2, 12);
+    EffectsManager.createSparkles(window.innerWidth/2, window.innerHeight/2, 8);
+  }
 
-  activeBotInterval = true; 
-  statusText.textContent = `نشط: ${def.name}...`;
+  var statusText = document.getElementById('active-status');
+  var coinBtn = document.getElementById('coin-btn');
+  var card = document.getElementById('card-' + id);
+  var timerBar = card.querySelector('.timer-bar');
+  var timerFill = card.querySelector('.timer-fill');
+
+  activeBot = true; 
+  statusText.textContent = 'نشط: ' + def.name + '...';
   coinBtn.classList.add('active-bot');
   card.classList.add('active-now');
   timerBar.style.display = 'block';
 
-  let timeLeft = def.duration * 1000;
-  const clicker = setInterval(() => clickCoin(null, true), def.speed);
+  var timeLeft = def.duration * 1000;
+  var clicker = setInterval(function() { clickCoin(null, true); }, def.speed);
 
-  const timer = setInterval(() => {
+  var timer = setInterval(function() {
     timeLeft -= 100;
-    timerFill.style.width = `${(timeLeft / (def.duration * 1000)) * 100}%`;
+    timerFill.style.width = ((timeLeft / (def.duration * 1000)) * 100) + '%';
 
     if (timeLeft <= 0) {
       clearInterval(clicker);
       clearInterval(timer);
-      activeBotInterval = false;
+      activeBot = false;
       statusText.textContent = "";
       coinBtn.classList.remove('active-bot');
       card.classList.remove('active-now');
       timerBar.style.display = 'none';
+      
+      if (SoundManager.enabled) SoundManager.playBotEnd();
+      if (EffectsManager.enabled) EffectsManager.createSparkles(window.innerWidth/2, window.innerHeight - 100, 8);
+      
       instantSave();
-      renderUpgrades(); // لإعادة تفعيل البطاقات
+      renderUpgrades();
     }
   }, 100);
 }
 
+// ========== شراء الترقية ==========
 function buyPermanent(id) {
-  const cost = getCost(id);
-  const def = UPGRADES_DEF.find(d => d.id === id);
+  var cost = getCost(id);
+  var def = null;
+  for (var i = 0; i < UPGRADES_DEF.length; i++) {    if (UPGRADES_DEF[i].id === id) {
+      def = UPGRADES_DEF[i];
+      break;
+    }
+  }
+  
   if (state.coins >= cost) {
     state.coins -= cost;
     state.upgrades[id]++;
@@ -223,10 +1040,25 @@ function buyPermanent(id) {
     renderUpgrades();
     updateUI();
     instantSave();
-    showToast("تمت الترقية!");
+    
+    if (SoundManager.enabled) {
+      SoundManager.playBuy();
+      setTimeout(function() { SoundManager.playUpgrade(); }, 100);
+    }
+    if (EffectsManager.enabled) {
+      EffectsManager.createParticles(window.innerWidth/2, 100, 12);
+      EffectsManager.createCrystals(window.innerWidth/2, 100, 5);
+      EffectsManager.createCoinSpins(window.innerWidth/2, 100, 3);
+    }
+    
+    showToast("✨ تمت الترقية!");
+  } else {
+    if (SoundManager.enabled) SoundManager.playError();
+    showToast("❌ رصيد غير كافي!");
   }
 }
 
+// ========== تحديث الواجهة ==========
 function updateUI() {
   document.getElementById('coin-display').textContent = Math.floor(state.coins).toLocaleString();
   document.getElementById('cpc-display').textContent = state.coinsPerClick;
@@ -238,87 +1070,123 @@ function updateUI() {
   document.getElementById('s-cpc').textContent = state.coinsPerClick;
   document.getElementById('s-used-bots').textContent = state.usedBotsCount;
 
-  UPGRADES_DEF.forEach(def => {
-    const card = document.getElementById(`card-${def.id}`);
-    if(!card) return;
-    const cost = getCost(def.id);
-    if (state.coins >= cost && !activeBotInterval) card.classList.add('affordable');
-    else card.classList.remove('affordable');
-    card.querySelector('.cost-val').textContent = cost.toLocaleString();
-  });
+  for (var i = 0; i < UPGRADES_DEF.length; i++) {
+    var def = UPGRADES_DEF[i];
+    var card = document.getElementById('card-' + def.id);
+    if (!card) continue;
+    var cost = getCost(def.id);
+    if (state.coins >= cost && !activeBot) card.classList.add('affordable');
+    else card.classList.remove('affordable');    card.querySelector('.cost-val').textContent = cost.toLocaleString();
+  }
 }
 
+// ========== عرض الترقيات ==========
 function renderUpgrades() {
-  const list = document.getElementById('upgrades-list');
+  var list = document.getElementById('upgrades-list');
   list.innerHTML = '';
-  UPGRADES_DEF.forEach(def => {
-    const card = document.createElement('div');
+  for (var i = 0; i < UPGRADES_DEF.length; i++) {
+    var def = UPGRADES_DEF[i];
+    var card = document.createElement('div');
     card.className = 'upgrade-card';
-    card.id = `card-${def.id}`;
-    const cost = getCost(def.id);
-    const lvl = state.upgrades[def.id] || 0;
-    card.onclick = () => def.type === "temp" ? activateBot(def.id) : buyPermanent(def.id);
-    card.innerHTML = `
-      <div class="upgrade-icon">${def.icon}</div>
-      <div class="upgrade-info">
-        <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-weight:700">${def.name}</span>
-            <span class="level-badge">${lvl}</span>
-        </div>
-        <div style="font-size:11px; color:#555577">${def.desc}</div>
-        <div class="timer-bar"><div class="timer-fill"></div></div>
-      </div>
-      <div style="font-weight:700; color:#FFD700">🪙 <span class="cost-val">${cost.toLocaleString()}</span></div>
-    `;
+    card.id = 'card-' + def.id;
+    var cost = getCost(def.id);
+    var lvl = state.upgrades[def.id] || 0;
+    (function(d, c) {
+      card.onclick = function() { 
+        if (d.type === "temp") activateBot(d.id); 
+        else buyPermanent(d.id); 
+      };
+    })(def, cost);
+    card.innerHTML = 
+      '<div class="upgrade-icon">' + def.icon + '</div>' +
+      '<div class="upgrade-info">' +
+        '<div style="display:flex; align-items:center; gap:8px;">' +
+            '<span style="font-weight:700">' + def.name + '</span>' +
+            '<span class="level-badge">' + lvl + '</span>' +
+        '</div>' +
+        '<div style="font-size:11px; color:#555577">' + def.desc + '</div>' +
+        '<div class="timer-bar"><div class="timer-fill"></div></div>' +
+      '</div>' +
+      '<div style="font-weight:700; color:#FFD700">🪙 <span class="cost-val">' + cost.toLocaleString() + '</span></div>';
     list.appendChild(card);
-  });
+  }
 }
 
+// ========== النصوص العائمة ==========
 function showFloat(x, y, txt, color) {
-  const span = document.createElement('div');
+  var span = document.createElement('div');
   span.className = 'float-text';
-  span.style.left = `${x}px`; span.style.top = `${y}px`;
-  span.style.color = color; span.textContent = txt;
+  span.style.left = x + 'px';
+  span.style.top = y + 'px';
+  span.style.color = color;
+  span.textContent = txt;
   document.body.appendChild(span);
-  setTimeout(() => span.remove(), 800);
+  setTimeout(function() { span.remove(); }, 800);
 }
 
-function switchTab(name, btn) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(`screen-${name}`).classList.add('active');
+// ========== التبويبات ==========
+function switchTab(name, btn) {  var screens = document.querySelectorAll('.screen');
+  for (var i = 0; i < screens.length; i++) {
+    screens[i].classList.remove('active');
+  }
+  var buttons = document.querySelectorAll('.tab-btn');
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].classList.remove('active');
+  }
+  document.getElementById('screen-' + name).classList.add('active');
   btn.classList.add('active');
 }
 
+// ========== الإشعارات ==========
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2000);
 }
 
+// ========== تصفير اللعبة ==========
 function resetGame() {
-  if(confirm("سيتم مسح كل التقدم، هل أنت متأكد؟")) {
+  if (confirm("سيتم مسح كل التقدم، هل أنت متأكد؟")) {
     localStorage.removeItem(DB_KEY);
     location.reload();
   }
 }
 
-function openExport() { prompt("انسخ كود الحفظ:", btoa(JSON.stringify(state))); }
+// ========== تصدير/استيراد ==========
+function openExport() { 
+  prompt("انسخ كود الحفظ:", btoa(JSON.stringify(state))); 
+}
+
 function openImport() {
-  const code = prompt("الصق كود الحفظ:");
-  if(code) {
+  var code = prompt("الصق كود الحفظ:");
+  if (code) {
     try {
       state = JSON.parse(atob(code));
       instantSave();
       location.reload();
-    } catch(e) { alert("خطأ!"); }
+    } catch(e) { 
+      if (SoundManager.enabled) SoundManager.playError();
+      alert("❌ خطأ في كود الحفظ!"); 
+    }
   }
 }
 
-// الانطلاق
-loadGame();
-renderUpgrades();
-updateUI();
+// ========== الانطلاق ==========
+window.addEventListener('load', function() {
+  createStars();  createGoldDust();
+  loadGame();
+  renderUpgrades();
+  updateUI();
+  
+  var coinBtn = document.getElementById('coin-btn');
+  coinBtn.addEventListener('click', function(e) {
+    initSoundOnFirstClick();
+    clickCoin(e, false);
+  });
+  
+  SoundManager.init();
+});
 </script>
 </body>
-</html>
+  </html>

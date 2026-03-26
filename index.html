@@ -169,6 +169,197 @@
     .g-close { background: rgba(239,68,68,0.3); border: 1px solid #EF4444; color: #fff; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; }
     .g-title { color: #FFD700; font-weight: bold; font-size: 16px; }
 
+    /* ========== Modal رسائل الظلام ========== */
+    #dark-messages-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      z-index: 5000;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #dark-messages-modal.active { display: flex; }
+    
+    /* Dark Messages Game Styles (Scoped) */
+    .dm-game * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+    .dm-game {
+      font-family: 'Courier New', monospace;
+      background: #000;
+      color: #fff;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+    }    .dm-phone {
+      width: 100%;
+      height: 100%;
+      max-width: 450px;
+      margin: 0 auto;
+      background: linear-gradient(180deg, #0a0a0a 0%, #1a0a0a 100%);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .dm-status-bar {
+      background: #000;
+      padding: 10px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #333;
+      font-size: 13px;
+    }
+    .dm-battery-container { display: flex; align-items: center; gap: 5px; }
+    .dm-battery-icon {
+      width: 28px; height: 14px; border: 2px solid #fff;
+      border-radius: 3px; position: relative; padding: 2px;
+    }
+    .dm-battery-icon::after {
+      content: ''; position: absolute; right: -4px; top: 50%;
+      transform: translateY(-50%); width: 3px; height: 6px; background: #fff;
+    }
+    .dm-battery-fill { height: 100%; background: #0f0; transition: all 0.3s; }
+    .dm-battery-fill.warning { background: #ff0; }
+    .dm-battery-fill.critical { background: #f00; animation: dm-pulse 0.5s infinite; }
+    @keyframes dm-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    
+    .dm-chat-header {
+      background: #111; padding: 15px; display: flex;
+      align-items: center; gap: 12px; border-bottom: 1px solid #333;
+    }
+    .dm-avatar {
+      width: 45px; height: 45px; background: #333; border-radius: 50%;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 24px; position: relative;
+    }
+    .dm-avatar.danger::after {
+      content: ''; position: absolute; width: 100%; height: 100%;
+      border-radius: 50%; border: 3px solid #f00;
+      animation: dm-borderPulse 1s infinite;
+    }
+    @keyframes dm-borderPulse { 0%, 100% { border-color: #f00; } 50% { border-color: #900; } }
+    .dm-contact-info { flex: 1; }
+    .dm-contact-name { font-weight: bold; font-size: 16px; }    .dm-contact-status { font-size: 12px; color: #666; margin-top: 3px; }
+    .dm-contact-status.danger { color: #f00; }
+    
+    .dm-chat-area {
+      flex: 1; overflow-y: auto; padding: 15px;
+      display: flex; flex-direction: column; gap: 12px;
+      background: #050505;
+    }
+    .dm-message {
+      max-width: 85%; padding: 12px 16px; border-radius: 18px;
+      font-size: 14px; line-height: 1.6; animation: dm-slideIn 0.3s ease;
+      position: relative;
+    }
+    @keyframes dm-slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .dm-message.received { background: #1a1a1a; color: #eee; align-self: flex-start; border: 1px solid #333; }
+    .dm-message.sent { background: linear-gradient(135deg, #8b0000 0%, #5c0000 100%); color: #fff; align-self: flex-end; }
+    .dm-message.system { background: transparent; color: #f66; align-self: center; font-size: 12px; font-style: italic; text-align: center; }
+    .dm-message.typing { background: #1a1a1a; color: #888; align-self: flex-start; }
+    .dm-typing-dots { display: flex; gap: 4px; }
+    .dm-typing-dots span {
+      width: 6px; height: 6px; background: #888; border-radius: 50%;
+      animation: dm-typing 1.4s infinite;
+    }
+    .dm-typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .dm-typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dm-typing { 0%, 100% { transform: translateY(0); opacity: 0.4; } 50% { transform: translateY(-5px); opacity: 1; } }
+    
+    .dm-choices-area {
+      padding: 15px; background: #111; display: flex;
+      flex-direction: column; gap: 10px; border-top: 1px solid #333;
+      max-height: 250px; overflow-y: auto;
+    }
+    .dm-choice-btn {
+      background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+      border: 1px solid #8b0000; color: #fff; padding: 14px 20px;
+      border-radius: 12px; cursor: pointer; font-size: 14px;
+      transition: all 0.3s; text-align: right;
+    }
+    .dm-choice-btn:hover { background: linear-gradient(135deg, #8b0000 0%, #5c0000 100%); transform: scale(1.02); }
+    .dm-choice-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .dm-hidden { display: none !important; }
+    
+    .dm-screen-overlay {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none; z-index: 500; opacity: 0;
+    }
+    .dm-screen-overlay.flash { animation: dm-flashAnim 0.2s; }
+    @keyframes dm-flashAnim { 0%, 100% { background: transparent; } 50% { background: #f00; opacity: 0.3; } }
+    
+    .dm-glitch { animation: dm-glitchAnim 0.3s infinite; }    @keyframes dm-glitchAnim {
+      0% { transform: translate(0); filter: hue-rotate(0deg); }
+      25% { transform: translate(-3px, 3px); filter: hue-rotate(90deg); }
+      50% { transform: translate(3px, -3px); filter: hue-rotate(180deg); }
+      75% { transform: translate(-3px, -3px); filter: hue-rotate(270deg); }
+      100% { transform: translate(0); filter: hue-rotate(360deg); }
+    }
+    
+    .dm-start-screen {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: #000; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; z-index: 2000;
+      padding: 30px;
+    }
+    .dm-start-screen h1 { color: #f00; font-size: 28px; margin-bottom: 10px; text-shadow: 0 0 20px #f00; }
+    .dm-start-screen p { color: #666; margin-bottom: 30px; text-align: center; line-height: 1.8; }
+    .dm-start-screen button {
+      background: #8b0000; border: none; color: #fff;
+      padding: 15px 50px; border-radius: 30px; cursor: pointer; font-size: 18px;
+    }
+    
+    .dm-timestamp { font-size: 10px; color: #666; margin-top: 5px; text-align: left; }
+    .dm-blood-drip {
+      position: absolute; width: 4px; background: linear-gradient(180deg, #8b0000 0%, #300 100%);
+      border-radius: 2px; animation: dm-drip 4s infinite; z-index: 600;
+    }
+    @keyframes dm-drip { 0% { height: 0; top: -50px; opacity: 1; } 100% { height: 200px; top: 0; opacity: 0.5; } }
+    
+    .dm-chapter-indicator {
+      background: #1a1a1a; padding: 8px 15px; text-align: center;
+      font-size: 12px; color: #666; border-bottom: 1px solid #333;
+    }
+    .dm-chapter-indicator span { color: #f00; }
+    
+    .dm-photo-attachment {
+      background: #1a1a1a; border-radius: 10px; overflow: hidden;
+      margin-top: 8px; border: 1px solid #333;
+    }
+    .dm-photo-placeholder {
+      width: 100%; height: 120px;
+      background: linear-gradient(45deg, #111 25%, #222 25%, #222 50%, #111 50%, #111 75%, #222 75%, #222 100%);
+      background-size: 20px 20px; display: flex; justify-content: center;
+      align-items: center; font-size: 40px; filter: grayscale(100%) contrast(120%);
+    }
+    .dm-photo-caption { padding: 10px; font-size: 12px; color: #888; text-align: center; }
+    .dm-warning-box {
+      background: #1a0a0a; border: 1px solid #f00; padding: 15px;
+      border-radius: 10px; margin: 10px; color: #f66; font-size: 13px;
+    }
+    .dm-final-message {      background: linear-gradient(135deg, #300 0%, #100 100%);
+      border: 2px solid #f00; animation: dm-finalPulse 2s infinite;
+    }
+    @keyframes dm-finalPulse { 0%, 100% { box-shadow: 0 0 10px #f00; } 50% { box-shadow: 0 0 30px #f00; } }
+    
+    .dm-restart-btn {
+      background: #8b0000; border: none; color: #fff;
+      padding: 15px 40px; border-radius: 25px; cursor: pointer;
+      font-size: 16px; margin: 20px; align-self: center;
+    }
+    
+    .dm-close-btn {
+      position: absolute; top: 10px; left: 10px;
+      background: rgba(239,68,68,0.8); border: 1px solid #EF4444;
+      color: #fff; padding: 8px 16px; border-radius: 8px;
+      cursor: pointer; font-size: 12px; z-index: 3000;
+    }
+    .dm-close-btn:hover { background: rgba(239,68,68,1); }
+
     @media (max-width: 480px) {
       .save-bar { height: 50px; padding: 0 8px; }
       .game-logo { font-size: 13px; }
@@ -194,13 +385,14 @@
 <div class="save-bar">
   <div class="save-left">
     <span class="game-logo">👑 King Tap</span>
-    <div class="save-status">      <div class="save-dot" id="save-dot"></div>
+    <div class="save-status">
+      <div class="save-dot" id="save-dot"></div>
       <span id="save-label">المزامنة فورية</span>
     </div>
   </div>
-  <div class="save-actions">
-    <button class="sbar-btn" id="genius-btn" onclick="openGeniusGame()" title="تحدي">🧠</button>
+  <div class="save-actions">    <button class="sbar-btn" id="genius-btn" onclick="openGeniusGame()" title="تحدي">🧠</button>
     <button class="sbar-btn" onclick="openMagicGame()" title="أشكال">✨</button>
+    <button class="sbar-btn" onclick="openDarkMessages()" title="رسائل الظلام">👁️</button>
     <button class="sbar-btn" onclick="openImport()" title="استيراد">📥</button>
     <button class="sbar-btn" onclick="openExport()" title="تصدير">📤</button>
   </div>
@@ -247,8 +439,7 @@
 <div class="toast" id="toast"></div>
 
 <!-- Modal لعبة الأشكال السحرية -->
-<div id="magic-modal">
-  <div id="magic-header">
+<div id="magic-modal">  <div id="magic-header">
     <span id="magic-title">🌟 الأشكال السحرية</span>
     <button id="magic-close" onclick="closeMagicGame()">✕ إغلاق</button>
   </div>
@@ -274,12 +465,52 @@
     <span class="g-title">🧠 تحدي العباقرة</span>
     <button class="g-close" onclick="closeGeniusGame()">🔙 خروج</button>
   </div>
-  <div id="genius-content">
+  <div id="genius-content"></div>
+</div>
+
+<!-- ========== Modal رسائل الظلام ========== -->
+<div id="dark-messages-modal">
+  <button class="dm-close-btn" onclick="closeDarkMessages()">🔙 خروج</button>
+  <div class="dm-game" id="dm-game-container">
+    <!-- Dark Messages Game Content -->
+    <div class="dm-start-screen" id="dm-startScreen">
+      <h1>📱 رسائل الظلام</h1>
+      <p>محادثة رعب تفاعلية كاملة<br>المدة: 10+ دقائق<br>خيارات مستمرة طوال التجربة<br>⚠️ تحذير: محتوى مرعب جداً</p>
+      <button onclick="dmStartGame()">ابدأ المحادثة</button>
+    </div>
+
+    <div class="dm-phone" id="dm-phone">
+      <div class="dm-status-bar">
+        <span>📶</span>
+        <span id="dm-clock">12:00 ص</span>
+        <div class="dm-battery-container">
+          <span id="dm-batteryPercent">100%</span>
+          <div class="dm-battery-icon">
+            <div class="dm-battery-fill" id="dm-batteryFill"></div>
+          </div>
+        </div>      </div>
+
+      <div class="dm-chapter-indicator">
+        الفصل <span id="dm-chapterNum">1</span> من 10
+      </div>
+
+      <div class="dm-chat-header">
+        <div class="dm-avatar" id="dm-avatar">👤</div>
+        <div class="dm-contact-info">
+          <div class="dm-contact-name" id="dm-contactName">رقم مجهول</div>
+          <div class="dm-contact-status" id="dm-contactStatus">متصل الآن</div>
+        </div>
+      </div>
+
+      <div class="dm-chat-area" id="dm-chatArea"></div>
+      <div class="dm-choices-area dm-hidden" id="dm-choicesArea"></div>
+      <div class="dm-screen-overlay" id="dm-screenOverlay"></div>
+    </div>
   </div>
 </div>
 
 <script>
-// ========== King Tap Game Code (نفس الكود الأصلي تماماً) ==========
+// ========== King Tap Game Code ==========
 const SoundManager = {
   ctx: null, enabled: true,
   init() { if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { } } if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume(); },
@@ -292,7 +523,8 @@ const SoundManager = {
   playBotStart() { if(!this.enabled||!this.ctx)return;const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.connect(g);g.connect(this.ctx.destination);o.frequency.setValueAtTime(330,this.ctx.currentTime);o.frequency.exponentialRampToValueAtTime(660,this.ctx.currentTime+0.3);o.type='sine';g.gain.setValueAtTime(0.3,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.35);o.start();o.stop(this.ctx.currentTime+0.35); },
   playBotEnd() { if(!this.enabled||!this.ctx)return;const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.connect(g);g.connect(this.ctx.destination);o.frequency.setValueAtTime(660,this.ctx.currentTime);o.frequency.exponentialRampToValueAtTime(330,this.ctx.currentTime+0.25);o.type='sine';g.gain.setValueAtTime(0.25,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.3);o.start();o.stop(this.ctx.currentTime+0.3); },
   playError() { if(!this.enabled||!this.ctx)return;const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.connect(g);g.connect(this.ctx.destination);o.frequency.setValueAtTime(220,this.ctx.currentTime);o.frequency.linearRampToValueAtTime(110,this.ctx.currentTime+0.15);o.type='sawtooth';g.gain.setValueAtTime(0.2,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.2);o.start();o.stop(this.ctx.currentTime+0.2); },
-  playUpgrade() { if(!this.enabled||!this.ctx)return;const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.connect(g);g.connect(this.ctx.destination);o.frequency.setValueAtTime(523,this.ctx.currentTime);o.frequency.exponentialRampToValueAtTime(1047,this.ctx.currentTime+0.1);o.frequency.exponentialRampToValueAtTime(1568,this.ctx.currentTime+0.2);o.type='square';g.gain.setValueAtTime(0.15,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.25);o.start();o.stop(this.ctx.currentTime+0.25); },  playBigBoom() { if(!this.enabled||!this.ctx)return;const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.connect(g);g.connect(this.ctx.destination);o.frequency.setValueAtTime(150,this.ctx.currentTime);o.frequency.exponentialRampToValueAtTime(50,this.ctx.currentTime+0.3);o.type='sawtooth';g.gain.setValueAtTime(0.4,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.4);o.start();o.stop(this.ctx.currentTime+0.4); },
+  playUpgrade() { if(!this.enabled||!this.ctx)return;const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.connect(g);g.connect(this.ctx.destination);o.frequency.setValueAtTime(523,this.ctx.currentTime);o.frequency.exponentialRampToValueAtTime(1047,this.ctx.currentTime+0.1);o.frequency.exponentialRampToValueAtTime(1568,this.ctx.currentTime+0.2);o.type='square';g.gain.setValueAtTime(0.15,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.25);o.start();o.stop(this.ctx.currentTime+0.25); },
+  playBigBoom() { if(!this.enabled||!this.ctx)return;const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.connect(g);g.connect(this.ctx.destination);o.frequency.setValueAtTime(150,this.ctx.currentTime);o.frequency.exponentialRampToValueAtTime(50,this.ctx.currentTime+0.3);o.type='sawtooth';g.gain.setValueAtTime(0.4,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.4);o.start();o.stop(this.ctx.currentTime+0.4); },
   toggle() { this.enabled = !this.enabled; return this.enabled; }
 };
 
@@ -305,8 +537,7 @@ const EffectsManager = {
   showCrown(x,y){if(!this.enabled)return;const c=document.createElement('div');c.className='crown-popup';c.textContent='👑';c.style.left=x+'px';c.style.top=y+'px';document.body.appendChild(c);if(SoundManager.enabled)SoundManager.playCrown();setTimeout(()=>c.remove(),600);},
   createComboTrail(x,y){if(!this.enabled||this.comboCount<3)return;const t=document.createElement('div');t.className='combo-trail';t.style.left=x+'px';t.style.top=y+'px';t.style.background=this.trailColors[this.comboCount%this.trailColors.length];t.style.boxShadow='0 0 10px '+t.style.background;document.body.appendChild(t);setTimeout(()=>t.remove(),800);},
   createCoinSpins(x,y,count=2){if(!this.enabled)return;for(let i=0;i<count;i++){const c=document.createElement('div');c.className='coin-spin';c.textContent='🪙';c.style.left=x+'px';c.style.top=y+'px';c.style.setProperty('--sx',((Math.random()-0.5)*100)+'px');document.body.appendChild(c);setTimeout(()=>c.remove(),800);}if(SoundManager.enabled)SoundManager.playCoinSpin();},
-  createCrystals(x,y,count=4){if(!this.enabled)return;for(let i=0;i<count;i++){const c=document.createElement('div');c.className='crystal';c.style.left=x+'px';c.style.top=y+'px';c.style.setProperty('--cx',((Math.random()-0.5)*120)+'px');c.style.setProperty('--cy',(-80-Math.random()*60)+'px');document.body.appendChild(c);setTimeout(()=>c.remove(),700);}},
-  createCelebration(x,y){if(!this.enabled)return;const cel=document.createElement('div');cel.className='celebration';cel.style.left=x+'px';cel.style.top=(y-50)+'px';cel.innerHTML='<div class="celebration-text">✨ رائع! ✨</div>';document.body.appendChild(cel);setTimeout(()=>cel.remove(),800);for(let i=0;i<15;i++){const cf=document.createElement('div');cf.className='confetti';cf.style.left=x+'px';cf.style.top=y+'px';cf.style.background=this.colors[Math.floor(Math.random()*this.colors.length)];cf.style.setProperty('--fx',((Math.random()-0.5)*200)+'px');cf.style.setProperty('--fy',(150+Math.random()*100)+'px');cf.style.transform='rotate('+(Math.random()*360)+'deg)';document.body.appendChild(cf);setTimeout(()=>cf.remove(),1200);}if(SoundManager.enabled)SoundManager.playCelebration();},
+  createCrystals(x,y,count=4){if(!this.enabled)return;for(let i=0;i<count;i++){const c=document.createElement('div');c.className='crystal';c.style.left=x+'px';c.style.top=y+'px';c.style.setProperty('--cx',((Math.random()-0.5)*120)+'px');c.style.setProperty('--cy',(-80-Math.random()*60)+'px');document.body.appendChild(c);setTimeout(()=>c.remove(),700);}},  createCelebration(x,y){if(!this.enabled)return;const cel=document.createElement('div');cel.className='celebration';cel.style.left=x+'px';cel.style.top=(y-50)+'px';cel.innerHTML='<div class="celebration-text">✨ رائع! ✨</div>';document.body.appendChild(cel);setTimeout(()=>cel.remove(),800);for(let i=0;i<15;i++){const cf=document.createElement('div');cf.className='confetti';cf.style.left=x+'px';cf.style.top=y+'px';cf.style.background=this.colors[Math.floor(Math.random()*this.colors.length)];cf.style.setProperty('--fx',((Math.random()-0.5)*200)+'px');cf.style.setProperty('--fy',(150+Math.random()*100)+'px');cf.style.transform='rotate('+(Math.random()*360)+'deg)';document.body.appendChild(cf);setTimeout(()=>cf.remove(),1200);}if(SoundManager.enabled)SoundManager.playCelebration();},
   updateCombo(x,y){this.comboCount++;var cd=document.getElementById('combo-display');if(cd)cd.textContent=this.comboCount>1?'كومبو: '+this.comboCount+'🔥':'';if(this.comboCount>=3)this.showCrown(x,y);if(this.comboCount>=5)this.createComboTrail(x,y);if(this.comboCount>=10)this.createCoinSpins(x,y);if(this.comboCount>=20)this.createCrystals(x,y);if(this.comboCount>=50)this.createCelebration(x,y);var self=this;if(this.comboTimer)clearTimeout(this.comboTimer);this.comboTimer=setTimeout(()=>{self.comboCount=0;var cdd=document.getElementById('combo-display');if(cdd)cdd.textContent='';},2000);},
   createBigExplosion(x,y){if(!this.enabled)return;this.createParticles(x,y,20,true);this.createSparkles(x,y,10);if(SoundManager.enabled)SoundManager.playBigBoom();},
   toggle(){this.enabled=!this.enabled;return this.enabled;},
@@ -355,14 +586,13 @@ function openImport(){var code=prompt("الصق كود الحفظ:");if(code){tr
 function openMagicGame(){
   document.getElementById('magic-modal').classList.add('active');
   initMagicGame();
-}
-function closeMagicGame(){
+}function closeMagicGame(){
   document.getElementById('magic-modal').classList.remove('active');
   if(magicLoopId) cancelAnimationFrame(magicLoopId);
   magicParticles = [];
 }
 
-// ========== تحدي العباقرة - مع مؤقت 24 ساعة ==========
+// ========== تحدي العباقرة ==========
 var geniusModal = null;
 var geniusContent = null;
 var gPlayer = null;
@@ -390,7 +620,8 @@ const G_QDB = [
   {q:'كم عدد عظام جسم الإنسان البالغ؟',a:['206','٢٠٦'],h:'عظمة',i:'🦴',d:3},
   {q:'ما هي الكلمة التي تنطق دائماً خطأ؟',a:['خطأ'],h:'السؤال فيه الإجابة',i:'❌',d:2},
   {q:'ما هو الشيء الذي اسمه على لونه؟',a:['البرتقال'],h:'فاكهة',i:'🍊',d:1},
-  {q:'ما هو أكبر محيط في العالم؟',a:['المحيط الهادئ','الهادئ'],h:'بين آسيا وأمريكا',i:'🌊',d:2},  {q:'ما هي أكبر قارة في العالم؟',a:['آسيا','اسيا'],h:'تحتوي على الصين والهند',i:'🌍',d:1},
+  {q:'ما هو أكبر محيط في العالم؟',a:['المحيط الهادئ','الهادئ'],h:'بين آسيا وأمريكا',i:'🌊',d:2},
+  {q:'ما هي أكبر قارة في العالم؟',a:['آسيا','اسيا'],h:'تحتوي على الصين والهند',i:'🌍',d:1},
   {q:'ما هو أطول نهر في العالم؟',a:['النيل','نهر النيل'],h:'في أفريقيا',i:'🌊',d:1},
   {q:'ما هي عاصمة السعودية؟',a:['الرياض'],h:'في وسط المملكة',i:'🇸🇦',d:1},
   {q:'كم عدد قارات العالم؟',a:['7','٧','سبعة'],h:'آسيا، أفريقيا، أوروبا...',i:'🌍',d:1},
@@ -402,16 +633,9 @@ for(let i=G_QDB.length;i<500;i++){const n1=Math.floor(Math.random()*50)+1,n2=Mat
 function openGeniusGame() {
   geniusModal = document.getElementById('genius-modal');
   geniusContent = document.getElementById('genius-content');
-  
   gPlayer = JSON.parse(localStorage.getItem('genius500pro') || '{"totalXp":0,"currentStage":1,"totalCorrect":0,"totalWrong":0,"stagesCompleted":0,"bestStreak":0,"inventory":{"extraHints":0,"extraTime":0,"multiplier":0,"protect":0},"daily":{"lastClaim":0,"reward":50}}');
-  
-  // Initialize daily reward if not exists
-  if (!gPlayer.daily) {
-    gPlayer.daily = { lastClaim: 0, reward: 50 };
-  }
-  
-  renderGeniusHome();
-  geniusModal.classList.add('active');
+  if (!gPlayer.daily) { gPlayer.daily = { lastClaim: 0, reward: 50 }; }
+  renderGeniusHome();  geniusModal.classList.add('active');
   document.getElementById('genius-btn').classList.add('active');
   showToast('🧠 تم فتح تحدي العباقرة');
 }
@@ -434,21 +658,16 @@ function gFormatTime(ms) {
 function gCheckDailyReady() {
   const now = Date.now();
   const lastClaim = gPlayer.daily.lastClaim || 0;
-  const cooldown = 24 * 60 * 60 * 1000; // 24 hours
+  const cooldown = 24 * 60 * 60 * 1000;
   const timePassed = now - lastClaim;
-  
-  if (timePassed >= cooldown) {
-    return { ready: true, remaining: 0 };
-  } else {    return { ready: false, remaining: cooldown - timePassed };
-  }
+  if (timePassed >= cooldown) { return { ready: true, remaining: 0 }; }
+  else { return { ready: false, remaining: cooldown - timePassed }; }
 }
 
 function gUpdateDailyButton() {
   const btn = document.getElementById('g-daily-btn');
   if (!btn) return;
-  
   const status = gCheckDailyReady();
-  
   if (status.ready) {
     btn.disabled = false;
     btn.style.background = 'linear-gradient(135deg,#ffd700,#ff9f0a)';
@@ -464,20 +683,15 @@ function gUpdateDailyButton() {
 
 function gStartDailyTimer() {
   if (gDailyTimer) clearInterval(gDailyTimer);
-  gDailyTimer = setInterval(() => {
-    gUpdateDailyButton();
-  }, 1000);
+  gDailyTimer = setInterval(() => { gUpdateDailyButton(); }, 1000);
 }
-
 function renderGeniusHome() {
   const status = gCheckDailyReady();
-  
   geniusContent.innerHTML = `
     <div style="text-align:center;margin:30px 0">
       <h1 style="font-size:32px;background:linear-gradient(135deg,#ffd700,#ff6b6b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px">🧠 تحدي العباقرة</h1>
       <p style="color:#666;font-size:12px">500 سؤال • 50 مرحلة • 10 أسئلة لكل مرحلة</p>
     </div>
-    
     <div class="stat-card">
       <div class="stat-row"><span>🏆 المرحلة</span><span style="color:#FFD700;font-weight:bold">${gPlayer.currentStage}</span></div>
       <div class="stat-row"><span>⭐ XP</span><span style="color:#FFD700;font-weight:bold">${gPlayer.totalXp.toLocaleString()}</span></div>
@@ -485,12 +699,11 @@ function renderGeniusHome() {
       <div class="stat-row"><span>❌ خطأ</span><span style="color:#FFD700;font-weight:bold">${gPlayer.totalWrong}</span></div>
       <div class="stat-row"><span>🔥 أفضل سلسلة</span><span style="color:#FFD700;font-weight:bold">${gPlayer.bestStreak}</span></div>
     </div>
-    
     <button class="menu-btn btn-success" onclick="gStartGame()" style="width:100%;padding:14px;font-size:15px;font-weight:bold;border:none;border-radius:14px;cursor:pointer;margin-bottom:8px;background:linear-gradient(135deg,#34c759,#30d158);color:#fff">🚀 بدء المرحلة</button>
     <button id="g-daily-btn" onclick="gDaily()" style="width:100%;padding:14px;font-size:15px;font-weight:bold;border:none;border-radius:14px;cursor:pointer;margin-bottom:8px;background:${status.ready ? 'linear-gradient(135deg,#ffd700,#ff9f0a)' : 'linear-gradient(135deg,#555,#666)'};color:${status.ready ? '#000' : '#888'}" ${!status.ready ? 'disabled' : ''}>${status.ready ? '📅 التحدي اليومي +50 XP' : '⏳ انتظر ' + gFormatTime(status.remaining)}</button>
-    <button class="menu-btn btn-primary" onclick="gShowShop()" style="width:100%;padding:14px;font-size:15px;font-weight:bold;border:none;border-radius:14px;cursor:pointer;margin-bottom:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff">🛒 المتجر</button>    <button class="menu-btn btn-danger" onclick="gReset()" style="width:100%;padding:14px;font-size:15px;font-weight:bold;border:none;border-radius:14px;cursor:pointer;background:linear-gradient(135deg,#ff6b6b,#ff4757);color:#fff">🔄 تصفير التقدم</button>
+    <button class="menu-btn btn-primary" onclick="gShowShop()" style="width:100%;padding:14px;font-size:15px;font-weight:bold;border:none;border-radius:14px;cursor:pointer;margin-bottom:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff">🛒 المتجر</button>
+    <button class="menu-btn btn-danger" onclick="gReset()" style="width:100%;padding:14px;font-size:15px;font-weight:bold;border:none;border-radius:14px;cursor:pointer;background:linear-gradient(135deg,#ff6b6b,#ff4757);color:#fff">🔄 تصفير التقدم</button>
   `;
-  
   gStartDailyTimer();
 }
 
@@ -500,7 +713,6 @@ function gShowShop() {
     <div class="stat-card" style="text-align:center;margin-bottom:20px">
       <span style="font-size:16px">💰 رصيدك: </span><span style="color:#FFD700;font-weight:bold;font-size:18px">${gPlayer.totalXp.toLocaleString()} XP</span>
     </div>
-    
     <div class="upgrade-card" style="margin-bottom:10px">
       <div style="font-size:24px">💡</div>
       <div style="flex:1">
@@ -509,7 +721,6 @@ function gShowShop() {
       </div>
       <button onclick="gBuy('extraHints',200)" style="background:linear-gradient(135deg,#34c759,#30d158);border:none;border-radius:8px;color:#fff;padding:8px 15px;font-weight:bold;cursor:pointer">200 XP</button>
     </div>
-    
     <div class="upgrade-card" style="margin-bottom:10px">
       <div style="font-size:24px">⏱️</div>
       <div style="flex:1">
@@ -518,26 +729,21 @@ function gShowShop() {
       </div>
       <button onclick="gBuy('extraTime',300)" style="background:linear-gradient(135deg,#34c759,#30d158);border:none;border-radius:8px;color:#fff;padding:8px 15px;font-weight:bold;cursor:pointer">300 XP</button>
     </div>
-    
     <div class="upgrade-card" style="margin-bottom:10px">
       <div style="font-size:24px">🎯</div>
       <div style="flex:1">
         <div style="font-weight:bold">مضاعف XP</div>
-        <div style="font-size:11px;color:#888">×2 XP للمرحلة القادمة (يُستخدم مرة واحدة)</div>
-      </div>
+        <div style="font-size:11px;color:#888">×2 XP للمرحلة القادمة (يُستخدم مرة واحدة)</div>      </div>
       <button onclick="gBuy('multiplier',500)" style="background:linear-gradient(135deg,#34c759,#30d158);border:none;border-radius:8px;color:#fff;padding:8px 15px;font-weight:bold;cursor:pointer">500 XP</button>
     </div>
-    
     <button onclick="renderGeniusHome()" style="width:100%;padding:14px;font-size:15px;font-weight:bold;border:none;border-radius:14px;cursor:pointer;margin-top:20px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff">🔙 رجوع</button>
   `;
 }
 
 function gBuy(item, cost) {
-  if (gPlayer.totalXp < cost) {
-    gFeedback('⚠️ XP غير كافٍ!', 'w');
-    return;
-  }
-  gPlayer.inventory[item] = (gPlayer.inventory[item] || 0) + 1;  gPlayer.totalXp -= cost;
+  if (gPlayer.totalXp < cost) { gFeedback('⚠️ XP غير كافٍ!', 'w'); return; }
+  gPlayer.inventory[item] = (gPlayer.inventory[item] || 0) + 1;
+  gPlayer.totalXp -= cost;
   gSave();
   gShowShop();
   gFeedback('✅ تم الشراء!', 'c');
@@ -545,12 +751,7 @@ function gBuy(item, cost) {
 
 function gDaily() {
   const status = gCheckDailyReady();
-  
-  if (!status.ready) {
-    gFeedback('⏳ انتظر ' + gFormatTime(status.remaining), 'w');
-    return;
-  }
-  
+  if (!status.ready) { gFeedback('⏳ انتظر ' + gFormatTime(status.remaining), 'w'); return; }
   gPlayer.totalXp += 50;
   gPlayer.daily.lastClaim = Date.now();
   gSave();
@@ -567,31 +768,21 @@ function gReset() {
   }
 }
 
-function gSave() {
-  localStorage.setItem('genius500pro', JSON.stringify(gPlayer));
-}
+function gSave() { localStorage.setItem('genius500pro', JSON.stringify(gPlayer)); }
 
 function gStartGame() {
   const hasHints = gPlayer.inventory.extraHints >= 1;
   const hasTime = gPlayer.inventory.extraTime >= 1;
   const hasMultiplier = gPlayer.inventory.multiplier >= 1;
-  
   if (hasHints) gPlayer.inventory.extraHints = 0;
   if (hasTime) gPlayer.inventory.extraTime = 0;
   if (hasMultiplier) gPlayer.inventory.multiplier = 0;
-  
   gGame = {
     questions: gPickQuestions(gPlayer.currentStage),
-    idx: 0,
-    total: 10,
-    correct: 0,
-    wrong: 0,
-    hints: 3 + (hasHints ? 3 : 0),    streak: 0,
-    sessionXp: 0,
-    timeLeft: 180 + (hasTime ? 60 : 0),
-    multiplier: hasMultiplier ? 2 : 1
-  };
-  
+    idx: 0, total: 10, correct: 0, wrong: 0,
+    hints: 3 + (hasHints ? 3 : 0), streak: 0,
+    sessionXp: 0, timeLeft: 180 + (hasTime ? 60 : 0),
+    multiplier: hasMultiplier ? 2 : 1  };
   gSave();
   gRenderPlay();
   gLoadQuestion();
@@ -600,8 +791,7 @@ function gStartGame() {
 }
 
 function gPickQuestions(stage) {
-  const minD = Math.ceil(stage / 10);
-  const maxD = Math.min(minD + 1, 4);
+  const minD = Math.ceil(stage / 10), maxD = Math.min(minD + 1, 4);
   const filtered = G_QDB.filter(q => q.d >= minD && q.d <= maxD);
   const shuffled = [...filtered].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, 10).map(q => ({...q}));
@@ -618,7 +808,6 @@ function gRenderPlay() {
         <div id="g-progress" style="height:100%;background:linear-gradient(90deg,#FFD700,#ff6b6b);width:0%;transition:width 0.3s"></div>
       </div>
     </div>
-    
     <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:6px;background:rgba(0,0,0,0.3);border-radius:8px;margin-bottom:15px">
       <div style="background:rgba(255,255,255,0.05);padding:6px 2px;border-radius:8px;text-align:center">
         <div id="g-q-num" style="font-size:14px;font-weight:bold;color:#FFD700">1/10</div>
@@ -635,15 +824,14 @@ function gRenderPlay() {
       <div style="background:rgba(255,255,255,0.05);padding:6px 2px;border-radius:8px;text-align:center">
         <div id="g-stat-h" style="font-size:14px;font-weight:bold;color:#FFD700">3</div>
         <div style="font-size:7px;color:#666">💡</div>
-      </div>      <div style="background:rgba(255,255,255,0.05);padding:6px 2px;border-radius:8px;text-align:center">
+      </div>
+      <div style="background:rgba(255,255,255,0.05);padding:6px 2px;border-radius:8px;text-align:center">
         <div id="g-stat-s" style="font-size:14px;font-weight:bold;color:#FFD700">0</div>
         <div style="font-size:7px;color:#666">🔥</div>
       </div>
     </div>
-    
     <div class="stat-card" style="text-align:center">
-      <div style="margin-bottom:10px">
-        <span id="g-diff" style="background:linear-gradient(135deg,#ff6b6b,#ff4757);padding:3px 8px;border-radius:10px;font-size:9px;font-weight:bold">صعب</span>
+      <div style="margin-bottom:10px">        <span id="g-diff" style="background:linear-gradient(135deg,#ff6b6b,#ff4757);padding:3px 8px;border-radius:10px;font-size:9px;font-weight:bold">صعب</span>
         <span id="g-cat" style="background:rgba(102,126,234,0.3);padding:3px 8px;border-radius:10px;font-size:9px;margin-right:5px">عام</span>
       </div>
       <div style="font-size:9px;color:#888;margin-bottom:5px" id="g-q-text">سؤال 1 من 10</div>
@@ -655,13 +843,9 @@ function gRenderPlay() {
       <button onclick="gHint()" id="g-hint-btn" style="width:100%;padding:10px;font-size:13px;font-weight:bold;border:none;border-radius:10px;cursor:pointer;margin-bottom:5px;background:linear-gradient(135deg,#ffd700,#ff9f0a);color:#000">💡 تلميح</button>
       <button onclick="gSkip()" style="width:100%;padding:10px;font-size:13px;font-weight:bold;border:none;border-radius:10px;cursor:pointer;background:linear-gradient(135deg,#ff6b6b,#ff4757);color:#fff">⏭️ تخطي (-400 XP)</button>
     </div>
-    
     <div id="g-feedback" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);padding:12px 25px;border-radius:12px;font-size:14px;font-weight:bold;z-index:200;display:none"></div>
   `;
-  
-  document.getElementById('g-input').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') gCheck();
-  });
+  document.getElementById('g-input').addEventListener('keypress', function(e) { if (e.key === 'Enter') gCheck(); });
 }
 
 function gLoadQuestion() {
@@ -682,11 +866,10 @@ function gStartTimer() {
   if (gTimer) clearInterval(gTimer);
   gTimer = setInterval(() => {
     gGame.timeLeft--;
-    const m = Math.floor(gGame.timeLeft / 60);
-    const s = gGame.timeLeft % 60;
-    document.getElementById('g-timer').textContent = '⏱️ ' + m.toString().padStart(2,'0') + ':' + s.toString().padStart(2,'0');    if (gGame.timeLeft <= 30) document.getElementById('g-timer').style.color = '#ff0000';
+    const m = Math.floor(gGame.timeLeft / 60), s = gGame.timeLeft % 60;
+    document.getElementById('g-timer').textContent = '⏱️ ' + m.toString().padStart(2,'0') + ':' + s.toString().padStart(2,'0');
+    if (gGame.timeLeft <= 30) document.getElementById('g-timer').style.color = '#ff0000';
     else document.getElementById('g-timer').style.color = '#ff6b6b';
-    
     if (gGame.timeLeft <= 0) {
       clearInterval(gTimer);
       gFeedback('⏰ انتهى الوقت!', 'w');
@@ -697,9 +880,7 @@ function gStartTimer() {
 }
 
 function gResetTimer(diff) {
-  gGame.timeLeft = Math.max(60, 180 - (diff - 1) * 30);
-  const m = Math.floor(gGame.timeLeft / 60);
-  const s = gGame.timeLeft % 60;
+  gGame.timeLeft = Math.max(60, 180 - (diff - 1) * 30);  const m = Math.floor(gGame.timeLeft / 60), s = gGame.timeLeft % 60;
   document.getElementById('g-timer').textContent = '⏱️ ' + m.toString().padStart(2,'0') + ':' + s.toString().padStart(2,'0');
 }
 
@@ -707,70 +888,48 @@ function gCheck() {
   const inp = document.getElementById('g-input').value.trim().toLowerCase();
   const q = gGame.questions[gGame.idx];
   if (!inp) { gFeedback('⚠️ اكتب إجابة!', 'w'); return; }
-  
   const ok = q.a.some(x => inp.includes(x.toLowerCase()));
-  if (ok) gCorrect(q);
-  else { gWrong(); document.getElementById('g-input').value = ''; }
-  gUpdateUI();
-  gSave();
+  if (ok) gCorrect(q); else { gWrong(); document.getElementById('g-input').value = ''; }
+  gUpdateUI(); gSave();
 }
 
 function gCorrect(q) {
-  gGame.correct++;
-  gPlayer.totalCorrect++;
-  gGame.streak++;
+  gGame.correct++; gPlayer.totalCorrect++; gGame.streak++;
   if (gGame.streak > gPlayer.bestStreak) gPlayer.bestStreak = gGame.streak;
-  
   const xp = (50 + (q.d || 1) * 20 + Math.floor(gGame.timeLeft / 10)) * gGame.multiplier;
-  gGame.sessionXp += xp;
-  gPlayer.totalXp += xp;
-  
+  gGame.sessionXp += xp; gPlayer.totalXp += xp;
   gFeedback('✅ صحيح! +' + xp + ' XP', 'c');
-  setTimeout(gNext, 1000);
-  gSave();
+  setTimeout(gNext, 1000); gSave();
 }
 
 function gWrong() {
-  gGame.wrong++;
-  gPlayer.totalWrong++;
-  gGame.streak = 0;  gPlayer.totalXp = Math.max(0, gPlayer.totalXp - 20);
-  gFeedback('❌ خطأ! -20 XP', 'w');
-  gSave();
+  gGame.wrong++; gPlayer.totalWrong++; gGame.streak = 0;
+  gPlayer.totalXp = Math.max(0, gPlayer.totalXp - 20);
+  gFeedback('❌ خطأ! -20 XP', 'w'); gSave();
 }
 
 function gSkip() {
   if (gPlayer.totalXp < 400) { gFeedback('⚠️ تحتاج 400 XP!', 'w'); return; }
-  gPlayer.totalXp -= 400;
-  gGame.streak = 0;
-  gFeedback('⏭️ تم التخطي', 'w');
-  setTimeout(gNext, 1000);
-  gSave();
+  gPlayer.totalXp -= 400; gGame.streak = 0;
+  gFeedback('⏭️ تم التخطي', 'w'); setTimeout(gNext, 1000); gSave();
 }
 
 function gNext() {
   gGame.idx++;
-  if (gGame.idx >= gGame.total) gComplete();
-  else gLoadQuestion();
+  if (gGame.idx >= gGame.total) gComplete(); else gLoadQuestion();
   gUpdateUI();
 }
 
 function gHint() {
   if (gGame.hints <= 0) { gFeedback('💡 لا يوجد تلميحات!', 'w'); return; }
-  gGame.hints--;
-  document.getElementById('g-hint').style.display = 'block';
-  gUpdateUI();
+  gGame.hints--; document.getElementById('g-hint').style.display = 'block'; gUpdateUI();
 }
 
 function gComplete() {
-  clearInterval(gTimer);
-  gPlayer.stagesCompleted++;
-  gPlayer.currentStage++;
-  
+  clearInterval(gTimer); gPlayer.stagesCompleted++; gPlayer.currentStage++;
   geniusContent.innerHTML = `
     <div style="text-align:center;margin:30px 0">
-      <h2 style="color:#FFD700;font-size:28px;margin-bottom:20px">🎉 اكتملت المرحلة!</h2>
-    </div>
-    
+      <h2 style="color:#FFD700;font-size:28px;margin-bottom:20px">🎉 اكتملت المرحلة!</h2>    </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
       <div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:10px;text-align:center">
         <div style="font-size:24px;margin-bottom:6px">✅</div>
@@ -782,7 +941,8 @@ function gComplete() {
         <div style="font-size:18px;font-weight:bold;color:#FFD700">${gGame.wrong}</div>
         <div style="font-size:10px;color:#888">خاطئة</div>
       </div>
-      <div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:10px;text-align:center">        <div style="font-size:24px;margin-bottom:6px">⭐</div>
+      <div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:10px;text-align:center">
+        <div style="font-size:24px;margin-bottom:6px">⭐</div>
         <div style="font-size:18px;font-weight:bold;color:#FFD700">${gGame.sessionXp}</div>
         <div style="font-size:10px;color:#888">XP</div>
       </div>
@@ -792,11 +952,9 @@ function gComplete() {
         <div style="font-size:10px;color:#888">سلسلة</div>
       </div>
     </div>
-    
     <button onclick="gStartGame()" style="width:100%;padding:14px;font-size:15px;font-weight:bold;border:none;border-radius:14px;cursor:pointer;margin-bottom:8px;background:linear-gradient(135deg,#34c759,#30d158);color:#fff">المرحلة التالية ➡️</button>
     <button onclick="renderGeniusHome()" style="width:100%;padding:14px;font-size:15px;font-weight:bold;border:none;border-radius:14px;cursor:pointer;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff">🏠 الرئيسية</button>
   `;
-  
   gSave();
 }
 
@@ -820,8 +978,7 @@ function gFeedback(txt, type) {
 }
 
 // ========== الأشكال السحرية ==========
-var magicCanvas, magicCtx, magicFlash, magicStarsContainer;
-var magicW, magicH, magicParticles = [], magicHue = 0, magicTouch = {x:null, y:null, active:false};
+var magicCanvas, magicCtx, magicFlash, magicStarsContainer;var magicW, magicH, magicParticles = [], magicHue = 0, magicTouch = {x:null, y:null, active:false};
 var magicLoopId = null;
 
 function magicParticle(x,y,color,targetX,targetY,isTarget=false){
@@ -831,7 +988,8 @@ function magicParticle(x,y,color,targetX,targetY,isTarget=false){
 }
 magicParticle.prototype.step=function(){
   if(this.isTarget){this.vx+=(this.tx-this.x)*0.02;this.vy+=(this.ty-this.y)*0.02;this.vx*=0.96;this.vy*=0.96;}
-  else{this.vy+=0.15;}  this.x+=this.vx;this.y+=this.vy;this.vx*=this.drag;this.vy*=this.drag;
+  else{this.vy+=0.15;}
+  this.x+=this.vx;this.y+=this.vy;this.vx*=this.drag;this.vy*=this.drag;
   if(this.size>0.4)this.size-=0.035;this.life--;
 };
 magicParticle.prototype.render=function(){
@@ -869,8 +1027,7 @@ function magicClear(){magicParticles=[];}
 
 function magicLoop(){
   magicCtx.fillStyle='rgba(0,0,10,0.08)';magicCtx.fillRect(0,0,magicW,magicH);
-  for(let i=magicParticles.length-1;i>=0;i--){magicParticles[i].step();magicParticles[i].render();if(magicParticles[i].life<=0||magicParticles[i].size<=0.4)magicParticles.splice(i,1);}
-  magicHue=(magicHue+0.3)%360;magicLoopId=requestAnimationFrame(magicLoop);
+  for(let i=magicParticles.length-1;i>=0;i--){magicParticles[i].step();magicParticles[i].render();if(magicParticles[i].life<=0||magicParticles[i].size<=0.4)magicParticles.splice(i,1);}  magicHue=(magicHue+0.3)%360;magicLoopId=requestAnimationFrame(magicLoop);
 }
 
 function initMagicGame(){
@@ -878,64 +1035,22 @@ function initMagicGame(){
   magicCtx = magicCanvas.getContext('2d');
   magicFlash = document.getElementById('magic-flash');
   magicStarsContainer = document.getElementById('magic-stars');
-  
   magicW = magicCanvas.width = window.innerWidth;
-  magicH = magicCanvas.height = window.innerHeight;  magicParticles = [];
-  magicHue = 0;
-  magicTouch = {x:null, y:null, active:false};
-  
+  magicH = magicCanvas.height = window.innerHeight;
+  magicParticles = []; magicHue = 0; magicTouch = {x:null, y:null, active:false};
   magicStarsContainer.innerHTML = '';
   for(let i=0; i<30; i++){
     let s = document.createElement('div');
     s.style.cssText = 'position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;opacity:'+(0.3+Math.random()*0.4)+';animation:twinkle '+(2+Math.random()*2)+'s infinite';
     magicStarsContainer.appendChild(s);
   }
-  
-  function getMagicPos(e){
-    const t = e.touches ? e.touches[0] : e;
-    return { x: t.clientX, y: t.clientY };
-  }
-  
-  magicCanvas.addEventListener('touchstart', function(e){
-    e.preventDefault();
-    magicTouch.active = true;
-    const p = getMagicPos(e);
-    magicTouch.x = p.x;
-    magicTouch.y = p.y;
-    magicEmit(p.x, p.y);
-  }, { passive: false });
-  
-  magicCanvas.addEventListener('touchmove', function(e){
-    e.preventDefault();
-    const p = getMagicPos(e);
-    magicTouch.x = p.x;
-    magicTouch.y = p.y;
-    magicEmit(p.x, p.y);
-  }, { passive: false });
-  
-  magicCanvas.addEventListener('touchend', function(e){
-    e.preventDefault();
-    magicTouch.active = false;
-  }, { passive: false });
-  
-  magicCanvas.addEventListener('mousedown', function(e){
-    magicTouch.active = true;
-    magicTouch.x = e.clientX;
-    magicTouch.y = e.clientY;
-    magicEmit(e.clientX, e.clientY);
-  });
-  
-  magicCanvas.addEventListener('mousemove', function(e){
-    if(magicTouch.active){
-      magicTouch.x = e.clientX;
-      magicTouch.y = e.clientY;
-      magicEmit(e.clientX, e.clientY);    }
-  });
-  
-  magicCanvas.addEventListener('mouseup', function(){
-    magicTouch.active = false;
-  });
-  
+  function getMagicPos(e){ const t = e.touches ? e.touches[0] : e; return { x: t.clientX, y: t.clientY }; }
+  magicCanvas.addEventListener('touchstart', function(e){ e.preventDefault(); magicTouch.active = true; const p = getMagicPos(e); magicTouch.x = p.x; magicTouch.y = p.y; magicEmit(p.x, p.y); }, { passive: false });
+  magicCanvas.addEventListener('touchmove', function(e){ e.preventDefault(); const p = getMagicPos(e); magicTouch.x = p.x; magicTouch.y = p.y; magicEmit(p.x, p.y); }, { passive: false });
+  magicCanvas.addEventListener('touchend', function(e){ e.preventDefault(); magicTouch.active = false; }, { passive: false });
+  magicCanvas.addEventListener('mousedown', function(e){ magicTouch.active = true; magicTouch.x = e.clientX; magicTouch.y = e.clientY; magicEmit(e.clientX, e.clientY); });
+  magicCanvas.addEventListener('mousemove', function(e){ if(magicTouch.active){ magicTouch.x = e.clientX; magicTouch.y = e.clientY; magicEmit(e.clientX, e.clientY); } });
+  magicCanvas.addEventListener('mouseup', function(){ magicTouch.active = false; });
   magicLoop();
 }
 
@@ -946,22 +1061,537 @@ window.addEventListener('resize', function(){
   }
 });
 
+// ========== رسائل الظلام - Dark Messages Game ==========
+let dmBattery = 100, dmGameActive = false, dmBatteryInterval, dmCurrentChapter = 1, dmPlayerChoices = [], dmMessageCount = 0, dmEndingReached = false;
+let dmStartScreen, dmPhone, dmChatArea, dmChoicesArea, dmBatteryFill, dmBatteryPercent, dmScreenOverlay, dmClock, dmAvatar, dmContactName, dmContactStatus, dmChapterNum;
+
+function openDarkMessages() {
+  document.getElementById('dark-messages-modal').classList.add('active');
+  initDarkMessages();
+  showToast('👁️ تم فتح رسائل الظلام');
+}
+
+function closeDarkMessages() {
+  document.getElementById('dark-messages-modal').classList.remove('active');
+  if (dmBatteryInterval) clearInterval(dmBatteryInterval);
+  dmGameActive = false;
+  showToast('✅ تم إغلاق رسائل الظلام');
+}
+function initDarkMessages() {
+  dmStartScreen = document.getElementById('dm-startScreen');
+  dmPhone = document.getElementById('dm-phone');
+  dmChatArea = document.getElementById('dm-chatArea');
+  dmChoicesArea = document.getElementById('dm-choicesArea');
+  dmBatteryFill = document.getElementById('dm-batteryFill');
+  dmBatteryPercent = document.getElementById('dm-batteryPercent');
+  dmScreenOverlay = document.getElementById('dm-screenOverlay');
+  dmClock = document.getElementById('dm-clock');
+  dmAvatar = document.getElementById('dm-avatar');
+  dmContactName = document.getElementById('dm-contactName');
+  dmContactStatus = document.getElementById('dm-contactStatus');
+  dmChapterNum = document.getElementById('dm-chapterNum');
+  dmUpdateClock();
+}
+
+function dmUpdateClock() {
+  const now = new Date();
+  let hours = now.getHours();
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const ampm = hours >= 12 ? 'م' : 'ص';
+  hours = hours % 12; hours = hours ? hours : 12;
+  dmClock.textContent = hours + ':' + minutes + ' ' + ampm;
+  setTimeout(dmUpdateClock, 1000);
+}
+
+function dmStartGame() {
+  dmStartScreen.style.display = 'none';
+  dmGameActive = true;
+  dmBattery = 100; dmCurrentChapter = 1; dmPlayerChoices = []; dmMessageCount = 0; dmEndingReached = false;
+  dmChatArea.innerHTML = ''; dmPhone.classList.remove('dm-glitch');
+  dmAvatar.className = 'dm-avatar'; dmContactName.textContent = 'رقم مجهول';
+  dmContactStatus.textContent = 'متصل الآن'; dmContactStatus.className = 'dm-contact-status';
+  dmUpdateBattery(); dmStartBatteryDrain();
+  setTimeout(() => { dmStartChapter1(); }, 1000);
+}
+
+function dmStartBatteryDrain() {
+  clearInterval(dmBatteryInterval);
+  dmBatteryInterval = setInterval(() => {
+    if (!dmGameActive) return;
+    dmBattery -= 0.5; if (dmBattery < 0) dmBattery = 0;
+    dmUpdateBattery();
+    if (dmBattery <= 0 && !dmEndingReached) dmEndGameBattery();
+  }, 15000);
+}
+
+function dmUpdateBattery() {
+  dmBatteryPercent.textContent = Math.floor(dmBattery) + '%';  dmBatteryFill.style.width = dmBattery + '%';
+  dmBatteryFill.classList.remove('warning', 'critical');
+  if (dmBattery > 50) dmBatteryFill.style.background = '#0f0';
+  else if (dmBattery > 20) { dmBatteryFill.classList.add('warning'); dmBatteryFill.style.background = '#ff0'; }
+  else { dmBatteryFill.classList.add('critical'); dmBatteryFill.style.background = '#f00'; }
+}
+
+function dmAddMessage(type, text, delay = 0, isFinal = false) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const msg = document.createElement('div');
+      msg.className = 'dm-message ' + type;
+      if (isFinal) msg.classList.add('dm-final-message');
+      const time = new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'});
+      if (type === 'typing') {
+        msg.innerHTML = '<div class="dm-typing-dots"><span></span><span></span><span></span></div>';
+        msg.id = 'dm-typingIndicator';
+      } else {
+        msg.innerHTML = text + '<div class="dm-timestamp">' + time + '</div>';
+        if (type === 'received') dmPlaySound('message');
+        dmMessageCount++;
+      }
+      dmChatArea.appendChild(msg);
+      dmChatArea.scrollTop = dmChatArea.scrollHeight;
+      resolve();
+    }, delay);
+  });
+}
+
+function dmPlaySound(type) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    if (type === 'message') {
+      osc.frequency.value = 800; osc.type = 'sine'; gain.gain.value = 0.05;
+      osc.start(); setTimeout(() => { osc.stop(); }, 50);
+    } else if (type === 'scare') {
+      osc.frequency.value = 200; osc.type = 'sawtooth';
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1);
+      osc.start(); setTimeout(() => { osc.stop(); }, 1000);
+    } else if (type === 'ending') {
+      osc.frequency.value = 150; osc.type = 'square';
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 2);
+      osc.start(); setTimeout(() => { osc.stop(); }, 2000);
+    }
+    setTimeout(() => ctx.close(), 2500);
+  } catch(e) {}}
+
+function dmFlashScreen() {
+  dmScreenOverlay.classList.add('flash');
+  setTimeout(() => dmScreenOverlay.classList.remove('flash'), 200);
+}
+
+function dmGlitchPhone() {
+  dmPhone.classList.add('dm-glitch');
+  dmPlaySound('scare');
+  setTimeout(() => dmPhone.classList.remove('dm-glitch'), 500);
+}
+
+function dmCreateBloodDrip() {
+  const drip = document.createElement('div');
+  drip.className = 'dm-blood-drip';
+  drip.style.left = Math.random() * 100 + '%';
+  document.getElementById('dm-game-container').appendChild(drip);
+  setTimeout(() => drip.remove(), 4000);
+}
+
+function dmShowTyping(delay = 500) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      dmAddMessage('typing', '', 0);
+      setTimeout(() => {
+        const typing = document.getElementById('dm-typingIndicator');
+        if (typing) typing.remove();
+        resolve();
+      }, 1500 + Math.random() * 1000);
+    }, delay);
+  });
+}
+
+function dmShowChoices(options) {
+  dmChoicesArea.innerHTML = '';
+  dmChoicesArea.classList.remove('dm-hidden');
+  options.forEach((option, index) => {
+    const btn = document.createElement('button');
+    btn.className = 'dm-choice-btn';
+    btn.textContent = option.text;
+    btn.onclick = () => {
+      dmChoicesArea.classList.add('dm-hidden');
+      dmAddMessage('sent', option.text);
+      dmPlayerChoices.push(index);
+      setTimeout(option.action, 800);
+    };
+    dmChoicesArea.appendChild(btn);
+  });
+}
+function dmAddPhoto(caption) {
+  const photo = document.createElement('div');
+  photo.className = 'dm-message received';
+  const time = new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'});
+  photo.innerHTML = `<div>📷 صورة مرفقة</div><div class="dm-photo-attachment"><div class="dm-photo-placeholder">👁️</div><div class="dm-photo-caption">${caption}</div></div><div class="dm-timestamp">${time}</div>`;
+  dmChatArea.appendChild(photo); dmChatArea.scrollTop = dmChatArea.scrollHeight; dmPlaySound('message');
+}
+
+function dmAddWarning(text) {
+  const warning = document.createElement('div');
+  warning.className = 'dm-message system';
+  warning.innerHTML = `<div class="dm-warning-box">⚠️ ${text}</div>`;
+  dmChatArea.appendChild(warning); dmChatArea.scrollTop = dmChatArea.scrollHeight;
+}
+
+// === Dark Messages Chapters (Simplified for integration) ===
+async function dmStartChapter1() {
+  dmChapterNum.textContent = '1';
+  await dmAddMessage('received', 'هل أنت مستيقظ؟');
+  await new Promise(r => setTimeout(r, 2000));
+  await dmAddMessage('received', 'أعرف أنك وحدك في المنزل الآن...');
+  await new Promise(r => setTimeout(r, 2000));
+  await dmAddMessage('received', 'الجميع نيام... إلا أنت 👁️');
+  await new Promise(r => setTimeout(r, 1500));
+  dmShowChoices([
+    { text: 'من هذا؟ كيف عرفت أنني وحدي؟', action: () => dmNextChapter2('a1') },
+    { text: 'ماذا تريد مني؟', action: () => dmNextChapter2('a2') },
+    { text: 'سأتصل بالشرطة فوراً!', action: () => dmNextChapter2('a3') },
+    { text: '...(لا ترد)', action: () => dmNextChapter2('a4') }
+  ]);
+}
+
+async function dmNextChapter2(choice) {
+  dmCurrentChapter = 2; dmChapterNum.textContent = '2';
+  await dmShowTyping();
+  if (choice === 'a1') {
+    await dmAddMessage('received', 'لديك طرق كثيرة لمعرفة الأشياء...');
+    await dmAddMessage('received', 'الكاميرات... الميكروفونات... الأجهزة الذكية...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'هاتفك الآن يتحدث معي 📱'); dmFlashScreen();
+  } else if (choice === 'a2') {
+    await dmAddMessage('received', 'أريد أن ألعب معك لعبة...');
+    await dmAddMessage('received', 'لعبة قديمة... جداً...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'لعبة الاختباء والبحث 🎮');
+  } else if (choice === 'a3') {
+    await dmAddMessage('received', 'الشرطة؟ 🚔'); await dmAddMessage('received', 'جرب الاتصال...');
+    await dmAddMessage('system', '📵 مكالمة فاشلة'); dmGlitchPhone(); dmBattery -= 15; dmUpdateBattery();
+    await new Promise(r => setTimeout(r, 1500));    await dmAddMessage('received', 'الخطوط مقطوعة... أنت معي فقط');
+  } else if (choice === 'a4') {
+    await dmAddMessage('received', 'تتجاهلني؟'); await dmAddMessage('received', 'هذا غير لطيف...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'سأجعلك ترد... بطريقتي'); dmBattery -= 10; dmUpdateBattery();
+  }
+  await new Promise(r => setTimeout(r, 1000));
+  dmShowChoices([
+    { text: 'كيف دخلت إلى هاتفي؟', action: () => dmNextChapter3('b1') },
+    { text: 'أين أنت الآن؟', action: () => dmNextChapter3('b2') },
+    { text: 'سأكسر الهاتف!', action: () => dmNextChapter3('b3') },
+    { text: 'ما هي اللعبة؟', action: () => dmNextChapter3('b4') }
+  ]);
+}
+
+async function dmNextChapter3(choice) {
+  dmCurrentChapter = 3; dmChapterNum.textContent = '3';
+  await dmShowTyping();
+  if (choice === 'b1') {
+    await dmAddMessage('received', 'لم أدخل إلى هاتفك...'); await dmAddMessage('received', 'أنا كنت هنا دائماً...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'في كل تطبيق... في كل ملف...'); dmAddPhoto('صورة لملفات هاتفك الشخصية');
+  } else if (choice === 'b2') {
+    await dmAddMessage('received', 'أين أنا؟'); await dmAddMessage('received', 'سؤال جيد...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'انظر حولك...'); dmFlashScreen();
+    await dmAddMessage('received', 'أنا أقرب مما تعتقد');
+  } else if (choice === 'b3') {
+    await dmAddMessage('received', 'كسر الهاتف لن ينفع...'); await dmAddMessage('received', 'أنا لست في الهاتف...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'الهاتف فيّ أنا'); dmGlitchPhone(); dmBattery -= 20; dmUpdateBattery();
+  } else if (choice === 'b4') {
+    await dmAddMessage('received', 'قواعد اللعبة بسيطة...'); await dmAddMessage('received', 'القاعدة 1: لا تنم');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'القاعدة 2: لا تهرب'); await dmAddMessage('received', 'القاعدة 3: لا تصرخ');
+    dmAddWarning('انتبه: هذه القواعد مهمة لبقائك');
+  }
+  await new Promise(r => setTimeout(r, 1000));
+  dmShowChoices([
+    { text: 'هذا كابوس... سأستيقظ', action: () => dmNextChapter4('c1') },
+    { text: 'سأغادر المنزل الآن', action: () => dmNextChapter4('c2') },
+    { text: 'من أنت حقاً؟', action: () => dmNextChapter4('c3') },
+    { text: 'سأطلب المساعدة', action: () => dmNextChapter4('c4') }
+  ]);
+}
+
+async function dmNextChapter4(choice) {
+  dmCurrentChapter = 4; dmChapterNum.textContent = '4';
+  await dmShowTyping();
+  if (choice === 'c1') {    await dmAddMessage('received', 'لو كان كابوساً...'); await dmAddMessage('received', 'لكنت استيقظت بالفعل');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'لكنك لن تستيقظ...'); await dmAddMessage('received', 'أبداً');
+    dmAvatar.className = 'dm-avatar danger'; dmContactStatus.textContent = 'معه الآن'; dmContactStatus.className = 'dm-contact-status danger';
+  } else if (choice === 'c2') {
+    await dmAddMessage('received', 'غادر المنزل؟'); await dmAddMessage('received', 'جرب...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'افتح الباب'); await dmAddMessage('system', '🚪 الباب مقفل'); dmBattery -= 15; dmUpdateBattery();
+  } else if (choice === 'c3') {
+    await dmAddMessage('received', 'من أنا؟'); await dmAddMessage('received', 'سؤال عميق...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'أنا الظل في زاوية غرفتك'); await dmAddMessage('received', 'أنا الصوت في رأسك');
+    await dmAddMessage('received', 'أنا... أنت'); dmGlitchPhone();
+  } else if (choice === 'c4') {
+    await dmAddMessage('received', 'اطلب المساعدة؟'); await dmAddMessage('received', 'من سيسمعك؟');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'عائلتك نائمة...'); await dmAddMessage('received', 'جيرانك بعيدون...');
+    await dmAddMessage('received', 'والشرطة...'); await dmAddMessage('received', 'الشرطة لا تأتي للأحياء');
+  }
+  await new Promise(r => setTimeout(r, 1000));
+  dmShowChoices([
+    { text: 'سأبحث عن سلاح', action: () => dmChapter5Choice1() },
+    { text: 'سأختبئ في أفضل مكان', action: () => dmChapter5Choice2() },
+    { text: 'سأحاول التفاوض', action: () => dmChapter5Choice3() },
+    { text: 'سأواجهه مباشرة', action: () => dmChapter5Choice4() }
+  ]);
+}
+
+function dmChapter5Choice1() { dmNextChapter5('d1'); }
+function dmChapter5Choice2() { dmNextChapter5('d2'); }
+function dmChapter5Choice3() { dmNextChapter5('d3'); }
+function dmChapter5Choice4() { dmNextChapter5('d4'); }
+
+async function dmNextChapter5(choice) {
+  dmCurrentChapter = 5; dmChapterNum.textContent = '5';
+  await dmShowTyping();
+  if (choice === 'd1') {
+    await dmAddMessage('received', 'سلاح؟'); await dmAddMessage('received', 'ضد ماذا؟');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'لا يمكنك طعن الظل...'); await dmAddMessage('received', 'لا يمكنك إطلاق النار على الخوف...');
+    dmCreateBloodDrip();
+  } else if (choice === 'd2') {
+    await dmAddMessage('received', 'تختبئ؟'); await dmAddMessage('received', 'أين؟');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'تحت السرير؟'); await dmAddMessage('received', 'في الخزانة؟');
+    await dmAddMessage('received', 'في الحمام؟'); await dmAddMessage('received', 'أعرف كل أماكنك...');
+    dmAddPhoto('صورة لمكان اختبائك');
+  } else if (choice === 'd3') {
+    await dmAddMessage('received', 'تتفاوض؟'); await dmAddMessage('received', 'ماذا تقدم؟');
+    await new Promise(r => setTimeout(r, 1500));    await dmAddMessage('received', 'روحك؟'); await dmAddMessage('received', 'عقلك؟');
+    await dmAddMessage('received', 'حياتك؟'); await dmAddMessage('received', 'كلها لي بالفعل');
+  } else if (choice === 'd4') {
+    await dmAddMessage('received', 'تواجهني؟'); await dmAddMessage('received', 'شجاع...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'لكن ضد من تقاتل؟'); await dmAddMessage('received', 'ضد الظلام؟');
+    await dmAddMessage('received', 'الظلام لا يُهزم... يُعانق فقط'); dmFlashScreen();
+  }
+  await new Promise(r => setTimeout(r, 1000));
+  dmShowChoices([
+    { text: 'لماذا أنا بالتحديد؟', action: () => dmNextChapter6('e1') },
+    { text: 'ماذا فعلت لك؟', action: () => dmNextChapter6('e2') },
+    { text: 'كم سيبقى هذا؟', action: () => dmNextChapter6('e3') },
+    { text: 'ما هو هدفك النهائي؟', action: () => dmNextChapter6('e4') }
+  ]);
+}
+
+async function dmNextChapter6(choice) {
+  dmCurrentChapter = 6; dmChapterNum.textContent = '6';
+  await dmShowTyping();
+  if (choice === 'e1') {
+    await dmAddMessage('received', 'لماذا أنت؟'); await dmAddMessage('received', 'سؤال جيد...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'لأنك الوحيد'); await dmAddMessage('received', 'الوحيد الذي يستطيع رؤيتي');
+    await dmAddMessage('received', 'الوحيد الذي يستطيع سماعي');
+  } else if (choice === 'e2') {
+    await dmAddMessage('received', 'ماذا فعلت لي؟'); await dmAddMessage('received', 'هل نسيت؟');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'الليل...'); await dmAddMessage('received', 'الطريق...');
+    await dmAddMessage('received', 'الحادث...'); dmGlitchPhone();
+  } else if (choice === 'e3') {
+    await dmAddMessage('received', 'كم سيبقى؟'); await dmAddMessage('received', 'إلى الأبد...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'أو'); await dmAddMessage('received', 'إلى أن تنكسر');
+    await dmAddMessage('received', 'أيها أولاً');
+  } else if (choice === 'e4') {
+    await dmAddMessage('received', 'هدفي؟'); await dmAddMessage('received', 'بسيط...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'أريدك أن تفهم'); await dmAddMessage('received', 'تفهم ما فعلت');
+    await dmAddMessage('received', 'تفهم ما ستصبح');
+  }
+  await new Promise(r => setTimeout(r, 1000));
+  dmShowChoices([
+    { text: 'لا أفهم ما تقول', action: () => dmNextChapter7('f1') },
+    { text: 'أعتقد أنني أتذكر...', action: () => dmNextChapter7('f2') },
+    { text: 'لن أسمح لك!', action: () => dmNextChapter7('f3') },
+    { text: 'أنا آسف...', action: () => dmNextChapter7('f4') }
+  ]);
+}
+async function dmNextChapter7(choice) {
+  dmCurrentChapter = 7; dmChapterNum.textContent = '7';
+  await dmShowTyping();
+  if (choice === 'f1') {
+    await dmAddMessage('received', 'سأذكرك...'); await dmAddMessage('received', 'كانت ليلة مظلمة...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'مطر...'); await dmAddMessage('received', 'طريق منحني...');
+    await dmAddMessage('received', 'شخص يعبر...'); dmAddPhoto('صورة لطريق مظلم ممطر');
+  } else if (choice === 'f2') {
+    await dmAddMessage('received', 'أخيراً...'); await dmAddMessage('received', 'تتذكر...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'الوجه...'); await dmAddMessage('received', 'العينين...');
+    await dmAddMessage('received', 'الدم...'); dmBattery -= 10; dmUpdateBattery();
+  } else if (choice === 'f3') {
+    await dmAddMessage('received', 'لا تسمح؟'); await dmAddMessage('received', 'أنت لا تتحكم...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'لم تتحكم من البداية'); await dmAddMessage('received', 'أنت مجرد لاعب'); dmGlitchPhone();
+  } else if (choice === 'f4') {
+    await dmAddMessage('received', 'آسف؟'); await dmAddMessage('received', 'الاعتذار...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'لا يعيد الموتى'); await dmAddMessage('received', 'لا يمسح الذنب');
+    await dmAddMessage('received', 'لا يغير الماضي');
+  }
+  await new Promise(r => setTimeout(r, 1000));
+  dmShowChoices([
+    { text: 'لم أقصد قتله...', action: () => dmNextChapter8('g1') },
+    { text: 'كان حادثاً!', action: () => dmNextChapter8('g2') },
+    { text: 'ماذا تريد مني الآن؟', action: () => dmNextChapter8('g3') },
+    { text: 'سأعترف للشرطة', action: () => dmNextChapter8('g4') }
+  ]);
+}
+
+async function dmNextChapter8(choice) {
+  dmCurrentChapter = 8; dmChapterNum.textContent = '8';
+  await dmShowTyping();
+  if (choice === 'g1') {
+    await dmAddMessage('received', 'لم تقصد...'); await dmAddMessage('received', 'لكنك فعلت');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'النية لا تغير النتيجة'); await dmAddMessage('received', 'الميت لا يهتم للنوايا');
+  } else if (choice === 'g2') {
+    await dmAddMessage('received', 'حادث؟'); await dmAddMessage('received', 'هل الحوادث...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'تُخفى الجثث؟'); await dmAddMessage('received', 'هل الحوادث...');
+    await dmAddMessage('received', 'تُكذب على الشرطة؟'); dmFlashScreen();
+  } else if (choice === 'g3') {
+    await dmAddMessage('received', 'ماذا أريد؟'); await dmAddMessage('received', 'أريد العدالة');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'لكن ليس عدالة البشر'); await dmAddMessage('received', 'عدالة...');
+    await dmAddMessage('received', 'أعمق');
+  } else if (choice === 'g4') {    await dmAddMessage('received', 'الشرطة؟'); await dmAddMessage('received', 'بعد كل هذه السنين؟');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'الأدلة اختفت'); await dmAddMessage('received', 'الشهود ماتوا');
+    await dmAddMessage('received', 'بقيت أنا فقط');
+  }
+  await new Promise(r => setTimeout(r, 1000));
+  dmShowChoices([
+    { text: 'ماذا ستفعل بي؟', action: () => dmNextChapter9('h1') },
+    { text: 'هل ستقتلني؟', action: () => dmNextChapter9('h2') },
+    { text: 'هل هناك طريقة للتكفير؟', action: () => dmNextChapter9('h3') },
+    { text: 'أنا مستعد للعقاب', action: () => dmNextChapter9('h4') }
+  ]);
+}
+
+async function dmNextChapter9(choice) {
+  dmCurrentChapter = 9; dmChapterNum.textContent = '9';
+  await dmShowTyping();
+  if (choice === 'h1') {
+    await dmAddMessage('received', 'ماذا سأفعل؟'); await dmAddMessage('received', 'سأجعلك تفهم');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'ستفهم الألم'); await dmAddMessage('received', 'ستفهم الخوف');
+    await dmAddMessage('received', 'ستفهم...'); await dmAddMessage('received', 'الموت'); dmCreateBloodDrip();
+  } else if (choice === 'h2') {
+    await dmAddMessage('received', 'أقتلك؟'); await dmAddMessage('received', 'الموت...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'سهل جداً'); await dmAddMessage('received', 'أنا أريد شيئاً');
+    await dmAddMessage('received', 'أصعب');
+  } else if (choice === 'h3') {
+    await dmAddMessage('received', 'التكفير؟'); await dmAddMessage('received', 'ربما...');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'لكن الثمن'); await dmAddMessage('received', 'ليس مالاً');
+    await dmAddMessage('received', 'ليس وقتاً'); await dmAddMessage('received', 'الثمن...');
+    await dmAddMessage('received', 'أنت');
+  } else if (choice === 'h4') {
+    await dmAddMessage('received', 'مستعد؟'); await dmAddMessage('received', 'هذا جيد');
+    await new Promise(r => setTimeout(r, 1500));
+    await dmAddMessage('received', 'لأنه لا رجعة'); await dmAddMessage('received', 'لا عودة');
+    await dmAddMessage('received', 'لا نجاة'); dmAvatar.className = 'dm-avatar danger';
+    dmContactStatus.textContent = 'الحقيقة قريبة'; dmContactStatus.className = 'dm-contact-status danger';
+  }
+  await new Promise(r => setTimeout(r, 1000));
+  dmShowChoices([
+    { text: '【القرار النهائي】أقبل مصيري', action: () => dmStartEnding('accept') },
+    { text: '【القرار النهائي】أرفض وأقاتل', action: () => dmStartEnding('fight') },
+    { text: '【القرار النهائي】أهرب الآن', action: () => dmStartEnding('escape') },
+    { text: '【القرار النهائي】أكشف الحقيقة', action: () => dmStartEnding('truth') }
+  ]);
+}
+
+async function dmStartEnding(type) {  dmCurrentChapter = 10; dmChapterNum.textContent = '10'; dmEndingReached = true;
+  await dmShowTyping();
+  if (type === 'accept') {
+    await dmAddMessage('received', 'تقبل مصيرك...', 0, true); await new Promise(r => setTimeout(r, 2000));
+    await dmAddMessage('received', 'حكيم...', 0, true); await new Promise(r => setTimeout(r, 2000));
+    await dmAddMessage('received', 'المقاومة تزيد الألم', 0, true); await new Promise(r => setTimeout(r, 2000));
+    await dmAddMessage('received', 'الاستسلام...', 0, true); await new Promise(r => setTimeout(r, 2000));
+    await dmAddMessage('received', 'يجلب السلام', 0, true); await new Promise(r => setTimeout(r, 3000));
+    await dmAddMessage('received', 'أغلق عينيك...', 0, true); await new Promise(r => setTimeout(r, 2000));
+    await dmAddMessage('received', 'تنفس بعمق...', 0, true); await new Promise(r => setTimeout(r, 2000));
+    await dmAddMessage('received', 'الظلام ليس عدوك...', 0, true); await new Promise(r => setTimeout(r, 2000));
+    await dmAddMessage('received', 'الظلام...', 0, true); await new Promise(r => setTimeout(r, 2000));
+    await dmAddMessage('received', 'هو بيتك الآن', 0, true); await new Promise(r => setTimeout(r, 3000));
+    await dmAddMessage('system', '📵 اتصل مقطوع', 0); await new Promise(r => setTimeout(r, 2000));
+    await dmAddMessage('received', '...', 0, true); await new Promise(r => setTimeout(r, 2000));
+    await dmAddMessage('received', 'أهلاً بك في العائلة', 0, true); await new Promise(r => setTimeout(r, 2000));
+    await dmAddMessage('received', 'الآن...', 0, true); await new Promise(r => setTimeout(r, 2000));
+    await dmAddMessage('received', 'دورك', 0, true); await new Promise(r => setTimeout(r, 2000));
+    await dmAddMessage('received', 'لتبحث عن الضحية التالية', 0, true); await new Promise(r => setTimeout(r, 3000));
+    await dmAddMessage('system', '👤 حالتك: متصل الآن', 0);
+    dmContactName.textContent = 'أنت الآن'; dmContactStatus.textContent = 'متصل الآن'; dmAvatar.textContent = '👁️';
+    await new Promise(r => setTimeout(r, 2000));
+    dmShowChoices([
+      { text: '🔄 ابدأ تجربة جديدة', action: () => dmRestartGame() },
+      { text: '💀 أنه المحادثة', action: () => dmEndConversation() }
+    ]);
+  } else {
+    await dmAddMessage('received', 'النهاية...', 0, true); await new Promise(r => setTimeout(r, 2000));
+    await dmAddMessage('received', 'شكراً للعب...', 0, true); await new Promise(r => setTimeout(r, 2000));
+    dmShowChoices([
+      { text: '🔄 ابدأ تجربة جديدة', action: () => dmRestartGame() },
+      { text: '💀 أنه المحادثة', action: () => dmEndConversation() }
+    ]);
+  }
+}
+
+async function dmEndGameBattery() {
+  dmEndingReached = true;
+  await dmAddMessage('received', 'بطاريتك...', 0, true); await new Promise(r => setTimeout(r, 2000));
+  await dmAddMessage('received', 'تنفد', 0, true); await new Promise(r => setTimeout(r, 3000));
+  await dmAddMessage('received', 'مثل...', 0, true); await new Promise(r => setTimeout(r, 2000));
+  await dmAddMessage('received', 'كل شيء آخر', 0, true); await new Promise(r => setTimeout(r, 3000));
+  await dmAddMessage('received', 'لا تقلق', 0, true); await new Promise(r => setTimeout(r, 2000));
+  await dmAddMessage('received', 'أنا...', 0, true); await new Promise(r => setTimeout(r, 2000));
+  await dmAddMessage('received', 'لا أحتاج بطارية', 0, true); await new Promise(r => setTimeout(r, 3000));
+  await dmAddMessage('received', 'أنا...', 0, true); await new Promise(r => setTimeout(r, 2000));
+  await dmAddMessage('received', 'في الظلام', 0, true); await new Promise(r => setTimeout(r, 3000));
+  await dmAddMessage('received', 'والظلام...', 0, true); await new Promise(r => setTimeout(r, 2000));
+  await dmAddMessage('received', 'أبدي', 0, true); await new Promise(r => setTimeout(r, 3000));
+  await dmAddMessage('system', '🔋 0% - انطفأ الهاتف', 0);  dmBatteryFill.style.width = '0%'; dmPhone.style.opacity = '0.5';
+  await new Promise(r => setTimeout(r, 3000));
+  dmShowChoices([
+    { text: '🔄 ابدأ تجربة جديدة', action: () => dmRestartGame() },
+    { text: '💀 أنه المحادثة', action: () => dmEndConversation() }
+  ]);
+}
+
+function dmEndConversation() {
+  dmAddMessage('system', '💀 انتهت المحادثة... لكن هل انتهى حقاً؟', 0);
+  dmChoicesArea.classList.add('dm-hidden');
+  setTimeout(() => { dmAddMessage('received', '...', 2000); }, 3000);
+  setTimeout(() => { dmAddMessage('received', 'أراك قريباً...', 4000); }, 5000);
+}
+
+function dmRestartGame() {
+  dmPhone.style.opacity = '1'; dmEndingReached = false; dmStartGame();
+}
+
 // ========== بدء ==========
 window.addEventListener('load', function(){
-  createStars();
-  createGoldDust();
-  loadGame();
-  renderUpgrades();
-  updateUI();
-  
+  createStars(); createGoldDust(); loadGame(); renderUpgrades(); updateUI();
   var coinBtn = document.getElementById('coin-btn');
-  coinBtn.addEventListener('click', function(e){
-    initSoundOnFirstClick();
-    clickCoin(e, false);
-  });
-  
+  coinBtn.addEventListener('click', function(e){ initSoundOnFirstClick(); clickCoin(e, false); });
   SoundManager.init();
 });
 </script>
 </body>
-</html>
+  </html>

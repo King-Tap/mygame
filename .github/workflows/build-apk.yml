@@ -19,7 +19,8 @@ jobs:
 
       - name: Create and Build
         run: |
-          cordova create king_app com.king.tap KingTap
+          # التعديل تم هنا: تغيير com.king.tap إلى com.kingtaproyal.game
+          cordova create king_app com.kingtaproyal.game KingTap
           cp index.html king_app/www/
           cd king_app
           cordova platform add android
@@ -30,3 +31,4 @@ jobs:
         with:
           name: King-Tap-Game
           path: king_app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+

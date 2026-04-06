@@ -19,8 +19,8 @@ jobs:
 
       - name: Create and Build
         run: |
-          # التعديل تم هنا: تغيير com.king.tap إلى com.kingtaproyal.game
-          cordova create king_app com.kingtaproyal.game KingTap
+          # التعديل تم هنا: تغيير com.king.tap إلى com.kingtaproyal
+          cordova create king_app com.kingtaproyal KingTap
           cp index.html king_app/www/
           cd king_app
           cordova platform add android

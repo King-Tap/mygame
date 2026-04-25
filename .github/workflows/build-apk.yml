@@ -1,4 +1,4 @@
-name: Build Strobe Game APK (Ultimate Fix)
+name: Build Strobe Game APK (Extreme Reset)
 on:
   push:
     branches: [ main ]
@@ -29,32 +29,27 @@ jobs:
         run: |
           mkdir -p www
           cp index.html www/
-          npx cap init "ستروب قيم" "com.strobe.game" --web-dir www
+          npx cap init "StrobeGame" "com.strobe.game" --web-dir www
           npx cap add android
           
-          # إعدادات متقدمة لحل تضارب المكتبات (النسخ المتكررة)
-          echo "android.enableJetifier=true" >> android/gradle.properties
-          echo "android.useAndroidX=true" >> android/gradle.properties
+          # 1. تنظيف الـ Cache تماماً
+          rm -rf android/.gradle
           
-          # [الحل الجذري] حقن إعدادات حل التضارب في نهاية ملف build.gradle
-          # هذا سيجبر Gradle على استخدام نسخة واحدة فقط من Kotlin لكل المكتبات
-          cat <<EOF >> android/app/build.gradle
-
-          configurations.all {
-              resolutionStrategy {
-                  force 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22'
-                  force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22'
-              }
-          }
-          EOF
+          # 2. فرض إعدادات الجرادل الأساسية
+          echo "android.useAndroidX=true" > android/gradle.properties
+          echo "android.enableJetifier=true" >> android/gradle.properties
+          echo "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8" >> android/gradle.properties
+          
+          # 3. [الأهم] فرض نسخة Kotlin موحدة على مستوى المشروع بالكامل (Root level)
+          # نضع هذا في نهاية ملف build.gradle الرئيسي وليس app/build.gradle
+          echo "allprojects { configurations.all { resolutionStrategy { force 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22' } } }" >> android/build.gradle
           
           # مسح أيقونات الأندرويد الافتراضية
           rm -rf android/app/src/main/res/mipmap-*
           
           # إنشاء المجلدات ووضع الأيقونات
-          mkdir -p android/app/src/main/res/mipmap-hdpi
-          cp icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-          cp icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+          mkdir -p android/app/src/main/res/mipmap-hdpi && cp icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+          mkdir -p android/app/src/main/res/mipmap-hdpi && cp icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
           mkdir -p android/app/src/main/res/mipmap-mdpi && cp icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher.png
           mkdir -p android/app/src/main/res/mipmap-xhdpi && cp icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
           mkdir -p android/app/src/main/res/mipmap-xxhdpi && cp icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
@@ -63,7 +58,9 @@ jobs:
       - name: Final Compilation
         run: |
           npx cap copy
-          cd android && ./gradlew assembleDebug
+          cd android
+          # تنظيف ثم بناء
+          ./gradlew clean assembleDebug
 
       - name: Download APK
         uses: actions/upload-artifact@v4

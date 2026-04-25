@@ -1,6 +1,6 @@
 {
-  "appId": "com.kingtaproyal.game",
-  "appName": "King Tap",
+  "appId": "com.strobe.game",
+  "appName": "strobe",
   "webDir": "www",
   "bundledWebRuntime": false
 }

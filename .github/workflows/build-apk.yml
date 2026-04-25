@@ -1,34 +1,54 @@
-name: Build APK
-on: [push]
+name: Build Strobe Game APK
+on:
+  push:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Source
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          node-version: 20
 
-      - name: Install Cordova
-        run: npm install -g cordova
-
-      - name: Create and Build
+      - name: Install Essential Tools
         run: |
-          # التعديل تم هنا: تغيير com.king.tap إلى com.kingtaproyal
-          cordova create king_app com.kingtaproyal KingTap
-          cp index.html king_app/www/
-          cd king_app
-          cordova platform add android
-          cordova build android --debug
+          npm install @capacitor/core @capacitor/cli @capacitor/android
           
-      - name: Upload APK
+      - name: Build Web and Android
+        run: |
+          mkdir -p www
+          cp index.html www/
+          # تم تغيير اسم التطبيق واسم الحزمة هنا
+          npx cap init "ستروب قيم" "com.strobe.game" --web-dir www
+          npx cap add android
+          
+          # مسح أيقونات الأندرويد الافتراضية تماماً
+          rm -rf android/app/src/main/res/mipmap-*
+          
+          # إنشاء المجلدات من جديد ووضع صورتك فيها بالقوة
+          mkdir -p android/app/src/main/res/mipmap-hdpi
+          cp icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+          cp icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+          
+          # تكرار العملية لضمان ظهورها في كل الهواتف
+          mkdir -p android/app/src/main/res/mipmap-mdpi && cp icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+          mkdir -p android/app/src/main/res/mipmap-xhdpi && cp icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          mkdir -p android/app/src/main/res/mipmap-xxhdpi && cp icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          mkdir -p android/app/src/main/res/mipmap-xxxhdpi && cp icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+
+      - name: Final Compilation
+        run: |
+          npx cap copy
+          cd android && ./gradlew assembleDebug
+
+      - name: Download APK
         uses: actions/upload-artifact@v4
         with:
-          name: King-Tap-Game
-          path: king_app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
-
+          # تم تحديث اسم الأداة الناتجة
+          name: Strobe-Game-Final
+          path: android/app/build/outputs/apk/debug/app-debug.apk

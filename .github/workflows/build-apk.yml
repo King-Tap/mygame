@@ -1,4 +1,4 @@
-name: Simple Build Test
+name: Build Strobe Game Final Boss
 on:
   push:
     branches: [ main ]
@@ -7,36 +7,60 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Source
         uses: actions/checkout@v4
 
-      - name: Node & Java Setup
+      - name: Setup Node & Java
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - uses: actions/setup-java@v4
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install & Init
+      - name: Essential Clean Install
         run: |
+          # 1. تثبيت الأدوات
           npm install @capacitor/core @capacitor/cli @capacitor/android
-          npx cap init "TestApp" "com.strobe.game" --web-dir www
+          
+          # 2. إنشاء مجلد الويب فارغاً إذا لم يوجد لضمان عمل Capacitor
+          mkdir -p www
+          [ ! -f www/index.html ] && echo "<html><body>Strobe Game</body></html>" > www/index.html
+          
+          # 3. تهيئة المشروع من الصفر تماماً
+          npx cap init "Strobe Game" "com.strobe.game" --web-dir www
           npx cap add android
-          # إعدادات بسيطة جداً لمنع تعارض المكتبات
-          echo "android.useAndroidX=true" >> android/gradle.properties
-          echo "android.enableJetifier=true" >> android/gradle.properties
-          # هذه السطر هو الأساس لحل مشكلة الـ Duplicate Class
-          echo "configurations.all { resolutionStrategy { force 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22' } }" >> android/app/build.gradle
+          
+          # 4. [الحل السحري] إجبار Gradle على استبعاد المكتبات المكررة
+          # هذا السطر سيقوم بحقن كود داخل build.gradle يمنع Kotlin من التكرار
+          cat <<EOF > fix_gradle.py
+          import os
+          path = 'android/app/build.gradle'
+          with open(path, 'r') as f:
+              content = f.read()
+          # إضافة استثناء للمكتبات المكررة في قسم dependencies
+          fix = "\nconfigurations.all { resolutionStrategy.force 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22' }\n"
+          if 'dependencies {' in content:
+              content = content.replace('dependencies {', fix + 'dependencies {')
+          with open(path, 'w') as f:
+              f.write(content)
+          EOF
+          python3 fix_gradle.py
 
-      - name: Build
+          # 5. مزامنة الملفات (ضرورية جداً لإصلاح خطأ capacitor.settings.gradle)
+          npx cap sync android
+
+      - name: Force Build
         run: |
           cd android
+          # إجبار Java 17 على مستوى الـ Build
+          echo "org.gradle.java.home=$JAVA_HOME" >> gradle.properties
           ./gradlew clean assembleDebug
 
-      - name: Upload
+      - name: Download APK
         uses: actions/upload-artifact@v4
         with:
-          name: Test-APK
+          name: Strobe-Game-Final
           path: android/app/build/outputs/apk/debug/app-debug.apk

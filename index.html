@@ -1,1597 +1,1034 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#0A0A1A">
-  <title>King Tap - Royal Edition ✨</title>
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
-    body { 
-      font-family: 'Segoe UI', Tahoma, sans-serif; 
-      background: linear-gradient(135deg, #0A0A1A 0%, #1A1A3A 50%, #0F0F2A 100%);
-      color: #fff; 
-      min-height: 100vh; 
-      overflow-x: hidden;
-      position: relative;
-      touch-action: manipulation;
-    }
-    
-    .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-    .star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; animation: twinkle 2s ease-in-out infinite; opacity: 0.7; }
-    @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-    
-    .orb { position:fixed; border-radius:50%; pointer-events:none; filter: blur(40px); opacity: 0.4; }
-    .orb1 { width:400px; height:400px; background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 70%); top:-150px; right:-100px; animation: float1 8s ease-in-out infinite alternate; }
-    .orb2 { width:320px; height:320px; background: radial-gradient(circle, rgba(159,103,255,0.25) 0%, transparent 70%); bottom:80px; left:-100px; animation: float2 10s ease-in-out infinite alternate; }
-    .orb3 { width:250px; height:250px; background: radial-gradient(circle, rgba(0,212,255,0.2) 0%, transparent 70%); top: 40%; right: 10%; animation: float3 12s ease-in-out infinite alternate; }
-    @keyframes float1 { from{transform:translate(0,0)} to{transform:translate(40px,30px)} }
-    @keyframes float2 { from{transform:translate(0,0)} to{transform:translate(-30px,-40px)} }
-    @keyframes float3 { from{transform:translate(0,0)} to{transform:translate(-20px,20px)} }
-    
-    .gold-dust { position: fixed; width: 3px; height: 3px; background: #FFD700; border-radius: 50%; pointer-events: none; z-index: 2; animation: dustFloat 6s linear infinite; opacity: 0.6; }
-    @keyframes dustFloat { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.6; } 90% { opacity: 0.6; } 100% { transform: translateY(-100px) rotate(720deg); opacity: 0; } }
-    
-    .save-bar { 
-      position:fixed; 
-      top:0; 
-      left:0; 
-      right:0; 
-      height:50px; 
-      background: rgba(15,15,26,0.95); 
-      backdrop-filter: blur(10px); 
-      border-bottom:1px solid rgba(255,215,0,0.3); 
-      display:flex; 
-      align-items:center; 
-      justify-content:space-between; 
-      padding:0 10px; 
-      z-index:200; 
-    }
-    .save-left { display:flex; align-items:center; gap:8px; }    .game-logo { font-size:14px; font-weight:700; color:#FFD700; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
-    .save-status { display:flex; align-items:center; gap:5px; font-size:10px; color:#555577; }
-    .save-dot { width:7px; height:7px; border-radius:50%; background:#555577; transition: 0.2s; }
-    .save-dot.active { background:#10B981; box-shadow: 0 0 8px #10B981; }
-    
-    .save-actions { 
-      display:flex; 
-      align-items:center; 
-      gap:6px; 
-      overflow-x:auto; 
-      padding:4px;
-    }
-    .sbar-btn { 
-      background:#1E1E2E; 
-      border:1px solid #2A2A40; 
-      border-radius:8px; 
-      padding:8px 12px; 
-      color:#9999BB; 
-      font-size:11px; 
-      cursor:pointer; 
-      transition: 0.2s; 
-      display:flex; 
-      align-items:center; 
-      justify-content:center;
-      gap:4px; 
-      font-weight:bold;
-      white-space:nowrap;
-      flex-shrink:0;
-    }
-    .sbar-btn:hover { border-color: #FFD700; color: #FFD700; transform: scale(1.05); }
-    .sbar-btn.active { border-color:#9F67FF; color:#9F67FF; box-shadow:0 0 15px rgba(159,103,255,0.5); background:rgba(159,103,255,0.2); }
-    
-    .toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:#1E1E2E; border:1px solid #FFD700; border-radius:12px; padding:10px 18px; font-size:13px; opacity:0; transition:0.3s; z-index:999; box-shadow: 0 4px 20px rgba(255,215,0,0.3); }
-    .toast.show { opacity:1; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>لعبة ستروب - Stroop Effect</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
 
-    .tab-bar { position:fixed; bottom:0; left:0; right:0; display:flex; background: rgba(15,15,26,0.95); backdrop-filter: blur(10px); border-top:1px solid rgba(255,215,0,0.2); z-index:100; }
-    .tab-btn { flex:1; display:flex; flex-direction:column; align-items:center; padding:10px; background:none; border:none; color:#555577; font-size:11px; cursor:pointer; transition: 0.2s; }
-    .tab-btn:hover { color: #FFD700; }
-    .tab-btn.active { color:#FFD700; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
-    
-    .screen { display:none; padding:60px 16px 90px; min-height:100vh; position: relative; z-index: 10; width: 100%; max-width: 100%; }
-    .screen.active { display:block; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: none; }
 
-    #screen-home { display:flex; flex-direction:column; align-items:center; gap:20px; padding-top:80px; }
-    .coin-count { font-size:52px; font-weight:700; color:#FFD700; text-shadow: 0 0 20px rgba(255,215,0,0.6), 0 0 40px rgba(255,215,0,0.3); animation: coinGlow 2s ease-in-out infinite alternate; }
-    @keyframes coinGlow { from { text-shadow: 0 0 20px rgba(255,215,0,0.4); } to { text-shadow: 0 0 30px rgba(255,215,0,0.8), 0 0 60px rgba(255,215,0,0.4); } }
-    
-    .coin-btn { position:relative; width:200px; height:200px; border-radius:50%; background: linear-gradient(145deg, #FFD700, #FFA500); border: 3px solid rgba(255,255,255,0.3); cursor:pointer; box-shadow: 0 0 60px rgba(255,215,0,0.5), inset 0 -5px 20px rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:center; outline:none; overflow: visible; margin: 20px auto; }
-    .coin-btn:active { transform: scale(0.95); box-shadow: 0 0 40px rgba(255,215,0,0.3), inset 0 -5px 20px rgba(0,0,0,0.2); }
-    .coin-btn.active-bot { box-shadow: 0 0 80px #9F67FF, inset 0 -5px 20px rgba(0,0,0,0.2); animation: pulse 0.5s infinite; background: linear-gradient(145deg, #9F67FF, #7B4CD6); }    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(0.95); } 100% { transform: scale(1); } }
-    
-    .float-text { position:fixed; font-size:22px; font-weight:700; color:#FFD700; pointer-events:none; z-index:999; animation:floatUp 0.9s ease forwards; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-    @keyframes floatUp { 0%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(-80px)} }
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: #050508;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            user-select: none;
+            color: white;
+            position: relative;
+        }
 
-    .particle { position: fixed; width: 8px; height: 8px; border-radius: 50%; pointer-events: none; z-index: 998; animation: particleFly 0.6s ease-out forwards; }
-    @keyframes particleFly { 0% { opacity: 1; transform: translate(0, 0) scale(1); } 100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); } }
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(0,229,255,0.04) 0%, transparent 50%);
+            animation: bgRotate 25s linear infinite;
+            z-index: -1;
+            pointer-events: none;
+        }
+        @keyframes bgRotate { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
 
-    .sparkle { position: fixed; width: 4px; height: 4px; background: #FFD700; border-radius: 50%; pointer-events: none; z-index: 997; box-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700; animation: sparkleFade 0.5s ease-out forwards; }
-    @keyframes sparkleFade { 0% { opacity: 1; transform: scale(1) translate(0, 0); } 100% { opacity: 0; transform: scale(0) translate(var(--sx), var(--sy)); } }
+        /* ===== MAIN MENU ===== */
+        .main-menu {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at center, #0a0a2e 0%, #050508 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            gap: 20px;
+            padding: 20px;            transition: opacity 0.3s;
+        }
+        .main-menu.hidden { display: none !important; }
+        .menu-title {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00e5ff, #ff6ec7, #ffea00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+            text-align: center;
+        }
+        @keyframes titleGlow {
+            0% { filter: drop-shadow(0 0 10px rgba(0,229,255,0.5)); }
+            50% { filter: drop-shadow(0 0 20px rgba(255,110,199,0.5)); }
+            100% { filter: drop-shadow(0 0 10px rgba(255,234,0,0.5)); }
+        }
 
-    .crown-popup { position: fixed; font-size: 36px; pointer-events: none; z-index: 1000; animation: crownPop 0.6s ease forwards; text-shadow: 0 0 20px rgba(255,215,0,0.8); }
-    @keyframes crownPop { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 30% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; } 70% { transform: translate(-50%, -70px) scale(1); opacity: 1; } 100% { transform: translate(-50%, -100px) scale(0.8); opacity: 0; } }
+        .menu-subtitle {
+            color: rgba(255,255,255,0.5);
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
 
-    .combo-trail { position: fixed; width: 6px; height: 6px; border-radius: 50%; pointer-events: none; z-index: 996; animation: trailFade 0.8s ease-out forwards; }
-    @keyframes trailFade { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0) translateY(-40px); } }
+        .menu-section {
+            width: 100%;
+            max-width: 350px;
+            margin-bottom: 10px;
+        }
+        .menu-section h3 {
+            color: rgba(255,255,255,0.7);
+            font-size: 1rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
 
-    .celebration { position: fixed; pointer-events: none; z-index: 1001; display: flex; flex-direction: column; align-items: center; animation: celebrate 0.8s ease forwards; }
-    @keyframes celebrate { 0% { transform: scale(0); opacity: 0; } 20% { transform: scale(1.2); opacity: 1; } 80% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.9); opacity: 0; } }
-    .celebration-text { font-size: 32px; font-weight: 900; background: linear-gradient(45deg, #FFD700, #FF6B00, #9F67FF, #00D4FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: none; animation: rainbow 1s linear infinite; }
-    @keyframes rainbow { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+        .option-group {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
 
-    .crystal { position: fixed; width: 10px; height: 10px; background: linear-gradient(135deg, #00D4FF, #9F67FF, #FF69B4); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); pointer-events: none; z-index: 995; animation: crystalFloat 0.7s ease-out forwards; box-shadow: 0 0 15px rgba(159,103,255,0.6); }
-    @keyframes crystalFloat { 0% { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1); } 100% { opacity: 0; transform: translate(var(--cx), var(--cy)) rotate(180deg) scale(0.3); } }
+        .option-btn {
+            padding: 10px 20px;
+            border: 2px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.7);
+            border-radius: 12px;
+            font-family: 'Tajawal', sans-serif;            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            user-select: none;
+        }
+        .option-btn:hover { border-color: rgba(0,229,255,0.5); color: white; }
+        .option-btn.selected {
+            border-color: #00e5ff;
+            background: rgba(0,229,255,0.15);
+            color: #00e5ff;
+            box-shadow: 0 0 15px rgba(0,229,255,0.2);
+        }
 
-    .coin-spin { position: fixed; font-size: 24px; pointer-events: none; z-index: 994; animation: spinFly 0.8s ease-out forwards; }
-    @keyframes spinFly { 0% { opacity: 1; transform: translate(0, 0) rotateY(0deg) scale(1); } 100% { opacity: 0; transform: translate(var(--sx), -60px) rotateY(720deg) scale(0.3); } }
+        .start-btn {
+            padding: 18px 60px;
+            font-size: 1.5rem;
+            font-weight: 900;
+            font-family: 'Tajawal', sans-serif;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #00e5ff, #7c4dff);
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(0,229,255,0.3);
+            transition: all 0.3s;
+            margin-top: 20px;
+            animation: startPulse 2s ease-in-out infinite;
+            user-select: none;
+        }
+        @keyframes startPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .start-btn:hover { transform: scale(1.1) translateY(-3px); box-shadow: 0 15px 50px rgba(0,229,255,0.5); }
+        .start-btn:active { transform: scale(0.98); }
 
-    .confetti { position: fixed; width: 8px; height: 12px; pointer-events: none; z-index: 993; animation: confettiFall 1.2s ease-out forwards; }
-    @keyframes confettiFall { 0% { opacity: 1; transform: translate(0, 0) rotate(0deg); } 100% { opacity: 0; transform: translate(var(--fx), var(--fy)) rotate(720deg); } }
+        .menu-emoji {
+            font-size: 4rem;
+            margin-bottom: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
 
-    .upgrade-card { display:flex; align-items:center; gap:14px; background:#1E1E2E; border-radius:16px; padding:14px; border:1px solid #2A2A40; margin-bottom:10px; cursor:pointer; transition: 0.2s; }
-    .upgrade-card.affordable { border-color:#FFD700; box-shadow: 0 0 15px rgba(255,215,0,0.2); }
-    .upgrade-card:hover { background: #252535; }
-    .upgrade-card.active-now { border-color:#9F67FF; background:rgba(159,103,255,0.15); pointer-events:none; opacity: 0.7; box-shadow: 0 0 20px rgba(159,103,255,0.3); }
-    .upgrade-icon { width:52px; height:52px; border-radius:14px; background: linear-gradient(145deg, #2A2A40, #1C1C28); display:flex; align-items:center; justify-content:center; font-size:26px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
-    .upgrade-info { flex:1; }
-    .timer-bar { height:4px; background:#1C1C28; border-radius:2px; margin-top:8px; overflow:hidden; display:none; }
-    .timer-fill { height:100%; background: linear-gradient(90deg, #9F67FF, #00D4FF); width:100%; }
-    .level-badge { font-size: 10px; background: linear-gradient(145deg, #2A2A40, #1C1C28); padding: 2px 6px; border-radius: 4px; color: #FFD700; border: 1px solid #FFD700; }
-    .stat-card { background:#1E1E2E; border-radius:16px; padding:16px; border:1px solid #2A2A40; margin-bottom:16px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-    .stat-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #1C1C28; font-size:14px; }
-    .reset-btn { width:100%; background:rgba(239,68,68,0.1); border:1px solid #EF4444; color:#EF4444; padding:14px; border-radius:14px; cursor:pointer; transition: 0.2s; }
-    .reset-btn:hover { background: rgba(239,68,68,0.2); }
-    
-    .controls-toggle { position: fixed; top: 60px; left: 14px; display: flex; flex-direction: column; gap: 8px; z-index: 150; }
-    .control-btn { width: 36px; height: 36px; border-radius: 50%; background: #1E1E2E; border: 1px solid #2A2A40; color: #9999BB; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-    .control-btn:hover { border-color: #FFD700; color: #FFD700; }
-    .control-btn.muted { color: #EF4444; border-color: #EF4444; }
-    /* Modal لعبة الأشكال السحرية */
-    #magic-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; flex-direction: column; touch-action: none; }
-    #magic-modal.active { display: flex; }
-    #magic-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: rgba(30,30,50,0.95); border-bottom: 1px solid rgba(255,215,0,0.2); }
-    #magic-title { color: #FFD700; font-weight: bold; font-size: 16px; }
-    #magic-close { background: rgba(239,68,68,0.2); border: 1px solid #EF4444; color: #fff; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; }
-    #magic-close:hover { background: rgba(239,68,68,0.4); }
-    #magic-canvas { flex: 1; width: 100%; height: 100%; display: block; touch-action: none; }
-    #magic-ui { position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 98%; z-index: 50; padding: 8px 12px; background: rgba(0,0,0,0.4); border-radius: 20px; backdrop-filter: blur(10px); pointer-events: auto; }
-    .magic-btn { background: linear-gradient(145deg, #fff, #ddd); border: none; border-radius: 50%; width: 42px; height: 42px; font-size: 22px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.05s; display: flex; align-items: center; justify-content: center; }
-    .magic-btn:active { transform: scale(0.8); }
-    #magic-stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-    #magic-flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; z-index: 100; transition: opacity 0.1s; }
-    #magic-hint { position: fixed; top: 60px; width: 100%; text-align: center; color: #fff; font-size: 13px; opacity: 0.8; pointer-events: none; z-index: 10; text-shadow: 0 1px 3px rgba(0,0,0,0.5); animation: magicHintFade 5s forwards; }
-    @keyframes magicHintFade { 70% {opacity:0.8} 100% {opacity:0} }
+        /* ===== GAME OVER ===== */
+        .game-over {
+            position: fixed;            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92);
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 2500;
+            padding: 20px;
+        }
+        .game-over.hidden { display: none !important; }
 
-    /* Modal لعبة تحدي العباقرة */
-    #genius-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; overflow-y: auto; }
-    #genius-modal.active { display: block; }
-    #genius-content { max-width: 480px; margin: 0 auto; padding: 20px; }
-    .g-header { position: sticky; top: 0; background: #1a1a2e; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,215,0,0.2); z-index: 10; }
-    .g-close { background: rgba(239,68,68,0.3); border: 1px solid #EF4444; color: #fff; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; }
-    .g-title { color: #FFD700; font-weight: bold; font-size: 16px; }
+        .game-over h2 {
+            font-size: 2.5rem;
+            color: #ff5252;
+        }
 
-    /* ========== Modal رسائل الظلام ========== */
-    #dark-messages-modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #000;
-      z-index: 5000;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    #dark-messages-modal.active { display: flex; }
-    
-    /* Dark Messages Game Styles (Scoped) */
-    .dm-game * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
-    .dm-game {
-      font-family: 'Courier New', monospace;
-      background: #000;
-      color: #fff;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      position: relative;
-    }    .dm-phone {
-      width: 100%;
-      height: 100%;
-      max-width: 450px;
-      margin: 0 auto;
-      background: linear-gradient(180deg, #0a0a0a 0%, #1a0a0a 100%);
-      position: relative;
-      display: flex;
-      flex-direction: column;
-    }
-    .dm-status-bar {
-      background: #000;
-      padding: 10px 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #333;
-      font-size: 13px;
-    }
-    .dm-battery-container { display: flex; align-items: center; gap: 5px; }
-    .dm-battery-icon {
-      width: 28px; height: 14px; border: 2px solid #fff;
-      border-radius: 3px; position: relative; padding: 2px;
-    }
-    .dm-battery-icon::after {
-      content: ''; position: absolute; right: -4px; top: 50%;
-      transform: translateY(-50%); width: 3px; height: 6px; background: #fff;
-    }
-    .dm-battery-fill { height: 100%; background: #0f0; transition: all 0.3s; }
-    .dm-battery-fill.warning { background: #ff0; }
-    .dm-battery-fill.critical { background: #f00; animation: dm-pulse 0.5s infinite; }
-    @keyframes dm-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-    
-    .dm-chat-header {
-      background: #111; padding: 15px; display: flex;
-      align-items: center; gap: 12px; border-bottom: 1px solid #333;
-    }
-    .dm-avatar {
-      width: 45px; height: 45px; background: #333; border-radius: 50%;
-      display: flex; justify-content: center; align-items: center;
-      font-size: 24px; position: relative;
-    }
-    .dm-avatar.danger::after {
-      content: ''; position: absolute; width: 100%; height: 100%;
-      border-radius: 50%; border: 3px solid #f00;
-      animation: dm-borderPulse 1s infinite;
-    }
-    @keyframes dm-borderPulse { 0%, 100% { border-color: #f00; } 50% { border-color: #900; } }
-    .dm-contact-info { flex: 1; }
-    .dm-contact-name { font-weight: bold; font-size: 16px; }    .dm-contact-status { font-size: 12px; color: #666; margin-top: 3px; }
-    .dm-contact-status.danger { color: #f00; }
-    
-    .dm-chat-area {
-      flex: 1; overflow-y: auto; padding: 15px;
-      display: flex; flex-direction: column; gap: 12px;
-      background: #050505;
-    }
-    .dm-message {
-      max-width: 85%; padding: 12px 16px; border-radius: 18px;
-      font-size: 14px; line-height: 1.6; animation: dm-slideIn 0.3s ease;
-      position: relative;
-    }
-    @keyframes dm-slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .dm-message.received { background: #1a1a1a; color: #eee; align-self: flex-start; border: 1px solid #333; }
-    .dm-message.sent { background: linear-gradient(135deg, #8b0000 0%, #5c0000 100%); color: #fff; align-self: flex-end; }
-    .dm-message.system { background: transparent; color: #f66; align-self: center; font-size: 12px; font-style: italic; text-align: center; }
-    .dm-message.typing { background: #1a1a1a; color: #888; align-self: flex-start; }
-    .dm-typing-dots { display: flex; gap: 4px; }
-    .dm-typing-dots span {
-      width: 6px; height: 6px; background: #888; border-radius: 50%;
-      animation: dm-typing 1.4s infinite;
-    }
-    .dm-typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-    .dm-typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes dm-typing { 0%, 100% { transform: translateY(0); opacity: 0.4; } 50% { transform: translateY(-5px); opacity: 1; } }
-    
-    .dm-choices-area {
-      padding: 15px; background: #111; display: flex;
-      flex-direction: column; gap: 10px; border-top: 1px solid #333;
-      max-height: 250px; overflow-y: auto;
-    }
-    .dm-choice-btn {
-      background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
-      border: 1px solid #8b0000; color: #fff; padding: 14px 20px;
-      border-radius: 12px; cursor: pointer; font-size: 14px;
-      transition: all 0.3s; text-align: right;
-    }
-    .dm-choice-btn:hover { background: linear-gradient(135deg, #8b0000 0%, #5c0000 100%); transform: scale(1.02); }
-    .dm-choice-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .dm-hidden { display: none !important; }
-    
-    .dm-screen-overlay {
-      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-      pointer-events: none; z-index: 500; opacity: 0;
-    }
-    .dm-screen-overlay.flash { animation: dm-flashAnim 0.2s; }
-    @keyframes dm-flashAnim { 0%, 100% { background: transparent; } 50% { background: #f00; opacity: 0.3; } }
-    
-    .dm-glitch { animation: dm-glitchAnim 0.3s infinite; }    @keyframes dm-glitchAnim {
-      0% { transform: translate(0); filter: hue-rotate(0deg); }
-      25% { transform: translate(-3px, 3px); filter: hue-rotate(90deg); }
-      50% { transform: translate(3px, -3px); filter: hue-rotate(180deg); }
-      75% { transform: translate(-3px, -3px); filter: hue-rotate(270deg); }
-      100% { transform: translate(0); filter: hue-rotate(360deg); }
-    }
-    
-    .dm-start-screen {
-      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-      background: #000; display: flex; flex-direction: column;
-      justify-content: center; align-items: center; z-index: 2000;
-      padding: 30px;
-    }
-    .dm-start-screen h1 { color: #f00; font-size: 28px; margin-bottom: 10px; text-shadow: 0 0 20px #f00; }
-    .dm-start-screen p { color: #666; margin-bottom: 30px; text-align: center; line-height: 1.8; }
-    .dm-start-screen button {
-      background: #8b0000; border: none; color: #fff;
-      padding: 15px 50px; border-radius: 30px; cursor: pointer; font-size: 18px;
-    }
-    
-    .dm-timestamp { font-size: 10px; color: #666; margin-top: 5px; text-align: left; }
-    .dm-blood-drip {
-      position: absolute; width: 4px; background: linear-gradient(180deg, #8b0000 0%, #300 100%);
-      border-radius: 2px; animation: dm-drip 4s infinite; z-index: 600;
-    }
-    @keyframes dm-drip { 0% { height: 0; top: -50px; opacity: 1; } 100% { height: 200px; top: 0; opacity: 0.5; } }
-    
-    .dm-chapter-indicator {
-      background: #1a1a1a; padding: 8px 15px; text-align: center;
-      font-size: 12px; color: #666; border-bottom: 1px solid #333;
-    }
-    .dm-chapter-indicator span { color: #f00; }
-    
-    .dm-photo-attachment {
-      background: #1a1a1a; border-radius: 10px; overflow: hidden;
-      margin-top: 8px; border: 1px solid #333;
-    }
-    .dm-photo-placeholder {
-      width: 100%; height: 120px;
-      background: linear-gradient(45deg, #111 25%, #222 25%, #222 50%, #111 50%, #111 75%, #222 75%, #222 100%);
-      background-size: 20px 20px; display: flex; justify-content: center;
-      align-items: center; font-size: 40px; filter: grayscale(100%) contrast(120%);
-    }
-    .dm-photo-caption { padding: 10px; font-size: 12px; color: #888; text-align: center; }
-    .dm-warning-box {
-      background: #1a0a0a; border: 1px solid #f00; padding: 15px;
-      border-radius: 10px; margin: 10px; color: #f66; font-size: 13px;
-    }
-    .dm-final-message {      background: linear-gradient(135deg, #300 0%, #100 100%);
-      border: 2px solid #f00; animation: dm-finalPulse 2s infinite;
-    }
-    @keyframes dm-finalPulse { 0%, 100% { box-shadow: 0 0 10px #f00; } 50% { box-shadow: 0 0 30px #f00; } }
-    
-    .dm-restart-btn {
-      background: #8b0000; border: none; color: #fff;
-      padding: 15px 40px; border-radius: 25px; cursor: pointer;
-      font-size: 16px; margin: 20px; align-self: center;
-    }
-    
-    .dm-close-btn {
-      position: absolute; top: 10px; left: 10px;
-      background: rgba(239,68,68,0.8); border: 1px solid #EF4444;
-      color: #fff; padding: 8px 16px; border-radius: 8px;
-      cursor: pointer; font-size: 12px; z-index: 3000;
-    }
-    .dm-close-btn:hover { background: rgba(239,68,68,1); }
+        .final-score-display {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #00e5ff;
+            text-shadow: 0 0 30px rgba(0,229,255,0.5);
+        }
 
-    @media (max-width: 480px) {
-      .save-bar { height: 50px; padding: 0 8px; }
-      .game-logo { font-size: 13px; }
-      .save-status { display: none; }
-      .sbar-btn { padding: 8px 10px; font-size: 10px; }
-      .sbar-btn span { display: none; }
-    }
-  </style>
+        .stats-row {
+            display: flex;
+            gap: 20px;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.95rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* ===== GAME UI ===== */
+        .timer-bar {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 5px;
+            background: rgba(255,255,255,0.08);
+            z-index: 50;
+            pointer-events: none;
+        }
+        .timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00e5ff, #7c4dff);
+            transition: width 0.1s linear;
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(0,229,255,0.4);        }
+        .timer-fill.urgent {
+            background: linear-gradient(90deg, #ff1744, #ff6d00);
+            box-shadow: 0 0 20px rgba(255,23,68,0.6);
+            animation: urgentPulse 0.4s infinite alternate;
+        }
+        @keyframes urgentPulse {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .header {
+            width: 100%;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            z-index: 10;
+            pointer-events: none;
+        }
+        .score-val { color: #00e5ff; font-size: 1.6rem; font-weight: 900; }
+        .timer-val { color: #ffab40; font-size: 1.4rem; font-weight: 900; }
+        .combo-badge {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            background: rgba(255,234,0,0.15);
+            border: 1px solid rgba(255,234,0,0.4);
+            color: #ffea00;
+            opacity: 0;
+            transition: all 0.3s;
+            pointer-events: none;
+        }
+        .combo-badge.show { opacity: 1; }
+
+        .word-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            pointer-events: none;
+        }
+
+        .word {
+            font-size: 4rem;            font-weight: 900;
+            text-align: center;
+            animation: wordPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: drop-shadow(0 0 15px currentColor);
+            position: relative;
+            pointer-events: none;
+        }
+        @keyframes wordPop {
+            0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .colors-container {
+            width: 100%;
+            height: 160px;
+            display: flex;
+            position: relative;
+            margin-bottom: 20px;
+            direction: ltr !important;
+            pointer-events: none;
+        }
+
+        .color-bar {
+            flex: 1;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, filter 0.2s;
+            pointer-events: none;
+        }
+        .color-bar::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 40%);
+            pointer-events: none;
+        }
+        .color-bar.blue { background: #2979ff; }
+        .color-bar.red { background: #ff1744; }
+        .color-bar.yellow { background: #ffea00; }
+        .color-bar.green { background: #00e676; }
+        .color-bar.orange { background: #ff9100; }
+        .color-bar.purple { background: #d500f9; }
+
+        .color-bar.shuffling {
+            animation: barShuffle 0.6s ease-in-out;
+        }
+        @keyframes barShuffle {
+            0% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(-5deg); }            50% { transform: translateY(10px) rotate(3deg); }
+            75% { transform: translateY(-5px) rotate(-2deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+
+        .slider {
+            position: absolute;
+            bottom: 15px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(145deg, #ffffff, #e0e0e0);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 2px 8px rgba(255,255,255,0.9);
+            cursor: grab;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+            touch-action: pan-x;
+        }
+        .slider:active { cursor: grabbing; }
+        .slider::before {
+            content: '';
+            width: 30px; height: 30px;
+            background: linear-gradient(145deg, #f8f9fa, #ced4da);
+            border-radius: 6px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Screen Flash */
+        #screenFlash {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none; z-index: 50;
+            transition: background-color 0.15s;
+        }
+
+        /* Feedback */
+        .feedback {
+            position: fixed;
+            top: 40%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            font-weight: 900;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+        }
+        .feedback.show { animation: feedbackPop 0.7s ease-out; }        @keyframes feedbackPop {
+            0% { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -80%) scale(0.8); opacity: 0; }
+        }
+
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            border-radius: 50%;
+            z-index: 500;
+        }
+
+        /* Distractor: Rock */
+        .rock {
+            position: fixed;
+            z-index: 80;
+            pointer-events: none;
+            font-size: 2rem;
+        }
+        /* Distractor: Confusion Text */
+        .confusion-text {
+            position: fixed;
+            z-index: 70;
+            pointer-events: none;
+            font-weight: 900;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        /* Urgent Warning */
+        .urgent-warning {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: 900;
+            color: #ff1744;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            text-shadow: 0 0 30px rgba(255,23,68,0.8);
+            animation: none;
+        }
+        .urgent-warning.show {
+            animation: warningFlash 0.6s ease-out;
+        }
+        @keyframes warningFlash {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+        }
+
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        @media (max-width: 768px) {
+            .menu-title { font-size: 2.2rem; }
+            .word { font-size: 2.8rem; }
+            .colors-container { height: 130px; }
+            .slider { width: 40px; height: 40px; bottom: 10px; }
+            .start-btn { padding: 15px 40px; font-size: 1.2rem; }
+            .final-score-display { font-size: 3rem; }
+        }
+    </style>
 </head>
 <body>
 
-<div class="stars" id="stars"></div>
-<div class="orb orb1"></div>
-<div class="orb orb2"></div>
-<div class="orb orb3"></div>
-<div id="gold-dust-container"></div>
+    <div id="screenFlash"></div>
+    <div class="urgent-warning" id="urgentWarning">⏰ وقت قليل!</div>
 
-<div class="controls-toggle">
-  <button class="control-btn" id="sound-toggle" onclick="toggleSound()">🔊</button>
-  <button class="control-btn" id="effects-toggle" onclick="toggleEffects()">✨</button>
-</div>
+    <!-- MAIN MENU -->
+    <div class="main-menu" id="mainMenu">
+        <div class="menu-emoji">🎨</div>
+        <div class="menu-title">لعبة ستروب</div>
+        <div class="menu-subtitle">اختار مستوى الصعوبة</div>
 
-<div class="save-bar">
-  <div class="save-left">
-    <span class="game-logo">👑 King Tap</span>
-    <div class="save-status">
-      <div class="save-dot" id="save-dot"></div>
-      <span id="save-label">المزامنة فورية</span>
-    </div>
-  </div>
-  <div class="save-actions">    <button class="sbar-btn" id="genius-btn" onclick="openGeniusGame()" title="تحدي">🧠</button>
-    <button class="sbar-btn" onclick="openMagicGame()" title="أشكال">✨</button>
-    <button class="sbar-btn" onclick="openDarkMessages()" title="رسائل الظلام">👁️</button>
-    <button class="sbar-btn" onclick="openImport()" title="استيراد">📥</button>
-    <button class="sbar-btn" onclick="openExport()" title="تصدير">📤</button>
-  </div>
-</div>
-
-<div id="screen-home" class="screen active">
-  <div class="coin-count" id="coin-display">0</div>
-  <div style="color:#9999BB; margin-bottom:10px;">عملة ذهبية</div>
-  <div id="active-status" style="height:20px; color:#9F67FF; font-weight:bold; font-size:14px;"></div>
-  <button class="coin-btn" id="coin-btn">
-    <div style="font-size:70px">★</div>
-  </button>
-  <div style="margin-top:20px; display:flex; flex-direction:column; align-items:center; gap:10px;">
-    <div>🖱️ قوة النقرة: <span id="cpc-display" style="color:#FFD700; font-weight:bold;">1</span></div>
-    <div id="combo-display" style="height:20px; color:#9F67FF; font-size:14px; font-weight:bold;"></div>
-  </div>
-</div>
-
-<div id="screen-upgrades" class="screen">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-    <h2>🏪 المتجر الملكي</h2>
-    <div style="color:#FFD700; font-weight:bold;">🪙 <span id="upgrades-coin-display">0</span></div>
-  </div>
-  <div id="upgrades-list"></div>
-</div>
-
-<div id="screen-stats" class="screen">
-  <div class="stat-card">
-    <h3 style="margin-bottom:10px; color:#555577">📊 إحصائيات التقدم</h3>
-    <div class="stat-row"><span>الرصيد المتوفر:</span><span id="s-coins" style="color:#FFD700">0</span></div>
-    <div class="stat-row"><span>إجمالي الأرباح التاريخية:</span><span id="s-total">0</span></div>
-    <div class="stat-row"><span>عدد النقرات اليدوية:</span><span id="s-clicks">0</span></div>
-    <div class="stat-row"><span>قوة النقرة الحالية:</span><span id="s-cpc">1</span></div>
-    <div class="stat-row"><span>مرات تفعيل المساعدين:</span><span id="s-used-bots">0</span></div>
-  </div>
-  <button class="reset-btn" onclick="resetGame()">🔄 تصفير اللعبة بالكامل</button>
-</div>
-
-<nav class="tab-bar">
-  <button class="tab-btn active" onclick="switchTab('home', this)">🖱️<br>النقر</button>
-  <button class="tab-btn" onclick="switchTab('upgrades', this)">⚡<br>المتجر</button>
-  <button class="tab-btn" onclick="switchTab('stats', this)">📊<br>الإحصائيات</button>
-</nav>
-<div class="toast" id="toast"></div>
-
-<!-- Modal لعبة الأشكال السحرية -->
-<div id="magic-modal">  <div id="magic-header">
-    <span id="magic-title">🌟 الأشكال السحرية</span>
-    <button id="magic-close" onclick="closeMagicGame()">✕ إغلاق</button>
-  </div>
-  <div id="magic-hint">✋ اسحب إصبعك للرسم</div>
-  <canvas id="magic-canvas"></canvas>
-  <div id="magic-stars"></div>
-  <div id="magic-flash"></div>
-  <div id="magic-ui">
-    <button class="magic-btn" onclick="magicSpawn('❤️')">❤️</button>
-    <button class="magic-btn" onclick="magicSpawn('⭐')">⭐</button>
-    <button class="magic-btn" onclick="magicSpawn('🔷')">🔷</button>
-    <button class="magic-btn" onclick="magicSpawn('🌸')">🌸</button>
-    <button class="magic-btn" onclick="magicSpawn('😊')">😊</button>
-    <button class="magic-btn" onclick="magicSpawn('🚀')">🚀</button>
-    <button class="magic-btn" onclick="magicBurst()">💥</button>
-    <button class="magic-btn" onclick="magicClear()">🗑️</button>
-  </div>
-</div>
-
-<!-- Modal لعبة تحدي العباقرة -->
-<div id="genius-modal">
-  <div class="g-header">
-    <span class="g-title">🧠 تحدي العباقرة</span>
-    <button class="g-close" onclick="closeGeniusGame()">🔙 خروج</button>
-  </div>
-  <div id="genius-content"></div>
-</div>
-
-<!-- ========== Modal رسائل الظلام ========== -->
-<div id="dark-messages-modal">
-  <button class="dm-close-btn" onclick="closeDarkMessages()">🔙 خروج</button>
-  <div class="dm-game" id="dm-game-container">
-    <!-- Dark Messages Game Content -->
-    <div class="dm-start-screen" id="dm-startScreen">
-      <h1>📱 رسائل الظلام</h1>
-      <p>محادثة رعب تفاعلية كاملة<br>المدة: 10+ دقائق<br>خيارات مستمرة طوال التجربة<br>⚠️ تحذير: محتوى مرعب جداً</p>
-      <button onclick="dmStartGame()">ابدأ المحادثة</button>
-    </div>
-
-    <div class="dm-phone" id="dm-phone">
-      <div class="dm-status-bar">
-        <span>📶</span>
-        <span id="dm-clock">12:00 ص</span>
-        <div class="dm-battery-container">
-          <span id="dm-batteryPercent">100%</span>
-          <div class="dm-battery-icon">
-            <div class="dm-battery-fill" id="dm-batteryFill"></div>
-          </div>
-        </div>      </div>
-
-      <div class="dm-chapter-indicator">
-        الفصل <span id="dm-chapterNum">1</span> من 10
-      </div>
-
-      <div class="dm-chat-header">
-        <div class="dm-avatar" id="dm-avatar">👤</div>
-        <div class="dm-contact-info">
-          <div class="dm-contact-name" id="dm-contactName">رقم مجهول</div>
-          <div class="dm-contact-status" id="dm-contactStatus">متصل الآن</div>
+        <div class="menu-section">
+            <h3>⚡ مستوى الصعوبة</h3>
+            <div class="option-group" id="difficultyGroup">
+                <button class="option-btn" data-diff="easy" onclick="selectDiff('easy', this)">😊 سهل</button>
+                <button class="option-btn selected" data-diff="medium" onclick="selectDiff('medium', this)">😤 متوسط</button>
+                <button class="option-btn" data-diff="hard" onclick="selectDiff('hard', this)">🔥 صعب</button>
+                <button class="option-btn" data-diff="insane" onclick="selectDiff('insane', this)">💀 مجنون</button>
+            </div>
         </div>
-      </div>
 
-      <div class="dm-chat-area" id="dm-chatArea"></div>
-      <div class="dm-choices-area dm-hidden" id="dm-choicesArea"></div>
-      <div class="dm-screen-overlay" id="dm-screenOverlay"></div>
+        <div class="menu-section">
+            <h3>⏱️ الوقت</h3>
+            <div class="option-group" id="timeGroup">
+                <button class="option-btn" data-time="15" onclick="selectTime(15, this)">15 ثانية</button>
+                <button class="option-btn selected" data-time="10" onclick="selectTime(10, this)">10 ثواني</button>
+                <button class="option-btn" data-time="20" onclick="selectTime(20, this)">20 ثانية</button>
+                <button class="option-btn" data-time="30" onclick="selectTime(30, this)">30 ثانية</button>
+            </div>        </div>
+
+        <div class="menu-section">
+            <h3>🎨 عدد الألوان</h3>
+            <div class="option-group" id="colorsGroup">
+                <button class="option-btn" data-count="3" onclick="selectColors(3, this)">3 ألوان</button>
+                <button class="option-btn selected" data-count="4" onclick="selectColors(4, this)">4 ألوان</button>
+                <button class="option-btn" data-count="5" onclick="selectColors(5, this)">5 ألوان</button>
+            </div>
+        </div>
+
+        <button class="start-btn" onclick="startGame()">🚀 ابدأ اللعب</button>
     </div>
-  </div>
-</div>
 
-<script>
-// ========== King Tap Game Code ==========
-const SoundManager = {
-  ctx: null, enabled: true,
-  init() { if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { } } if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume(); },
-  playClick(pitch = 1) { if (!this.enabled || !this.ctx) return; const osc = this.ctx.createOscillator(), gain = this.ctx.createGain(); osc.connect(gain); gain.connect(this.ctx.destination); osc.frequency.value = 880 * pitch; osc.type = 'sine'; gain.gain.setValueAtTime(0.25, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.08); osc.start(); osc.stop(this.ctx.currentTime + 0.08); },
-  playCrystal() { if (!this.enabled || !this.ctx) return; for(let i=0;i<3;i++){setTimeout(()=>{const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.connect(g);g.connect(this.ctx.destination);o.frequency.value=1200+Math.random()*400;o.type='sine';g.gain.setValueAtTime(0.15,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.15);o.start();o.stop(this.ctx.currentTime+0.15);},i*30);} },
-  playCoinSpin() { if(!this.enabled||!this.ctx)return;const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.connect(g);g.connect(this.ctx.destination);o.frequency.setValueAtTime(600,this.ctx.currentTime);o.frequency.exponentialRampToValueAtTime(1000,this.ctx.currentTime+0.2);o.type='triangle';g.gain.setValueAtTime(0.2,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.25);o.start();o.stop(this.ctx.currentTime+0.25); },
-  playCrown() { if(!this.enabled||!this.ctx)return;[523,659,784].forEach((f,i)=>{setTimeout(()=>{const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.connect(g);g.connect(this.ctx.destination);o.frequency.value=f;o.type='sine';g.gain.setValueAtTime(0.2,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.12);o.start();o.stop(this.ctx.currentTime+0.12);},i*80);}); },
-  playCelebration() { if(!this.enabled||!this.ctx)return;[523,659,784,1047].forEach((f,i)=>{setTimeout(()=>{const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.connect(g);g.connect(this.ctx.destination);o.frequency.value=f;o.type='square';g.gain.setValueAtTime(0.12,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.15);o.start();o.stop(this.ctx.currentTime+0.15);},i*100);}); },
-  playBuy() { if(!this.enabled||!this.ctx)return;const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.connect(g);g.connect(this.ctx.destination);o.frequency.setValueAtTime(440,this.ctx.currentTime);o.frequency.exponentialRampToValueAtTime(880,this.ctx.currentTime+0.15);o.type='triangle';g.gain.setValueAtTime(0.25,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.2);o.start();o.stop(this.ctx.currentTime+0.2); },
-  playBotStart() { if(!this.enabled||!this.ctx)return;const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.connect(g);g.connect(this.ctx.destination);o.frequency.setValueAtTime(330,this.ctx.currentTime);o.frequency.exponentialRampToValueAtTime(660,this.ctx.currentTime+0.3);o.type='sine';g.gain.setValueAtTime(0.3,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.35);o.start();o.stop(this.ctx.currentTime+0.35); },
-  playBotEnd() { if(!this.enabled||!this.ctx)return;const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.connect(g);g.connect(this.ctx.destination);o.frequency.setValueAtTime(660,this.ctx.currentTime);o.frequency.exponentialRampToValueAtTime(330,this.ctx.currentTime+0.25);o.type='sine';g.gain.setValueAtTime(0.25,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.3);o.start();o.stop(this.ctx.currentTime+0.3); },
-  playError() { if(!this.enabled||!this.ctx)return;const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.connect(g);g.connect(this.ctx.destination);o.frequency.setValueAtTime(220,this.ctx.currentTime);o.frequency.linearRampToValueAtTime(110,this.ctx.currentTime+0.15);o.type='sawtooth';g.gain.setValueAtTime(0.2,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.2);o.start();o.stop(this.ctx.currentTime+0.2); },
-  playUpgrade() { if(!this.enabled||!this.ctx)return;const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.connect(g);g.connect(this.ctx.destination);o.frequency.setValueAtTime(523,this.ctx.currentTime);o.frequency.exponentialRampToValueAtTime(1047,this.ctx.currentTime+0.1);o.frequency.exponentialRampToValueAtTime(1568,this.ctx.currentTime+0.2);o.type='square';g.gain.setValueAtTime(0.15,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.25);o.start();o.stop(this.ctx.currentTime+0.25); },
-  playBigBoom() { if(!this.enabled||!this.ctx)return;const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.connect(g);g.connect(this.ctx.destination);o.frequency.setValueAtTime(150,this.ctx.currentTime);o.frequency.exponentialRampToValueAtTime(50,this.ctx.currentTime+0.3);o.type='sawtooth';g.gain.setValueAtTime(0.4,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.4);o.start();o.stop(this.ctx.currentTime+0.4); },
-  toggle() { this.enabled = !this.enabled; return this.enabled; }
-};
-
-const EffectsManager = {
-  enabled: true, comboCount: 0, comboTimer: null,
-  colors: ['#FFD700','#FFA500','#FF6B00','#9F67FF','#00D4FF','#FF69B4','#00FFA3'],
-  trailColors: ['#FFD700','#FF6B00','#9F67FF','#00D4FF','#FF69B4'],
-  createParticles(x,y,count=8,isBig=false){if(!this.enabled)return;for(let i=0;i<count;i++){const p=document.createElement('div');p.className='particle';const a=(Math.PI*2*i)/count+Math.random()*0.5,v=isBig?100+Math.random()*80:50+Math.random()*50;const tx=Math.cos(a)*v,ty=Math.sin(a)*v-40;p.style.left=x+'px';p.style.top=y+'px';p.style.background=this.colors[Math.floor(Math.random()*this.colors.length)];p.style.setProperty('--tx',tx+'px');p.style.setProperty('--ty',ty+'px');p.style.width=isBig?'14px':'9px';p.style.height=isBig?'14px':'9px';document.body.appendChild(p);setTimeout(()=>p.remove(),600);}},
-  createSparkles(x,y,count=6){if(!this.enabled)return;for(let i=0;i<count;i++){const s=document.createElement('div');s.className='sparkle';s.style.left=x+'px';s.style.top=y+'px';s.style.setProperty('--sx',((Math.random()-0.5)*80)+'px');s.style.setProperty('--sy',((Math.random()-0.5)*80-50)+'px');s.style.background=this.colors[Math.floor(Math.random()*4)];document.body.appendChild(s);setTimeout(()=>s.remove(),500);}if(SoundManager.enabled)SoundManager.playCrystal();},
-  showCrown(x,y){if(!this.enabled)return;const c=document.createElement('div');c.className='crown-popup';c.textContent='👑';c.style.left=x+'px';c.style.top=y+'px';document.body.appendChild(c);if(SoundManager.enabled)SoundManager.playCrown();setTimeout(()=>c.remove(),600);},
-  createComboTrail(x,y){if(!this.enabled||this.comboCount<3)return;const t=document.createElement('div');t.className='combo-trail';t.style.left=x+'px';t.style.top=y+'px';t.style.background=this.trailColors[this.comboCount%this.trailColors.length];t.style.boxShadow='0 0 10px '+t.style.background;document.body.appendChild(t);setTimeout(()=>t.remove(),800);},
-  createCoinSpins(x,y,count=2){if(!this.enabled)return;for(let i=0;i<count;i++){const c=document.createElement('div');c.className='coin-spin';c.textContent='🪙';c.style.left=x+'px';c.style.top=y+'px';c.style.setProperty('--sx',((Math.random()-0.5)*100)+'px');document.body.appendChild(c);setTimeout(()=>c.remove(),800);}if(SoundManager.enabled)SoundManager.playCoinSpin();},
-  createCrystals(x,y,count=4){if(!this.enabled)return;for(let i=0;i<count;i++){const c=document.createElement('div');c.className='crystal';c.style.left=x+'px';c.style.top=y+'px';c.style.setProperty('--cx',((Math.random()-0.5)*120)+'px');c.style.setProperty('--cy',(-80-Math.random()*60)+'px');document.body.appendChild(c);setTimeout(()=>c.remove(),700);}},  createCelebration(x,y){if(!this.enabled)return;const cel=document.createElement('div');cel.className='celebration';cel.style.left=x+'px';cel.style.top=(y-50)+'px';cel.innerHTML='<div class="celebration-text">✨ رائع! ✨</div>';document.body.appendChild(cel);setTimeout(()=>cel.remove(),800);for(let i=0;i<15;i++){const cf=document.createElement('div');cf.className='confetti';cf.style.left=x+'px';cf.style.top=y+'px';cf.style.background=this.colors[Math.floor(Math.random()*this.colors.length)];cf.style.setProperty('--fx',((Math.random()-0.5)*200)+'px');cf.style.setProperty('--fy',(150+Math.random()*100)+'px');cf.style.transform='rotate('+(Math.random()*360)+'deg)';document.body.appendChild(cf);setTimeout(()=>cf.remove(),1200);}if(SoundManager.enabled)SoundManager.playCelebration();},
-  updateCombo(x,y){this.comboCount++;var cd=document.getElementById('combo-display');if(cd)cd.textContent=this.comboCount>1?'كومبو: '+this.comboCount+'🔥':'';if(this.comboCount>=3)this.showCrown(x,y);if(this.comboCount>=5)this.createComboTrail(x,y);if(this.comboCount>=10)this.createCoinSpins(x,y);if(this.comboCount>=20)this.createCrystals(x,y);if(this.comboCount>=50)this.createCelebration(x,y);var self=this;if(this.comboTimer)clearTimeout(this.comboTimer);this.comboTimer=setTimeout(()=>{self.comboCount=0;var cdd=document.getElementById('combo-display');if(cdd)cdd.textContent='';},2000);},
-  createBigExplosion(x,y){if(!this.enabled)return;this.createParticles(x,y,20,true);this.createSparkles(x,y,10);if(SoundManager.enabled)SoundManager.playBigBoom();},
-  toggle(){this.enabled=!this.enabled;return this.enabled;},
-  resetCombo(){this.comboCount=0;if(this.comboTimer)clearTimeout(this.comboTimer);var cd=document.getElementById('combo-display');if(cd)cd.textContent='';}
-};
-
-function createStars(){var c=document.getElementById('stars');for(var i=0;i<50;i++){var s=document.createElement('div');s.className='star';s.style.left=(Math.random()*100)+'%';s.style.top=(Math.random()*100)+'%';s.style.animationDelay=(Math.random()*2)+'s';s.style.width=s.style.height=(1+Math.random()*2)+'px';c.appendChild(s);}}
-function createGoldDust(){var c=document.getElementById('gold-dust-container');for(var i=0;i<15;i++){var d=document.createElement('div');d.className='gold-dust';d.style.left=(Math.random()*100)+'%';d.style.animationDelay=(Math.random()*6)+'s';d.style.animationDuration=(4+Math.random()*4)+'s';c.appendChild(d);}}
-
-var DB_KEY = 'KING_TAP_LIVE_STABLE_VERSION';
-var UPGRADES_DEF = [
-  {id:"finger",name:"إصبع قوي",desc:"يزيد قوة نقرتك الدائمة",icon:"🖐️",baseCost:15,mult:1.6,type:"permanent",cpc:1},
-  {id:"robot",name:"روبوت",desc:"ينقر تلقائياً لـ 5 ثواني",icon:"🤖",baseCost:100,mult:1.4,type:"temp",duration:5,speed:100},
-  {id:"mine",name:"منجم",desc:"ينقر تلقائياً لـ 10 ثواني",icon:"⛏️",baseCost:500,mult:1.4,type:"temp",duration:10,speed:80},
-  {id:"bank",name:"بنك",desc:"ينقر تلقائياً لـ 15 ثانية",icon:"🏦",baseCost:2000,mult:1.5,type:"temp",duration:15,speed:60},
-  {id:"wizard",name:"ساحر",desc:"ينقر تلقائياً لـ 20 ثانية",icon:"🧙",baseCost:10000,mult:1.5,type:"temp",duration:20,speed:40},
-  {id:"dragon",name:"تنين",desc:"ينقر تلقائياً لـ 25 ثانية",icon:"🐉",baseCost:50000,mult:1.6,type:"temp",duration:25,speed:20}
-];
-var state = {coins:0,totalCoins:0,coinsPerClick:1,clickCount:0,usedBotsCount:0,upgrades:{finger:0,robot:0,mine:0,bank:0,wizard:0,dragon:0},soundEnabled:true,effectsEnabled:true};
-var activeBot = false;
-
-function toggleSound(){SoundManager.init();var en=SoundManager.toggle();state.soundEnabled=en;document.getElementById('sound-toggle').textContent=en?'🔊':'🔇';document.getElementById('sound-toggle').classList.toggle('muted',!en);instantSave();showToast(en?'✅ تم تشغيل الصوت':'🔇 تم كتم الصوت');}
-function toggleEffects(){var en=EffectsManager.toggle();state.effectsEnabled=en;document.getElementById('effects-toggle').textContent=en?'✨':'💫';document.getElementById('effects-toggle').classList.toggle('muted',!en);if(!en)EffectsManager.resetCombo();instantSave();showToast(en?'✅ تم تشغيل المؤثرات':'💫 تم إيقاف المؤثرات');}
-function initSoundOnFirstClick(){SoundManager.init();if(state.soundEnabled)SoundManager.playClick();}
-
-function instantSave(){try{localStorage.setItem(DB_KEY,JSON.stringify(state));var d=document.getElementById('save-dot');d.classList.add('active');setTimeout(()=>d.classList.remove('active'),150);}catch(e){}}
-function loadGame(){try{var s=localStorage.getItem(DB_KEY);if(s){var p=JSON.parse(s);for(var k in p)if(state.hasOwnProperty(k))state[k]=p[k];}}catch(e){}if(!state.soundEnabled){SoundManager.enabled=false;document.getElementById('sound-toggle').textContent='🔇';document.getElementById('sound-toggle').classList.add('muted');}if(!state.effectsEnabled){EffectsManager.enabled=false;document.getElementById('effects-toggle').textContent='💫';document.getElementById('effects-toggle').classList.add('muted');}}
-function getCost(id){var def=null;for(var i=0;i<UPGRADES_DEF.length;i++)if(UPGRADES_DEF[i].id===id){def=UPGRADES_DEF[i];break;}var lvl=state.upgrades[id]||0;return Math.floor(def.baseCost*Math.pow(def.mult,lvl));}
-
-function clickCoin(e,isAuto){if(isAuto===undefined)isAuto=false;state.coins+=state.coinsPerClick;state.totalCoins+=state.coinsPerClick;if(!isAuto)state.clickCount++;updateUI();instantSave();if(!isAuto&&EffectsManager.enabled){var btn=document.getElementById('coin-btn');var rect=btn.getBoundingClientRect();var x=e?e.clientX:(rect.left+rect.width/2);var y=e?e.clientY:(rect.top+rect.height/2);EffectsManager.createParticles(x,y,8);EffectsManager.createSparkles(x,y,5);EffectsManager.updateCombo(x,y);if(state.coinsPerClick>=10)EffectsManager.createCrystals(x,y,3);if(state.coinsPerClick>=50){EffectsManager.createBigExplosion(x,y);EffectsManager.createCelebration(x,y);}}if(SoundManager.enabled)SoundManager.playClick(isAuto?0.85:1);var floatX=isAuto?(window.innerWidth/2+(Math.random()*60-30)):(e?e.clientX:window.innerWidth/2);var floatY=isAuto?(window.innerHeight/2+(Math.random()*60-30)):(e?e.clientY:window.innerHeight/2);showFloat(floatX,floatY,'+'+state.coinsPerClick,isAuto?"#9F67FF":"#FFD700");}
-
-function activateBot(id){var def=null;for(var i=0;i<UPGRADES_DEF.length;i++)if(UPGRADES_DEF[i].id===id){def=UPGRADES_DEF[i];break;}var cc=getCost(id);if(state.coins<cc||activeBot){if(SoundManager.enabled)SoundManager.playError();return;}state.coins-=cc;state.upgrades[id]++;state.usedBotsCount++;renderUpgrades();updateUI();instantSave();if(SoundManager.enabled)SoundManager.playBotStart();if(EffectsManager.enabled){EffectsManager.createParticles(window.innerWidth/2,window.innerHeight/2,12);EffectsManager.createSparkles(window.innerWidth/2,window.innerHeight/2,8);}var st=document.getElementById('active-status');var cb=document.getElementById('coin-btn');var card=document.getElementById('card-'+id);var tb=card.querySelector('.timer-bar');var tf=card.querySelector('.timer-fill');activeBot=true;st.textContent='نشط: '+def.name+'...';cb.classList.add('active-bot');card.classList.add('active-now');tb.style.display='block';var tl=def.duration*1000;var cl=setInterval(()=>clickCoin(null,true),def.speed);var tm=setInterval(()=>{tl-=100;tf.style.width=((tl/(def.duration*1000))*100)+'%';if(tl<=0){clearInterval(cl);clearInterval(tm);activeBot=false;st.textContent="";cb.classList.remove('active-bot');card.classList.remove('active-now');tb.style.display='none';if(SoundManager.enabled)SoundManager.playBotEnd();if(EffectsManager.enabled)EffectsManager.createSparkles(window.innerWidth/2,window.innerHeight-100,8);instantSave();renderUpgrades();}},100);}
-
-function buyPermanent(id){var cost=getCost(id);var def=null;for(var i=0;i<UPGRADES_DEF.length;i++)if(UPGRADES_DEF[i].id===id){def=UPGRADES_DEF[i];break;}if(state.coins>=cost){state.coins-=cost;state.upgrades[id]++;state.coinsPerClick+=def.cpc;renderUpgrades();updateUI();instantSave();if(SoundManager.enabled){SoundManager.playBuy();setTimeout(()=>SoundManager.playUpgrade(),100);}if(EffectsManager.enabled){EffectsManager.createParticles(window.innerWidth/2,100,12);EffectsManager.createCrystals(window.innerWidth/2,100,5);EffectsManager.createCoinSpins(window.innerWidth/2,100,3);}showToast("✨ تمت الترقية!");}else{if(SoundManager.enabled)SoundManager.playError();showToast("❌ رصيد غير كافي!");}}
-function updateUI(){document.getElementById('coin-display').textContent=Math.floor(state.coins).toLocaleString();document.getElementById('cpc-display').textContent=state.coinsPerClick;document.getElementById('upgrades-coin-display').textContent=Math.floor(state.coins).toLocaleString();document.getElementById('s-coins').textContent=Math.floor(state.coins).toLocaleString();document.getElementById('s-total').textContent=Math.floor(state.totalCoins).toLocaleString();document.getElementById('s-clicks').textContent=state.clickCount;document.getElementById('s-cpc').textContent=state.coinsPerClick;document.getElementById('s-used-bots').textContent=state.usedBotsCount;for(var i=0;i<UPGRADES_DEF.length;i++){var def=UPGRADES_DEF[i];var card=document.getElementById('card-'+def.id);if(!card)continue;var cost=getCost(def.id);if(state.coins>=cost&&!activeBot)card.classList.add('affordable');else card.classList.remove('affordable');card.querySelector('.cost-val').textContent=cost.toLocaleString();}}
-
-function renderUpgrades(){var list=document.getElementById('upgrades-list');list.innerHTML='';for(var i=0;i<UPGRADES_DEF.length;i++){var def=UPGRADES_DEF[i];var card=document.createElement('div');card.className='upgrade-card';card.id='card-'+def.id;var cost=getCost(def.id);var lvl=state.upgrades[def.id]||0;(function(d,c){card.onclick=function(){if(d.type==="temp")activateBot(d.id);else buyPermanent(d.id);};})(def,cost);card.innerHTML='<div class="upgrade-icon">'+def.icon+'</div><div class="upgrade-info"><div style="display:flex;align-items:center;gap:8px;"><span style="font-weight:700">'+def.name+'</span><span class="level-badge">'+lvl+'</span></div><div style="font-size:11px;color:#555577">'+def.desc+'</div><div class="timer-bar"><div class="timer-fill"></div></div></div><div style="font-weight:700;color:#FFD700">🪙 <span class="cost-val">'+cost.toLocaleString()+'</span></div>';list.appendChild(card);}}
-
-function showFloat(x,y,txt,color){var s=document.createElement('div');s.className='float-text';s.style.left=x+'px';s.style.top=y+'px';s.style.color=color;s.textContent=txt;document.body.appendChild(s);setTimeout(()=>s.remove(),800);}
-function switchTab(name,btn){var sc=document.querySelectorAll('.screen');for(var i=0;i<sc.length;i++)sc[i].classList.remove('active');var bt=document.querySelectorAll('.tab-btn');for(var i=0;i<bt.length;i++)bt[i].classList.remove('active');document.getElementById('screen-'+name).classList.add('active');btn.classList.add('active');}
-function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
-function resetGame(){if(confirm("سيتم مسح كل التقدم، هل أنت متأكد؟")){localStorage.removeItem(DB_KEY);location.reload();}}
-function openExport(){prompt("انسخ كود الحفظ:",btoa(JSON.stringify(state)));}
-function openImport(){var code=prompt("الصق كود الحفظ:");if(code){try{state=JSON.parse(atob(code));instantSave();location.reload();}catch(e){if(SoundManager.enabled)SoundManager.playError();alert("❌ خطأ في كود الحفظ!");}}}
-
-function openMagicGame(){
-  document.getElementById('magic-modal').classList.add('active');
-  initMagicGame();
-}function closeMagicGame(){
-  document.getElementById('magic-modal').classList.remove('active');
-  if(magicLoopId) cancelAnimationFrame(magicLoopId);
-  magicParticles = [];
-}
-
-// ========== تحدي العباقرة ==========
-var geniusModal = null;
-var geniusContent = null;
-var gPlayer = null;
-var gGame = null;
-var gQuestions = [];
-var gTimer = null;
-var gDailyTimer = null;
-
-const G_QDB = [
-  {q:'ما هو الرقم الذي إذا ضربته في 6 ثم أضفت 12 ثم قسمت على 3 يساوي 30؟',a:['13','١٣'],h:'اعكس: 30×3=90، 90-12=78، 78÷6=13',i:'🧮',d:3},
-  {q:'ساعة تدق 6 دقات في 30 ثانية. كم تستغرق لتدق 12 دقة؟',a:['66','٦٦'],h:'5 فواصل × 6 = 30. 11 فاصل × 6 = 66',i:'⏰',d:3},
-  {q:'إذا كان 5 آلات تنتج 5 قطع في 5 دقائق، فكم دقيقة تحتاج 100 آلة لإنتاج 100 قطعة؟',a:['5','٥'],h:'كل آلة تنتج قطعة في 5 دقائق',i:'🏭',d:3},
-  {q:'كم مرة يتكرر الرقم 9 بين 1 و 100؟',a:['20','٢٠'],h:'9,19,29,39,49,59,69,79,89,90-99',i:'🔢',d:2},
-  {q:'ما هو الشيء الذي يمشي على 4 في الصباح و2 في الظهر و3 في المساء؟',a:['الإنسان','انسان'],h:'مراحل الحياة',i:'🚶',d:3},
-  {q:'ما هو الشيء الذي يكسر بمجرد أن تنطق اسمه؟',a:['الصمت','صمت'],h:'عندما تتكلم ينكسر',i:'🤫',d:2},
-  {q:'ما هو الغاز الذي نتنفسه؟',a:['الأكسجين','اوكسجين','o2'],h:'O2',i:'💨',d:1},
-  {q:'ما هي عاصمة مصر؟',a:['القاهرة','cairo'],h:'مدينة على النيل',i:'🇪🇬',d:1},
-  {q:'ما هو الشيء الذي له أسنان ولا يعض؟',a:['المشط','مشط'],h:'للشعر',i:'🪮',d:1},
-  {q:'ما هو نصف ربع 400؟',a:['50','٥٠'],h:'400÷4÷2',i:'➗',d:2},
-  {q:'2+2×2-2÷2 = ؟',a:['5','٥'],h:'الضرب والقسمة أولاً',i:'🔢',d:2},
-  {q:'ما هو الكوكب الأحمر؟',a:['المريخ'],h:'الكوكب الرابع',i:'🔴',d:1},
-  {q:'كم عدد قلوب الأخطبوط؟',a:['3','٣','ثلاث'],h:'أكثر من الإنسان',i:'🐙',d:3},
-  {q:'ما هي درجة غليان الماء؟',a:['100','١٠٠'],h:'بالسيليزيوس',i:'🌡️',d:1},
-  {q:'ما هو أكبر عضو في جسم الإنسان؟',a:['الجلد','البشرة'],h:'يغطي الجسم',i:'👤',d:2},
-  {q:'كم عدد عظام جسم الإنسان البالغ؟',a:['206','٢٠٦'],h:'عظمة',i:'🦴',d:3},
-  {q:'ما هي الكلمة التي تنطق دائماً خطأ؟',a:['خطأ'],h:'السؤال فيه الإجابة',i:'❌',d:2},
-  {q:'ما هو الشيء الذي اسمه على لونه؟',a:['البرتقال'],h:'فاكهة',i:'🍊',d:1},
-  {q:'ما هو أكبر محيط في العالم؟',a:['المحيط الهادئ','الهادئ'],h:'بين آسيا وأمريكا',i:'🌊',d:2},
-  {q:'ما هي أكبر قارة في العالم؟',a:['آسيا','اسيا'],h:'تحتوي على الصين والهند',i:'🌍',d:1},
-  {q:'ما هو أطول نهر في العالم؟',a:['النيل','نهر النيل'],h:'في أفريقيا',i:'🌊',d:1},
-  {q:'ما هي عاصمة السعودية؟',a:['الرياض'],h:'في وسط المملكة',i:'🇸🇦',d:1},
-  {q:'كم عدد قارات العالم؟',a:['7','٧','سبعة'],h:'آسيا، أفريقيا، أوروبا...',i:'🌍',d:1},
-  {q:'ما هو أطول برج في العالم؟',a:['برج خليفة','خليفة'],h:'في دبي',i:'🏢',d:1},
-  {q:'ما هو الحيوان الذي يلقب بملك الغابة؟',a:['الأسد','اسد'],h:'حيوان مفترس',i:'🦁',d:1}
-];
-for(let i=G_QDB.length;i<500;i++){const n1=Math.floor(Math.random()*50)+1,n2=Math.floor(Math.random()*20)+1;G_QDB.push({q:n1+'+'+n2+'=؟',a:[(n1+n2).toString()],h:'جمع',i:'➕',d:1});}
-
-function openGeniusGame() {
-  geniusModal = document.getElementById('genius-modal');
-  geniusContent = document.getElementById('genius-content');
-  gPlayer = JSON.parse(localStorage.getItem('genius500pro') || '{"totalXp":0,"currentStage":1,"totalCorrect":0,"totalWrong":0,"stagesCompleted":0,"bestStreak":0,"inventory":{"extraHints":0,"extraTime":0,"multiplier":0,"protect":0},"daily":{"lastClaim":0,"reward":50}}');
-  if (!gPlayer.daily) { gPlayer.daily = { lastClaim: 0, reward: 50 }; }
-  renderGeniusHome();  geniusModal.classList.add('active');
-  document.getElementById('genius-btn').classList.add('active');
-  showToast('🧠 تم فتح تحدي العباقرة');
-}
-
-function closeGeniusGame() {
-  if (gTimer) clearInterval(gTimer);
-  if (gDailyTimer) clearInterval(gDailyTimer);
-  geniusModal.classList.remove('active');
-  document.getElementById('genius-btn').classList.remove('active');
-  showToast('✅ تم إغلاق تحدي العباقرة');
-}
-
-function gFormatTime(ms) {
-  const hours = Math.floor(ms / (1000 * 60 * 60));
-  const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((ms % (1000 * 60)) / 1000);
-  return `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-}
-
-function gCheckDailyReady() {
-  const now = Date.now();
-  const lastClaim = gPlayer.daily.lastClaim || 0;
-  const cooldown = 24 * 60 * 60 * 1000;
-  const timePassed = now - lastClaim;
-  if (timePassed >= cooldown) { return { ready: true, remaining: 0 }; }
-  else { return { ready: false, remaining: cooldown - timePassed }; }
-}
-
-function gUpdateDailyButton() {
-  const btn = document.getElementById('g-daily-btn');
-  if (!btn) return;
-  const status = gCheckDailyReady();
-  if (status.ready) {
-    btn.disabled = false;
-    btn.style.background = 'linear-gradient(135deg,#ffd700,#ff9f0a)';
-    btn.style.color = '#000';
-    btn.innerHTML = '📅 التحدي اليومي +50 XP';
-  } else {
-    btn.disabled = true;
-    btn.style.background = 'linear-gradient(135deg,#555,#666)';
-    btn.style.color = '#888';
-    btn.innerHTML = `⏳ انتظر ${gFormatTime(status.remaining)}`;
-  }
-}
-
-function gStartDailyTimer() {
-  if (gDailyTimer) clearInterval(gDailyTimer);
-  gDailyTimer = setInterval(() => { gUpdateDailyButton(); }, 1000);
-}
-function renderGeniusHome() {
-  const status = gCheckDailyReady();
-  geniusContent.innerHTML = `
-    <div style="text-align:center;margin:30px 0">
-      <h1 style="font-size:32px;background:linear-gradient(135deg,#ffd700,#ff6b6b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px">🧠 تحدي العباقرة</h1>
-      <p style="color:#666;font-size:12px">500 سؤال • 50 مرحلة • 10 أسئلة لكل مرحلة</p>
+    <!-- GAME OVER -->
+    <div class="game-over hidden" id="gameOver">
+        <h2>💥 انتهى الوقت!</h2>
+        <div class="final-score-display" id="finalScore">0</div>
+        <div class="stats-row">
+            <span>أعلى سلسلة: <strong id="maxStreak">0</strong></span>
+            <span>إجابات صحيحة: <strong id="correctCount">0</strong></span>
+        </div>
+        <p id="finalMessage" style="color:rgba(255,255,255,0.6); text-align:center;">أداء رائع!</p>
+        <button class="start-btn" onclick="backToMenu()" style="font-size:1.2rem; padding:14px 40px;">🏠 القائمة الرئيسية</button>
+        <button class="start-btn" onclick="startGame()" style="font-size:1.2rem; padding:14px 40px; background:linear-gradient(135deg,#ff6ec7,#7c4dff);">🔄 العب مرة ثانية</button>
     </div>
-    <div class="stat-card">
-      <div class="stat-row"><span>🏆 المرحلة</span><span style="color:#FFD700;font-weight:bold">${gPlayer.currentStage}</span></div>
-      <div class="stat-row"><span>⭐ XP</span><span style="color:#FFD700;font-weight:bold">${gPlayer.totalXp.toLocaleString()}</span></div>
-      <div class="stat-row"><span>✅ صحيح</span><span style="color:#FFD700;font-weight:bold">${gPlayer.totalCorrect}</span></div>
-      <div class="stat-row"><span>❌ خطأ</span><span style="color:#FFD700;font-weight:bold">${gPlayer.totalWrong}</span></div>
-      <div class="stat-row"><span>🔥 أفضل سلسلة</span><span style="color:#FFD700;font-weight:bold">${gPlayer.bestStreak}</span></div>
+
+    <!-- GAME UI -->
+    <div class="timer-bar" id="timerBar" style="display:none;"><div class="timer-fill" id="timerFill"></div></div>
+
+    <div class="header" id="gameHeader" style="display:none;">
+        <div>⭐ <span class="score-val" id="scoreEl">0</span></div>
+        <div class="combo-badge" id="comboBadge">🔥 x0</div>
+        <div>⏱️ <span class="timer-val" id="timerEl">10.0</span></div>
     </div>
-    <button class="menu-btn btn-success" onclick="gStartGame()" style="width:100%;padding:14px;font-size:15px;font-weight:bold;border:none;border-radius:14px;cursor:pointer;margin-bottom:8px;background:linear-gradient(135deg,#34c759,#30d158);color:#fff">🚀 بدء المرحلة</button>
-    <button id="g-daily-btn" onclick="gDaily()" style="width:100%;padding:14px;font-size:15px;font-weight:bold;border:none;border-radius:14px;cursor:pointer;margin-bottom:8px;background:${status.ready ? 'linear-gradient(135deg,#ffd700,#ff9f0a)' : 'linear-gradient(135deg,#555,#666)'};color:${status.ready ? '#000' : '#888'}" ${!status.ready ? 'disabled' : ''}>${status.ready ? '📅 التحدي اليومي +50 XP' : '⏳ انتظر ' + gFormatTime(status.remaining)}</button>
-    <button class="menu-btn btn-primary" onclick="gShowShop()" style="width:100%;padding:14px;font-size:15px;font-weight:bold;border:none;border-radius:14px;cursor:pointer;margin-bottom:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff">🛒 المتجر</button>
-    <button class="menu-btn btn-danger" onclick="gReset()" style="width:100%;padding:14px;font-size:15px;font-weight:bold;border:none;border-radius:14px;cursor:pointer;background:linear-gradient(135deg,#ff6b6b,#ff4757);color:#fff">🔄 تصفير التقدم</button>
-  `;
-  gStartDailyTimer();
-}
 
-function gShowShop() {
-  geniusContent.innerHTML = `
-    <h2 style="text-align:center;color:#FFD700;margin:20px 0">🛒 المتجر</h2>
-    <div class="stat-card" style="text-align:center;margin-bottom:20px">
-      <span style="font-size:16px">💰 رصيدك: </span><span style="color:#FFD700;font-weight:bold;font-size:18px">${gPlayer.totalXp.toLocaleString()} XP</span>
+    <div class="word-container" id="wordContainer" style="display:none;">
+        <div class="word" id="wordEl">جاري...</div>
     </div>
-    <div class="upgrade-card" style="margin-bottom:10px">
-      <div style="font-size:24px">💡</div>
-      <div style="flex:1">
-        <div style="font-weight:bold">تلميح إضافي</div>
-        <div style="font-size:11px;color:#888">+3 تلميحات للمرحلة (يُستخدم مرة واحدة)</div>
-      </div>
-      <button onclick="gBuy('extraHints',200)" style="background:linear-gradient(135deg,#34c759,#30d158);border:none;border-radius:8px;color:#fff;padding:8px 15px;font-weight:bold;cursor:pointer">200 XP</button>
-    </div>
-    <div class="upgrade-card" style="margin-bottom:10px">
-      <div style="font-size:24px">⏱️</div>
-      <div style="flex:1">
-        <div style="font-weight:bold">وقت إضافي</div>
-        <div style="font-size:11px;color:#888">+60 ثانية لكل سؤال (يُستخدم مرة واحدة)</div>
-      </div>
-      <button onclick="gBuy('extraTime',300)" style="background:linear-gradient(135deg,#34c759,#30d158);border:none;border-radius:8px;color:#fff;padding:8px 15px;font-weight:bold;cursor:pointer">300 XP</button>
-    </div>
-    <div class="upgrade-card" style="margin-bottom:10px">
-      <div style="font-size:24px">🎯</div>
-      <div style="flex:1">
-        <div style="font-weight:bold">مضاعف XP</div>
-        <div style="font-size:11px;color:#888">×2 XP للمرحلة القادمة (يُستخدم مرة واحدة)</div>      </div>
-      <button onclick="gBuy('multiplier',500)" style="background:linear-gradient(135deg,#34c759,#30d158);border:none;border-radius:8px;color:#fff;padding:8px 15px;font-weight:bold;cursor:pointer">500 XP</button>
-    </div>
-    <button onclick="renderGeniusHome()" style="width:100%;padding:14px;font-size:15px;font-weight:bold;border:none;border-radius:14px;cursor:pointer;margin-top:20px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff">🔙 رجوع</button>
-  `;
-}
 
-function gBuy(item, cost) {
-  if (gPlayer.totalXp < cost) { gFeedback('⚠️ XP غير كافٍ!', 'w'); return; }
-  gPlayer.inventory[item] = (gPlayer.inventory[item] || 0) + 1;
-  gPlayer.totalXp -= cost;
-  gSave();
-  gShowShop();
-  gFeedback('✅ تم الشراء!', 'c');
-}
+    <div class="colors-container" id="colorsContainer" style="display:none;"></div>
+    <div class="slider" id="slider" style="display:none;"></div>
+    <div class="feedback" id="feedbackEl"></div>
 
-function gDaily() {
-  const status = gCheckDailyReady();
-  if (!status.ready) { gFeedback('⏳ انتظر ' + gFormatTime(status.remaining), 'w'); return; }
-  gPlayer.totalXp += 50;
-  gPlayer.daily.lastClaim = Date.now();
-  gSave();
-  renderGeniusHome();
-  gFeedback('📅 +50 XP! عد غداً للمزيد', 'c');
-}
+    <script>
+        // ===== ALL COLORS =====
+        const ALL_COLORS = [
+            { name: 'أزرق', hex: '#2979ff', cssClass: 'blue' },
+            { name: 'أحمر', hex: '#ff1744', cssClass: 'red' },
+            { name: 'أصفر', hex: '#ffea00', cssClass: 'yellow' },            { name: 'أخضر', hex: '#00e676', cssClass: 'green' },
+            { name: 'برتقالي', hex: '#ff9100', cssClass: 'orange' },
+            { name: 'بنفسجي', hex: '#d500f9', cssClass: 'purple' },
+        ];
 
-function gReset() {
-  if (confirm('تصفير كل التقدم؟')) {
-    gPlayer = {totalXp:0,currentStage:1,totalCorrect:0,totalWrong:0,stagesCompleted:0,bestStreak:0,inventory:{extraHints:0,extraTime:0,multiplier:0,protect:0},daily:{lastClaim:0,reward:50}};
-    gSave();
-    renderGeniusHome();
-    gFeedback('✅ تم التصفير', 'c');
-  }
-}
+        // ===== MENU SELECTIONS =====
+        let selectedDiff = 'medium';
+        let selectedTime = 10;
+        let selectedColorCount = 4;
 
-function gSave() { localStorage.setItem('genius500pro', JSON.stringify(gPlayer)); }
+        // Difficulty settings
+        const DIFFICULTY = {
+            easy:   { timeBonus: 2.0, timePenalty: 1, distractorChance: 0.1, speed: 1, colors: 3 },
+            medium: { timeBonus: 1.5, timePenalty: 2, distractorChance: 0.3, speed: 1, colors: 4 },
+            hard:   { timeBonus: 1.0, timePenalty: 3, distractorChance: 0.6, speed: 1.5, colors: 4 },
+            insane: { timeBonus: 0.5, timePenalty: 4, distractorChance: 0.8, speed: 2, colors: 5 },
+        };
 
-function gStartGame() {
-  const hasHints = gPlayer.inventory.extraHints >= 1;
-  const hasTime = gPlayer.inventory.extraTime >= 1;
-  const hasMultiplier = gPlayer.inventory.multiplier >= 1;
-  if (hasHints) gPlayer.inventory.extraHints = 0;
-  if (hasTime) gPlayer.inventory.extraTime = 0;
-  if (hasMultiplier) gPlayer.inventory.multiplier = 0;
-  gGame = {
-    questions: gPickQuestions(gPlayer.currentStage),
-    idx: 0, total: 10, correct: 0, wrong: 0,
-    hints: 3 + (hasHints ? 3 : 0), streak: 0,
-    sessionXp: 0, timeLeft: 180 + (hasTime ? 60 : 0),
-    multiplier: hasMultiplier ? 2 : 1  };
-  gSave();
-  gRenderPlay();
-  gLoadQuestion();
-  gUpdateUI();
-  gStartTimer();
-}
+        function selectDiff(d, el) {
+            selectedDiff = d;
+            document.querySelectorAll('#difficultyGroup .option-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+            playClick();
+        }
+        function selectTime(t, el) {
+            selectedTime = t;
+            document.querySelectorAll('#timeGroup .option-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+            playClick();
+        }
+        function selectColors(c, el) {
+            selectedColorCount = c;
+            document.querySelectorAll('#colorsGroup .option-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+            playClick();
+        }
 
-function gPickQuestions(stage) {
-  const minD = Math.ceil(stage / 10), maxD = Math.min(minD + 1, 4);
-  const filtered = G_QDB.filter(q => q.d >= minD && q.d <= maxD);
-  const shuffled = [...filtered].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, 10).map(q => ({...q}));
-}
+        // ===== AUDIO =====
+        let audioCtx = null;
+        function initAudio() {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+            } catch(e) {
+                console.log('Audio not supported');
+            }        }
 
-function gRenderPlay() {
-  geniusContent.innerHTML = `
-    <div class="stat-card" style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
-        <span id="g-timer" style="color:#ff6b6b;font-weight:bold;font-family:monospace;font-size:16px">⏱️ 03:00</span>
-        <span id="g-xp-display" style="color:#FFD700;font-weight:bold">0 XP</span>
-      </div>
-      <div style="height:4px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden">
-        <div id="g-progress" style="height:100%;background:linear-gradient(90deg,#FFD700,#ff6b6b);width:0%;transition:width 0.3s"></div>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:6px;background:rgba(0,0,0,0.3);border-radius:8px;margin-bottom:15px">
-      <div style="background:rgba(255,255,255,0.05);padding:6px 2px;border-radius:8px;text-align:center">
-        <div id="g-q-num" style="font-size:14px;font-weight:bold;color:#FFD700">1/10</div>
-        <div style="font-size:7px;color:#666">سؤال</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.05);padding:6px 2px;border-radius:8px;text-align:center">
-        <div id="g-stat-c" style="font-size:14px;font-weight:bold;color:#FFD700">0</div>
-        <div style="font-size:7px;color:#666">✅</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.05);padding:6px 2px;border-radius:8px;text-align:center">
-        <div id="g-stat-w" style="font-size:14px;font-weight:bold;color:#FFD700">0</div>
-        <div style="font-size:7px;color:#666">❌</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.05);padding:6px 2px;border-radius:8px;text-align:center">
-        <div id="g-stat-h" style="font-size:14px;font-weight:bold;color:#FFD700">3</div>
-        <div style="font-size:7px;color:#666">💡</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.05);padding:6px 2px;border-radius:8px;text-align:center">
-        <div id="g-stat-s" style="font-size:14px;font-weight:bold;color:#FFD700">0</div>
-        <div style="font-size:7px;color:#666">🔥</div>
-      </div>
-    </div>
-    <div class="stat-card" style="text-align:center">
-      <div style="margin-bottom:10px">        <span id="g-diff" style="background:linear-gradient(135deg,#ff6b6b,#ff4757);padding:3px 8px;border-radius:10px;font-size:9px;font-weight:bold">صعب</span>
-        <span id="g-cat" style="background:rgba(102,126,234,0.3);padding:3px 8px;border-radius:10px;font-size:9px;margin-right:5px">عام</span>
-      </div>
-      <div style="font-size:9px;color:#888;margin-bottom:5px" id="g-q-text">سؤال 1 من 10</div>
-      <div style="font-size:50px;margin:12px 0" id="g-icon">🤔</div>
-      <div id="g-question" style="font-size:15px;line-height:1.5;margin-bottom:18px;color:#e0e0e0">جاري التحميل...</div>
-      <div id="g-hint" style="display:none;font-size:11px;color:#FFD700;font-style:italic;margin-bottom:12px;padding:8px;background:rgba(255,215,0,0.08);border-radius:8px;border:1px solid rgba(255,215,0,0.2)"></div>
-      <input type="text" id="g-input" placeholder="اكتب الإجابة" style="width:100%;padding:10px;font-size:16px;text-align:center;background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.15);border-radius:10px;color:#fff;margin-bottom:8px;font-family:monospace">
-      <button onclick="gCheck()" style="width:100%;padding:10px;font-size:13px;font-weight:bold;border:none;border-radius:10px;cursor:pointer;margin-bottom:5px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff">✅ تحقق</button>
-      <button onclick="gHint()" id="g-hint-btn" style="width:100%;padding:10px;font-size:13px;font-weight:bold;border:none;border-radius:10px;cursor:pointer;margin-bottom:5px;background:linear-gradient(135deg,#ffd700,#ff9f0a);color:#000">💡 تلميح</button>
-      <button onclick="gSkip()" style="width:100%;padding:10px;font-size:13px;font-weight:bold;border:none;border-radius:10px;cursor:pointer;background:linear-gradient(135deg,#ff6b6b,#ff4757);color:#fff">⏭️ تخطي (-400 XP)</button>
-    </div>
-    <div id="g-feedback" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);padding:12px 25px;border-radius:12px;font-size:14px;font-weight:bold;z-index:200;display:none"></div>
-  `;
-  document.getElementById('g-input').addEventListener('keypress', function(e) { if (e.key === 'Enter') gCheck(); });
-}
+        function playTone(freq, type, duration, vol = 0.2) {
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
 
-function gLoadQuestion() {
-  const q = gGame.questions[gGame.idx];
-  document.getElementById('g-diff').textContent = ['','سهل','متوسط','صعب','صعب جداً'][q.d] || 'صعب';
-  document.getElementById('g-cat').textContent = 'عام';
-  document.getElementById('g-q-text').textContent = 'سؤال ' + (gGame.idx + 1) + ' من ' + gGame.total;
-  document.getElementById('g-icon').textContent = q.i || '🤔';
-  document.getElementById('g-question').textContent = q.q;
-  document.getElementById('g-hint').textContent = '💡 ' + q.h;
-  document.getElementById('g-hint').style.display = 'none';
-  document.getElementById('g-input').value = '';
-  document.getElementById('g-input').focus();
-  gResetTimer(q.d);
-}
+        function playCorrect() {
+            playTone(523, 'sine', 0.15, 0.25);
+            setTimeout(() => playTone(659, 'sine', 0.15, 0.25), 80);
+            setTimeout(() => playTone(784, 'sine', 0.2, 0.25), 160);
+        }
 
-function gStartTimer() {
-  if (gTimer) clearInterval(gTimer);
-  gTimer = setInterval(() => {
-    gGame.timeLeft--;
-    const m = Math.floor(gGame.timeLeft / 60), s = gGame.timeLeft % 60;
-    document.getElementById('g-timer').textContent = '⏱️ ' + m.toString().padStart(2,'0') + ':' + s.toString().padStart(2,'0');
-    if (gGame.timeLeft <= 30) document.getElementById('g-timer').style.color = '#ff0000';
-    else document.getElementById('g-timer').style.color = '#ff6b6b';
-    if (gGame.timeLeft <= 0) {
-      clearInterval(gTimer);
-      gFeedback('⏰ انتهى الوقت!', 'w');
-      gWrong();
-      setTimeout(gNext, 1500);
-    }
-  }, 1000);
-}
+        function playWrong() {
+            playTone(200, 'sawtooth', 0.3, 0.2);
+            setTimeout(() => playTone(150, 'sawtooth', 0.2, 0.15), 100);
+        }
+        function playClick() {
+            playTone(800, 'sine', 0.05, 0.1);
+        }
 
-function gResetTimer(diff) {
-  gGame.timeLeft = Math.max(60, 180 - (diff - 1) * 30);  const m = Math.floor(gGame.timeLeft / 60), s = gGame.timeLeft % 60;
-  document.getElementById('g-timer').textContent = '⏱️ ' + m.toString().padStart(2,'0') + ':' + s.toString().padStart(2,'0');
-}
+        function playWarning() {
+            playTone(440, 'square', 0.15, 0.15);
+            setTimeout(() => playTone(440, 'square', 0.15, 0.15), 200);
+            setTimeout(() => playTone(440, 'square', 0.15, 0.15), 400);
+        }
 
-function gCheck() {
-  const inp = document.getElementById('g-input').value.trim().toLowerCase();
-  const q = gGame.questions[gGame.idx];
-  if (!inp) { gFeedback('⚠️ اكتب إجابة!', 'w'); return; }
-  const ok = q.a.some(x => inp.includes(x.toLowerCase()));
-  if (ok) gCorrect(q); else { gWrong(); document.getElementById('g-input').value = ''; }
-  gUpdateUI(); gSave();
-}
+        function playDistractor() {
+            playTone(300, 'triangle', 0.1, 0.15);
+            setTimeout(() => playTone(500, 'triangle', 0.1, 0.15), 60);
+        }
 
-function gCorrect(q) {
-  gGame.correct++; gPlayer.totalCorrect++; gGame.streak++;
-  if (gGame.streak > gPlayer.bestStreak) gPlayer.bestStreak = gGame.streak;
-  const xp = (50 + (q.d || 1) * 20 + Math.floor(gGame.timeLeft / 10)) * gGame.multiplier;
-  gGame.sessionXp += xp; gPlayer.totalXp += xp;
-  gFeedback('✅ صحيح! +' + xp + ' XP', 'c');
-  setTimeout(gNext, 1000); gSave();
-}
+        // ===== GAME STATE =====
+        let score = 0;
+        let streak = 0;
+        let maxStreak = 0;
+        let correctTotal = 0;
+        let timeLeft = 10;
+        let totalTime = 10;        let gameActive = false;
+        let currentTarget = null;
+        let currentColors = [];
+        let isDragging = false;
+        let dragStartX = 0;
+        let sliderStartLeft = 0;
+        let warned = false;
+        let _timerInterval = null;
 
-function gWrong() {
-  gGame.wrong++; gPlayer.totalWrong++; gGame.streak = 0;
-  gPlayer.totalXp = Math.max(0, gPlayer.totalXp - 20);
-  gFeedback('❌ خطأ! -20 XP', 'w'); gSave();
-}
+        // Elements
+        const slider = document.getElementById('slider');
+        const colorsContainer = document.getElementById('colorsContainer');
+        const wordEl = document.getElementById('wordEl');
+        const scoreEl = document.getElementById('scoreEl');
+        const timerEl = document.getElementById('timerEl');
+        const timerFill = document.getElementById('timerFill');
+        const comboBadge = document.getElementById('comboBadge');
+        const feedbackEl = document.getElementById('feedbackEl');
+        const screenFlash = document.getElementById('screenFlash');
+        const urgentWarning = document.getElementById('urgentWarning');
+        const mainMenu = document.getElementById('mainMenu');
+        const gameOver = document.getElementById('gameOver');
+        const timerBar = document.getElementById('timerBar');
+        const gameHeader = document.getElementById('gameHeader');
+        const wordContainer = document.getElementById('wordContainer');
 
-function gSkip() {
-  if (gPlayer.totalXp < 400) { gFeedback('⚠️ تحتاج 400 XP!', 'w'); return; }
-  gPlayer.totalXp -= 400; gGame.streak = 0;
-  gFeedback('⏭️ تم التخطي', 'w'); setTimeout(gNext, 1000); gSave();
-}
+        // ===== GAME LOGIC =====
+        function startGame() {
+            initAudio();
 
-function gNext() {
-  gGame.idx++;
-  if (gGame.idx >= gGame.total) gComplete(); else gLoadQuestion();
-  gUpdateUI();
-}
+            const diff = DIFFICULTY[selectedDiff];
+            totalTime = selectedTime;
+            timeLeft = totalTime;
+            score = 0;
+            streak = 0;
+            maxStreak = 0;
+            correctTotal = 0;
+            warned = false;
+            gameActive = true;
 
-function gHint() {
-  if (gGame.hints <= 0) { gFeedback('💡 لا يوجد تلميحات!', 'w'); return; }
-  gGame.hints--; document.getElementById('g-hint').style.display = 'block'; gUpdateUI();
-}
+            // Pick colors based on selection
+            currentColors = ALL_COLORS.slice(0, selectedColorCount);
 
-function gComplete() {
-  clearInterval(gTimer); gPlayer.stagesCompleted++; gPlayer.currentStage++;
-  geniusContent.innerHTML = `
-    <div style="text-align:center;margin:30px 0">
-      <h2 style="color:#FFD700;font-size:28px;margin-bottom:20px">🎉 اكتملت المرحلة!</h2>    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
-      <div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:10px;text-align:center">
-        <div style="font-size:24px;margin-bottom:6px">✅</div>
-        <div style="font-size:18px;font-weight:bold;color:#FFD700">${gGame.correct}</div>
-        <div style="font-size:10px;color:#888">صحيحة</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:10px;text-align:center">
-        <div style="font-size:24px;margin-bottom:6px">❌</div>
-        <div style="font-size:18px;font-weight:bold;color:#FFD700">${gGame.wrong}</div>
-        <div style="font-size:10px;color:#888">خاطئة</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:10px;text-align:center">
-        <div style="font-size:24px;margin-bottom:6px">⭐</div>
-        <div style="font-size:18px;font-weight:bold;color:#FFD700">${gGame.sessionXp}</div>
-        <div style="font-size:10px;color:#888">XP</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:10px;text-align:center">
-        <div style="font-size:24px;margin-bottom:6px">🔥</div>
-        <div style="font-size:18px;font-weight:bold;color:#FFD700">${gGame.streak}</div>
-        <div style="font-size:10px;color:#888">سلسلة</div>
-      </div>
-    </div>
-    <button onclick="gStartGame()" style="width:100%;padding:14px;font-size:15px;font-weight:bold;border:none;border-radius:14px;cursor:pointer;margin-bottom:8px;background:linear-gradient(135deg,#34c759,#30d158);color:#fff">المرحلة التالية ➡️</button>
-    <button onclick="renderGeniusHome()" style="width:100%;padding:14px;font-size:15px;font-weight:bold;border:none;border-radius:14px;cursor:pointer;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff">🏠 الرئيسية</button>
-  `;
-  gSave();
-}
+            // Show game UI
+            mainMenu.classList.add('hidden');
+            gameOver.classList.add('hidden');
+            timerBar.style.display = 'block';
+            gameHeader.style.display = 'flex';
+            wordContainer.style.display = 'flex';
+            colorsContainer.style.display = 'flex';            slider.style.display = 'flex';
 
-function gUpdateUI() {
-  document.getElementById('g-xp-display').textContent = gPlayer.totalXp + ' XP';
-  document.getElementById('g-q-num').textContent = (gGame.idx + 1) + '/' + gGame.total;
-  document.getElementById('g-stat-c').textContent = gGame.correct;
-  document.getElementById('g-stat-w').textContent = gGame.wrong;
-  document.getElementById('g-stat-h').textContent = gGame.hints;
-  document.getElementById('g-stat-s').textContent = gGame.streak;
-  document.getElementById('g-progress').style.width = (gGame.idx / gGame.total * 100) + '%';
-  document.getElementById('g-hint-btn').disabled = gGame.hints <= 0;
-}
+            buildColorBars();
+            updateUI();
+            newRound();
 
-function gFeedback(txt, type) {
-  const fb = document.getElementById('g-feedback');
-  fb.textContent = txt;
-  fb.style.background = type === 'c' ? 'rgba(52,199,89,0.95)' : 'rgba(255,107,107,0.95)';
-  fb.style.display = 'block';
-  setTimeout(() => fb.style.display = 'none', 1500);
-}
+            // Timer
+            if (_timerInterval) clearInterval(_timerInterval);
+            _timerInterval = setInterval(() => {
+                if (!gameActive) return;
+                timeLeft -= 0.1;
+                if (timeLeft <= 0) { 
+                    timeLeft = 0; 
+                    endGame(); 
+                }
 
-// ========== الأشكال السحرية ==========
-var magicCanvas, magicCtx, magicFlash, magicStarsContainer;var magicW, magicH, magicParticles = [], magicHue = 0, magicTouch = {x:null, y:null, active:false};
-var magicLoopId = null;
+                // Warning at 60% time remaining
+                const warningThreshold = totalTime * 0.6;
+                if (timeLeft <= warningThreshold && !warned) {
+                    warned = true;
+                    playWarning();
+                    urgentWarning.classList.remove('show');
+                    void urgentWarning.offsetWidth;
+                    urgentWarning.classList.add('show');
+                    setTimeout(() => urgentWarning.classList.remove('show'), 800);
+                }
 
-function magicParticle(x,y,color,targetX,targetY,isTarget=false){
-  this.x=x;this.y=y;this.tx=targetX;this.ty=targetY;this.isTarget=isTarget;
-  this.vx=(Math.random()-0.5)*12;this.vy=(Math.random()-0.5)*12-3;
-  this.color=color;this.size=Math.random()*5+3;this.life=180;this.drag=0.94;
-}
-magicParticle.prototype.step=function(){
-  if(this.isTarget){this.vx+=(this.tx-this.x)*0.02;this.vy+=(this.ty-this.y)*0.02;this.vx*=0.96;this.vy*=0.96;}
-  else{this.vy+=0.15;}
-  this.x+=this.vx;this.y+=this.vy;this.vx*=this.drag;this.vy*=this.drag;
-  if(this.size>0.4)this.size-=0.035;this.life--;
-};
-magicParticle.prototype.render=function(){
-  if(this.life<=0||this.size<=0.4)return;
-  const a=Math.min(1,this.life/40);
-  magicCtx.shadowBlur=15;magicCtx.shadowColor=this.color;magicCtx.fillStyle=this.color;magicCtx.globalAlpha=a;
-  magicCtx.beginPath();magicCtx.arc(this.x,this.y,this.size,0,Math.PI*2);magicCtx.fill();
-  magicCtx.shadowBlur=0;magicCtx.globalAlpha=1;
-};
+                updateTimerUI();
+            }, 100);
+        }
 
-function magicShapePoints(name,cx,cy){
-  const pts=[];
-  switch(name){
-    case'❤️':for(let t=0;t<Math.PI*2;t+=0.08){let x=18*Math.pow(Math.sin(t),3),y=-(15*Math.cos(t)-6*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t));pts.push({x:cx+x*2.2,y:cy+y*2.2});}break;
-    case'⭐':for(let i=0;i<5;i++){let a1=(i*72-90)*Math.PI/180,a2=(i*72+36-90)*Math.PI/180;pts.push({x:cx+Math.cos(a1)*85,y:cy+Math.sin(a1)*85});pts.push({x:cx+Math.cos(a2)*35,y:cy+Math.sin(a2)*35});}break;
-    case'🔷':for(let i=-80;i<=80;i+=6){pts.push({x:cx+i,y:cy-80},{x:cx+i,y:cy+80},{x:cx-80,y:cy+i},{x:cx+80,y:cy+i});}break;
-    case'🌸':for(let p=0;p<6;p++){let ang=p*Math.PI/3;for(let r=0;r<50;r+=8){let a=ang+(Math.sin(r/15)*0.5);pts.push({x:cx+Math.cos(a)*(30+r),y:cy+Math.sin(a)*(30+r)});}}break;
-    case'😊':for(let a=0;a<Math.PI*2;a+=0.12)pts.push({x:cx+Math.cos(a)*70,y:cy+Math.sin(a)*70});break;
-    case'🚀':for(let y=-70;y<=70;y+=7){let w=12+Math.abs(y)*0.1;pts.push({x:cx-w,y:cy+y},{x:cx+w,y:cy+y});}break;
-  }return pts;
-}
+        function buildColorBars() {
+            colorsContainer.innerHTML = '';
+            currentColors.forEach(c => {
+                const bar = document.createElement('div');
+                bar.className = `color-bar ${c.cssClass}`;
+                bar.setAttribute('data-color', c.name);
+                bar.style.background = c.hex;
+                colorsContainer.appendChild(bar);
+            });
+        }
 
-function magicSpawn(emoji){
-  const cx=magicW/2,cy=magicH/2.3,baseHue=Math.random()*360,pts=magicShapePoints(emoji,cx,cy);
-  magicFlash.style.opacity='0.5';setTimeout(()=>magicFlash.style.opacity='0',80);
-  pts.forEach((p,i)=>{setTimeout(()=>{const col='hsl('+(baseHue+i*2)+',100%,65%)',part=new magicParticle(cx,cy,col,p.x,p.y,true);part.size=7;magicParticles.push(part);},i*8);});
-}
-function magicBurst(){
-  const cx=magicW/2,cy=magicH/2.3,baseHue=Math.random()*360;
-  magicFlash.style.opacity='0.7';setTimeout(()=>magicFlash.style.opacity='0',100);
-  for(let i=0;i<120;i++){const col='hsl('+(baseHue+Math.random()*80)+',100%,60%)',part=new magicParticle(cx,cy,col);const angle=(i/120)*Math.PI*2,speed=5+Math.random()*8;part.vx=Math.cos(angle)*speed;part.vy=Math.sin(angle)*speed-4;part.size=8+Math.random()*5;magicParticles.push(part);}
-}
-function magicEmit(x,y){const col='hsl('+magicHue+',100%,65%)';for(let i=0;i<2;i++)magicParticles.push(new magicParticle(x,y,col));}
-function magicClear(){magicParticles=[];}
+        function newRound() {
+            if (!gameActive) return;
+            
+            // Reset slider to center
+            resetSlider();
 
-function magicLoop(){
-  magicCtx.fillStyle='rgba(0,0,10,0.08)';magicCtx.fillRect(0,0,magicW,magicH);
-  for(let i=magicParticles.length-1;i>=0;i--){magicParticles[i].step();magicParticles[i].render();if(magicParticles[i].life<=0||magicParticles[i].size<=0.4)magicParticles.splice(i,1);}  magicHue=(magicHue+0.3)%360;magicLoopId=requestAnimationFrame(magicLoop);
-}
+            // Pick random meaning & different display color
+            const meaningIdx = Math.floor(Math.random() * currentColors.length);            let displayIdx;
+            do { displayIdx = Math.floor(Math.random() * currentColors.length); }
+            while (displayIdx === meaningIdx);
 
-function initMagicGame(){
-  magicCanvas = document.getElementById('magic-canvas');
-  magicCtx = magicCanvas.getContext('2d');
-  magicFlash = document.getElementById('magic-flash');
-  magicStarsContainer = document.getElementById('magic-stars');
-  magicW = magicCanvas.width = window.innerWidth;
-  magicH = magicCanvas.height = window.innerHeight;
-  magicParticles = []; magicHue = 0; magicTouch = {x:null, y:null, active:false};
-  magicStarsContainer.innerHTML = '';
-  for(let i=0; i<30; i++){
-    let s = document.createElement('div');
-    s.style.cssText = 'position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;opacity:'+(0.3+Math.random()*0.4)+';animation:twinkle '+(2+Math.random()*2)+'s infinite';
-    magicStarsContainer.appendChild(s);
-  }
-  function getMagicPos(e){ const t = e.touches ? e.touches[0] : e; return { x: t.clientX, y: t.clientY }; }
-  magicCanvas.addEventListener('touchstart', function(e){ e.preventDefault(); magicTouch.active = true; const p = getMagicPos(e); magicTouch.x = p.x; magicTouch.y = p.y; magicEmit(p.x, p.y); }, { passive: false });
-  magicCanvas.addEventListener('touchmove', function(e){ e.preventDefault(); const p = getMagicPos(e); magicTouch.x = p.x; magicTouch.y = p.y; magicEmit(p.x, p.y); }, { passive: false });
-  magicCanvas.addEventListener('touchend', function(e){ e.preventDefault(); magicTouch.active = false; }, { passive: false });
-  magicCanvas.addEventListener('mousedown', function(e){ magicTouch.active = true; magicTouch.x = e.clientX; magicTouch.y = e.clientY; magicEmit(e.clientX, e.clientY); });
-  magicCanvas.addEventListener('mousemove', function(e){ if(magicTouch.active){ magicTouch.x = e.clientX; magicTouch.y = e.clientY; magicEmit(e.clientX, e.clientY); } });
-  magicCanvas.addEventListener('mouseup', function(){ magicTouch.active = false; });
-  magicLoop();
-}
+            currentTarget = currentColors[meaningIdx];
+            const displayColor = currentColors[displayIdx];
 
-window.addEventListener('resize', function(){
-  if(magicCanvas && document.getElementById('magic-modal').classList.contains('active')){
-    magicW = magicCanvas.width = window.innerWidth;
-    magicH = magicCanvas.height = window.innerHeight;
-  }
-});
+            wordEl.textContent = currentTarget.name;
+            wordEl.style.color = displayColor.hex;
+            wordEl.style.animation = 'none';
+            void wordEl.offsetWidth;
+            wordEl.style.animation = 'wordPop 0.4s cubic-bezier(0.175,0.885,0.32,1.275)';
 
-// ========== رسائل الظلام - Dark Messages Game ==========
-let dmBattery = 100, dmGameActive = false, dmBatteryInterval, dmCurrentChapter = 1, dmPlayerChoices = [], dmMessageCount = 0, dmEndingReached = false;
-let dmStartScreen, dmPhone, dmChatArea, dmChoicesArea, dmBatteryFill, dmBatteryPercent, dmScreenOverlay, dmClock, dmAvatar, dmContactName, dmContactStatus, dmChapterNum;
+            // Add time bonus
+            timeLeft = Math.min(timeLeft + DIFFICULTY[selectedDiff].timeBonus, totalTime);
+            updateTimerUI();
+        }
 
-function openDarkMessages() {
-  document.getElementById('dark-messages-modal').classList.add('active');
-  initDarkMessages();
-  showToast('👁️ تم فتح رسائل الظلام');
-}
+        function resetSlider() {
+            const containerWidth = colorsContainer.offsetWidth;
+            const sliderWidth = slider.offsetWidth;
+            slider.style.left = (containerWidth / 2 - sliderWidth / 2) + 'px';
+        }
 
-function closeDarkMessages() {
-  document.getElementById('dark-messages-modal').classList.remove('active');
-  if (dmBatteryInterval) clearInterval(dmBatteryInterval);
-  dmGameActive = false;
-  showToast('✅ تم إغلاق رسائل الظلام');
-}
-function initDarkMessages() {
-  dmStartScreen = document.getElementById('dm-startScreen');
-  dmPhone = document.getElementById('dm-phone');
-  dmChatArea = document.getElementById('dm-chatArea');
-  dmChoicesArea = document.getElementById('dm-choicesArea');
-  dmBatteryFill = document.getElementById('dm-batteryFill');
-  dmBatteryPercent = document.getElementById('dm-batteryPercent');
-  dmScreenOverlay = document.getElementById('dm-screenOverlay');
-  dmClock = document.getElementById('dm-clock');
-  dmAvatar = document.getElementById('dm-avatar');
-  dmContactName = document.getElementById('dm-contactName');
-  dmContactStatus = document.getElementById('dm-contactStatus');
-  dmChapterNum = document.getElementById('dm-chapterNum');
-  dmUpdateClock();
-}
+        function checkAnswer() {
+            if (!gameActive) return;
+            
+            const sliderRect = slider.getBoundingClientRect();
+            const centerX = sliderRect.left + sliderRect.width / 2;
+            const centerY = sliderRect.top + sliderRect.height / 2;
 
-function dmUpdateClock() {
-  const now = new Date();
-  let hours = now.getHours();
-  const minutes = now.getMinutes().toString().padStart(2, '0');
-  const ampm = hours >= 12 ? 'م' : 'ص';
-  hours = hours % 12; hours = hours ? hours : 12;
-  dmClock.textContent = hours + ':' + minutes + ' ' + ampm;
-  setTimeout(dmUpdateClock, 1000);
-}
+            let selectedBar = null;
+            const bars = colorsContainer.querySelectorAll('.color-bar');
+            for (let bar of bars) {
+                const rect = bar.getBoundingClientRect();
+                if (centerX >= rect.left && centerX <= rect.right && 
+                    centerY >= rect.top && centerY <= rect.bottom) {
+                    selectedBar = bar;
+                    break;
+                }
+            }
+            if (!selectedBar) return;
 
-function dmStartGame() {
-  dmStartScreen.style.display = 'none';
-  dmGameActive = true;
-  dmBattery = 100; dmCurrentChapter = 1; dmPlayerChoices = []; dmMessageCount = 0; dmEndingReached = false;
-  dmChatArea.innerHTML = ''; dmPhone.classList.remove('dm-glitch');
-  dmAvatar.className = 'dm-avatar'; dmContactName.textContent = 'رقم مجهول';
-  dmContactStatus.textContent = 'متصل الآن'; dmContactStatus.className = 'dm-contact-status';
-  dmUpdateBattery(); dmStartBatteryDrain();
-  setTimeout(() => { dmStartChapter1(); }, 1000);
-}
+            const selectedColorName = selectedBar.getAttribute('data-color');
+            const isCorrect = selectedColorName === currentTarget.name;
+            const diff = DIFFICULTY[selectedDiff];
 
-function dmStartBatteryDrain() {
-  clearInterval(dmBatteryInterval);
-  dmBatteryInterval = setInterval(() => {
-    if (!dmGameActive) return;
-    dmBattery -= 0.5; if (dmBattery < 0) dmBattery = 0;
-    dmUpdateBattery();
-    if (dmBattery <= 0 && !dmEndingReached) dmEndGameBattery();
-  }, 15000);
-}
+            if (isCorrect) {
+                score += 10 + (streak * 3);
+                streak++;                if (streak > maxStreak) maxStreak = streak;
+                correctTotal++;
 
-function dmUpdateBattery() {
-  dmBatteryPercent.textContent = Math.floor(dmBattery) + '%';  dmBatteryFill.style.width = dmBattery + '%';
-  dmBatteryFill.classList.remove('warning', 'critical');
-  if (dmBattery > 50) dmBatteryFill.style.background = '#0f0';
-  else if (dmBattery > 20) { dmBatteryFill.classList.add('warning'); dmBatteryFill.style.background = '#ff0'; }
-  else { dmBatteryFill.classList.add('critical'); dmBatteryFill.style.background = '#f00'; }
-}
+                playCorrect();
+                showFeedback('✅', '#00e676');
+                flashScreen('rgba(0,230,118,0.15)');
+                spawnParticles(centerX, centerY, currentTarget.hex, 18);
+                spawnConfetti(centerX, centerY);
 
-function dmAddMessage(type, text, delay = 0, isFinal = false) {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      const msg = document.createElement('div');
-      msg.className = 'dm-message ' + type;
-      if (isFinal) msg.classList.add('dm-final-message');
-      const time = new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'});
-      if (type === 'typing') {
-        msg.innerHTML = '<div class="dm-typing-dots"><span></span><span></span><span></span></div>';
-        msg.id = 'dm-typingIndicator';
-      } else {
-        msg.innerHTML = text + '<div class="dm-timestamp">' + time + '</div>';
-        if (type === 'received') dmPlaySound('message');
-        dmMessageCount++;
-      }
-      dmChatArea.appendChild(msg);
-      dmChatArea.scrollTop = dmChatArea.scrollHeight;
-      resolve();
-    }, delay);
-  });
-}
+                comboBadge.textContent = `🔥 x${streak}`;
+                comboBadge.classList.add('show');
 
-function dmPlaySound(type) {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator(), gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    if (type === 'message') {
-      osc.frequency.value = 800; osc.type = 'sine'; gain.gain.value = 0.05;
-      osc.start(); setTimeout(() => { osc.stop(); }, 50);
-    } else if (type === 'scare') {
-      osc.frequency.value = 200; osc.type = 'sawtooth';
-      gain.gain.setValueAtTime(0.2, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1);
-      osc.start(); setTimeout(() => { osc.stop(); }, 1000);
-    } else if (type === 'ending') {
-      osc.frequency.value = 150; osc.type = 'square';
-      gain.gain.setValueAtTime(0.15, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 2);
-      osc.start(); setTimeout(() => { osc.stop(); }, 2000);
-    }
-    setTimeout(() => ctx.close(), 2500);
-  } catch(e) {}}
+                // Trigger distractor on correct answer!
+                triggerDistractor();
 
-function dmFlashScreen() {
-  dmScreenOverlay.classList.add('flash');
-  setTimeout(() => dmScreenOverlay.classList.remove('flash'), 200);
-}
+            } else {
+                streak = 0;
+                timeLeft -= diff.timePenalty;
+                playWrong();
+                showFeedback('❌', '#ff1744');
+                document.body.classList.add('shake');
+                flashScreen('rgba(255,23,68,0.15)');
+                setTimeout(() => document.body.classList.remove('shake'), 400);
+                comboBadge.classList.remove('show');
+                spawnParticles(centerX, centerY, '#ff1744', 10);
+            }
 
-function dmGlitchPhone() {
-  dmPhone.classList.add('dm-glitch');
-  dmPlaySound('scare');
-  setTimeout(() => dmPhone.classList.remove('dm-glitch'), 500);
-}
+            updateUI();
+            setTimeout(() => { if(gameActive) newRound(); }, 300);
+        }
 
-function dmCreateBloodDrip() {
-  const drip = document.createElement('div');
-  drip.className = 'dm-blood-drip';
-  drip.style.left = Math.random() * 100 + '%';
-  document.getElementById('dm-game-container').appendChild(drip);
-  setTimeout(() => drip.remove(), 4000);
-}
+        // ===== DISTRACTORS =====
+        function triggerDistractor() {
+            const diff = DIFFICULTY[selectedDiff];
+            const rand = Math.random();
 
-function dmShowTyping(delay = 500) {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      dmAddMessage('typing', '', 0);
-      setTimeout(() => {
-        const typing = document.getElementById('dm-typingIndicator');
-        if (typing) typing.remove();
-        resolve();
-      }, 1500 + Math.random() * 1000);
-    }, delay);
-  });
-}
+            if (rand < diff.distractorChance * 0.5) {
+                shuffleBars();
+            } else if (rand < diff.distractorChance) {
+                flyRock();
+            } else if (rand < diff.distractorChance * 1.2) {
+                showConfusionText();
+            }
+        }
 
-function dmShowChoices(options) {
-  dmChoicesArea.innerHTML = '';
-  dmChoicesArea.classList.remove('dm-hidden');
-  options.forEach((option, index) => {
-    const btn = document.createElement('button');
-    btn.className = 'dm-choice-btn';
-    btn.textContent = option.text;
-    btn.onclick = () => {
-      dmChoicesArea.classList.add('dm-hidden');
-      dmAddMessage('sent', option.text);
-      dmPlayerChoices.push(index);
-      setTimeout(option.action, 800);
-    };
-    dmChoicesArea.appendChild(btn);
-  });
-}
-function dmAddPhoto(caption) {
-  const photo = document.createElement('div');
-  photo.className = 'dm-message received';
-  const time = new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'});
-  photo.innerHTML = `<div>📷 صورة مرفقة</div><div class="dm-photo-attachment"><div class="dm-photo-placeholder">👁️</div><div class="dm-photo-caption">${caption}</div></div><div class="dm-timestamp">${time}</div>`;
-  dmChatArea.appendChild(photo); dmChatArea.scrollTop = dmChatArea.scrollHeight; dmPlaySound('message');
-}
+        function shuffleBars() {
+            playDistractor();
+            const bars = colorsContainer.querySelectorAll('.color-bar');
+            bars.forEach(bar => {
+                bar.classList.add('shuffling');                setTimeout(() => bar.classList.remove('shuffling'), 600);
+            });
 
-function dmAddWarning(text) {
-  const warning = document.createElement('div');
-  warning.className = 'dm-message system';
-  warning.innerHTML = `<div class="dm-warning-box">⚠️ ${text}</div>`;
-  dmChatArea.appendChild(warning); dmChatArea.scrollTop = dmChatArea.scrollHeight;
-}
+            const barArray = Array.from(bars);
+            const shuffled = shuffleArray([...barArray]);
+            colorsContainer.innerHTML = '';
+            shuffled.forEach(bar => colorsContainer.appendChild(bar));
 
-// === Dark Messages Chapters (Simplified for integration) ===
-async function dmStartChapter1() {
-  dmChapterNum.textContent = '1';
-  await dmAddMessage('received', 'هل أنت مستيقظ؟');
-  await new Promise(r => setTimeout(r, 2000));
-  await dmAddMessage('received', 'أعرف أنك وحدك في المنزل الآن...');
-  await new Promise(r => setTimeout(r, 2000));
-  await dmAddMessage('received', 'الجميع نيام... إلا أنت 👁️');
-  await new Promise(r => setTimeout(r, 1500));
-  dmShowChoices([
-    { text: 'من هذا؟ كيف عرفت أنني وحدي؟', action: () => dmNextChapter2('a1') },
-    { text: 'ماذا تريد مني؟', action: () => dmNextChapter2('a2') },
-    { text: 'سأتصل بالشرطة فوراً!', action: () => dmNextChapter2('a3') },
-    { text: '...(لا ترد)', action: () => dmNextChapter2('a4') }
-  ]);
-}
+            setTimeout(() => resetSlider(), 300);
+        }
 
-async function dmNextChapter2(choice) {
-  dmCurrentChapter = 2; dmChapterNum.textContent = '2';
-  await dmShowTyping();
-  if (choice === 'a1') {
-    await dmAddMessage('received', 'لديك طرق كثيرة لمعرفة الأشياء...');
-    await dmAddMessage('received', 'الكاميرات... الميكروفونات... الأجهزة الذكية...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'هاتفك الآن يتحدث معي 📱'); dmFlashScreen();
-  } else if (choice === 'a2') {
-    await dmAddMessage('received', 'أريد أن ألعب معك لعبة...');
-    await dmAddMessage('received', 'لعبة قديمة... جداً...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'لعبة الاختباء والبحث 🎮');
-  } else if (choice === 'a3') {
-    await dmAddMessage('received', 'الشرطة؟ 🚔'); await dmAddMessage('received', 'جرب الاتصال...');
-    await dmAddMessage('system', '📵 مكالمة فاشلة'); dmGlitchPhone(); dmBattery -= 15; dmUpdateBattery();
-    await new Promise(r => setTimeout(r, 1500));    await dmAddMessage('received', 'الخطوط مقطوعة... أنت معي فقط');
-  } else if (choice === 'a4') {
-    await dmAddMessage('received', 'تتجاهلني؟'); await dmAddMessage('received', 'هذا غير لطيف...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'سأجعلك ترد... بطريقتي'); dmBattery -= 10; dmUpdateBattery();
-  }
-  await new Promise(r => setTimeout(r, 1000));
-  dmShowChoices([
-    { text: 'كيف دخلت إلى هاتفي؟', action: () => dmNextChapter3('b1') },
-    { text: 'أين أنت الآن؟', action: () => dmNextChapter3('b2') },
-    { text: 'سأكسر الهاتف!', action: () => dmNextChapter3('b3') },
-    { text: 'ما هي اللعبة؟', action: () => dmNextChapter3('b4') }
-  ]);
-}
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
 
-async function dmNextChapter3(choice) {
-  dmCurrentChapter = 3; dmChapterNum.textContent = '3';
-  await dmShowTyping();
-  if (choice === 'b1') {
-    await dmAddMessage('received', 'لم أدخل إلى هاتفك...'); await dmAddMessage('received', 'أنا كنت هنا دائماً...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'في كل تطبيق... في كل ملف...'); dmAddPhoto('صورة لملفات هاتفك الشخصية');
-  } else if (choice === 'b2') {
-    await dmAddMessage('received', 'أين أنا؟'); await dmAddMessage('received', 'سؤال جيد...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'انظر حولك...'); dmFlashScreen();
-    await dmAddMessage('received', 'أنا أقرب مما تعتقد');
-  } else if (choice === 'b3') {
-    await dmAddMessage('received', 'كسر الهاتف لن ينفع...'); await dmAddMessage('received', 'أنا لست في الهاتف...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'الهاتف فيّ أنا'); dmGlitchPhone(); dmBattery -= 20; dmUpdateBattery();
-  } else if (choice === 'b4') {
-    await dmAddMessage('received', 'قواعد اللعبة بسيطة...'); await dmAddMessage('received', 'القاعدة 1: لا تنم');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'القاعدة 2: لا تهرب'); await dmAddMessage('received', 'القاعدة 3: لا تصرخ');
-    dmAddWarning('انتبه: هذه القواعد مهمة لبقائك');
-  }
-  await new Promise(r => setTimeout(r, 1000));
-  dmShowChoices([
-    { text: 'هذا كابوس... سأستيقظ', action: () => dmNextChapter4('c1') },
-    { text: 'سأغادر المنزل الآن', action: () => dmNextChapter4('c2') },
-    { text: 'من أنت حقاً؟', action: () => dmNextChapter4('c3') },
-    { text: 'سأطلب المساعدة', action: () => dmNextChapter4('c4') }
-  ]);
-}
+        function flyRock() {
+            playDistractor();
+            const rock = document.createElement('div');
+            rock.className = 'rock';
+            rock.textContent = '🪨';
 
-async function dmNextChapter4(choice) {
-  dmCurrentChapter = 4; dmChapterNum.textContent = '4';
-  await dmShowTyping();
-  if (choice === 'c1') {    await dmAddMessage('received', 'لو كان كابوساً...'); await dmAddMessage('received', 'لكنت استيقظت بالفعل');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'لكنك لن تستيقظ...'); await dmAddMessage('received', 'أبداً');
-    dmAvatar.className = 'dm-avatar danger'; dmContactStatus.textContent = 'معه الآن'; dmContactStatus.className = 'dm-contact-status danger';
-  } else if (choice === 'c2') {
-    await dmAddMessage('received', 'غادر المنزل؟'); await dmAddMessage('received', 'جرب...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'افتح الباب'); await dmAddMessage('system', '🚪 الباب مقفل'); dmBattery -= 15; dmUpdateBattery();
-  } else if (choice === 'c3') {
-    await dmAddMessage('received', 'من أنا؟'); await dmAddMessage('received', 'سؤال عميق...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'أنا الظل في زاوية غرفتك'); await dmAddMessage('received', 'أنا الصوت في رأسك');
-    await dmAddMessage('received', 'أنا... أنت'); dmGlitchPhone();
-  } else if (choice === 'c4') {
-    await dmAddMessage('received', 'اطلب المساعدة؟'); await dmAddMessage('received', 'من سيسمعك؟');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'عائلتك نائمة...'); await dmAddMessage('received', 'جيرانك بعيدون...');
-    await dmAddMessage('received', 'والشرطة...'); await dmAddMessage('received', 'الشرطة لا تأتي للأحياء');
-  }
-  await new Promise(r => setTimeout(r, 1000));
-  dmShowChoices([
-    { text: 'سأبحث عن سلاح', action: () => dmChapter5Choice1() },
-    { text: 'سأختبئ في أفضل مكان', action: () => dmChapter5Choice2() },
-    { text: 'سأحاول التفاوض', action: () => dmChapter5Choice3() },
-    { text: 'سأواجهه مباشرة', action: () => dmChapter5Choice4() }
-  ]);
-}
+            const startY = Math.random() * (window.innerHeight * 0.6);
+            const fromLeft = Math.random() > 0.5;
 
-function dmChapter5Choice1() { dmNextChapter5('d1'); }
-function dmChapter5Choice2() { dmNextChapter5('d2'); }
-function dmChapter5Choice3() { dmNextChapter5('d3'); }
-function dmChapter5Choice4() { dmNextChapter5('d4'); }
+            rock.style.top = startY + 'px';
+            rock.style.left = fromLeft ? '-50px' : (window.innerWidth + 50) + 'px';
 
-async function dmNextChapter5(choice) {
-  dmCurrentChapter = 5; dmChapterNum.textContent = '5';
-  await dmShowTyping();
-  if (choice === 'd1') {
-    await dmAddMessage('received', 'سلاح؟'); await dmAddMessage('received', 'ضد ماذا؟');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'لا يمكنك طعن الظل...'); await dmAddMessage('received', 'لا يمكنك إطلاق النار على الخوف...');
-    dmCreateBloodDrip();
-  } else if (choice === 'd2') {
-    await dmAddMessage('received', 'تختبئ؟'); await dmAddMessage('received', 'أين؟');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'تحت السرير؟'); await dmAddMessage('received', 'في الخزانة؟');
-    await dmAddMessage('received', 'في الحمام؟'); await dmAddMessage('received', 'أعرف كل أماكنك...');
-    dmAddPhoto('صورة لمكان اختبائك');
-  } else if (choice === 'd3') {
-    await dmAddMessage('received', 'تتفاوض؟'); await dmAddMessage('received', 'ماذا تقدم؟');
-    await new Promise(r => setTimeout(r, 1500));    await dmAddMessage('received', 'روحك؟'); await dmAddMessage('received', 'عقلك؟');
-    await dmAddMessage('received', 'حياتك؟'); await dmAddMessage('received', 'كلها لي بالفعل');
-  } else if (choice === 'd4') {
-    await dmAddMessage('received', 'تواجهني؟'); await dmAddMessage('received', 'شجاع...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'لكن ضد من تقاتل؟'); await dmAddMessage('received', 'ضد الظلام؟');
-    await dmAddMessage('received', 'الظلام لا يُهزم... يُعانق فقط'); dmFlashScreen();
-  }
-  await new Promise(r => setTimeout(r, 1000));
-  dmShowChoices([
-    { text: 'لماذا أنا بالتحديد؟', action: () => dmNextChapter6('e1') },
-    { text: 'ماذا فعلت لك؟', action: () => dmNextChapter6('e2') },
-    { text: 'كم سيبقى هذا؟', action: () => dmNextChapter6('e3') },
-    { text: 'ما هو هدفك النهائي؟', action: () => dmNextChapter6('e4') }
-  ]);
-}
+            document.body.appendChild(rock);
 
-async function dmNextChapter6(choice) {
-  dmCurrentChapter = 6; dmChapterNum.textContent = '6';
-  await dmShowTyping();
-  if (choice === 'e1') {
-    await dmAddMessage('received', 'لماذا أنت؟'); await dmAddMessage('received', 'سؤال جيد...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'لأنك الوحيد'); await dmAddMessage('received', 'الوحيد الذي يستطيع رؤيتي');
-    await dmAddMessage('received', 'الوحيد الذي يستطيع سماعي');
-  } else if (choice === 'e2') {
-    await dmAddMessage('received', 'ماذا فعلت لي؟'); await dmAddMessage('received', 'هل نسيت؟');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'الليل...'); await dmAddMessage('received', 'الطريق...');
-    await dmAddMessage('received', 'الحادث...'); dmGlitchPhone();
-  } else if (choice === 'e3') {
-    await dmAddMessage('received', 'كم سيبقى؟'); await dmAddMessage('received', 'إلى الأبد...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'أو'); await dmAddMessage('received', 'إلى أن تنكسر');
-    await dmAddMessage('received', 'أيها أولاً');
-  } else if (choice === 'e4') {
-    await dmAddMessage('received', 'هدفي؟'); await dmAddMessage('received', 'بسيط...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'أريدك أن تفهم'); await dmAddMessage('received', 'تفهم ما فعلت');
-    await dmAddMessage('received', 'تفهم ما ستصبح');
-  }
-  await new Promise(r => setTimeout(r, 1000));
-  dmShowChoices([
-    { text: 'لا أفهم ما تقول', action: () => dmNextChapter7('f1') },
-    { text: 'أعتقد أنني أتذكر...', action: () => dmNextChapter7('f2') },
-    { text: 'لن أسمح لك!', action: () => dmNextChapter7('f3') },
-    { text: 'أنا آسف...', action: () => dmNextChapter7('f4') }
-  ]);
-}
-async function dmNextChapter7(choice) {
-  dmCurrentChapter = 7; dmChapterNum.textContent = '7';
-  await dmShowTyping();
-  if (choice === 'f1') {
-    await dmAddMessage('received', 'سأذكرك...'); await dmAddMessage('received', 'كانت ليلة مظلمة...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'مطر...'); await dmAddMessage('received', 'طريق منحني...');
-    await dmAddMessage('received', 'شخص يعبر...'); dmAddPhoto('صورة لطريق مظلم ممطر');
-  } else if (choice === 'f2') {
-    await dmAddMessage('received', 'أخيراً...'); await dmAddMessage('received', 'تتذكر...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'الوجه...'); await dmAddMessage('received', 'العينين...');
-    await dmAddMessage('received', 'الدم...'); dmBattery -= 10; dmUpdateBattery();
-  } else if (choice === 'f3') {
-    await dmAddMessage('received', 'لا تسمح؟'); await dmAddMessage('received', 'أنت لا تتحكم...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'لم تتحكم من البداية'); await dmAddMessage('received', 'أنت مجرد لاعب'); dmGlitchPhone();
-  } else if (choice === 'f4') {
-    await dmAddMessage('received', 'آسف؟'); await dmAddMessage('received', 'الاعتذار...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'لا يعيد الموتى'); await dmAddMessage('received', 'لا يمسح الذنب');
-    await dmAddMessage('received', 'لا يغير الماضي');
-  }
-  await new Promise(r => setTimeout(r, 1000));
-  dmShowChoices([
-    { text: 'لم أقصد قتله...', action: () => dmNextChapter8('g1') },
-    { text: 'كان حادثاً!', action: () => dmNextChapter8('g2') },
-    { text: 'ماذا تريد مني الآن؟', action: () => dmNextChapter8('g3') },
-    { text: 'سأعترف للشرطة', action: () => dmNextChapter8('g4') }
-  ]);
-}
+            const speed = 3000 / DIFFICULTY[selectedDiff].speed;
+            const targetX = fromLeft ? window.innerWidth + 60 : -60;
+            const startTime = performance.now();
 
-async function dmNextChapter8(choice) {
-  dmCurrentChapter = 8; dmChapterNum.textContent = '8';
-  await dmShowTyping();
-  if (choice === 'g1') {
-    await dmAddMessage('received', 'لم تقصد...'); await dmAddMessage('received', 'لكنك فعلت');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'النية لا تغير النتيجة'); await dmAddMessage('received', 'الميت لا يهتم للنوايا');
-  } else if (choice === 'g2') {
-    await dmAddMessage('received', 'حادث؟'); await dmAddMessage('received', 'هل الحوادث...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'تُخفى الجثث؟'); await dmAddMessage('received', 'هل الحوادث...');
-    await dmAddMessage('received', 'تُكذب على الشرطة؟'); dmFlashScreen();
-  } else if (choice === 'g3') {
-    await dmAddMessage('received', 'ماذا أريد؟'); await dmAddMessage('received', 'أريد العدالة');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'لكن ليس عدالة البشر'); await dmAddMessage('received', 'عدالة...');
-    await dmAddMessage('received', 'أعمق');
-  } else if (choice === 'g4') {    await dmAddMessage('received', 'الشرطة؟'); await dmAddMessage('received', 'بعد كل هذه السنين؟');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'الأدلة اختفت'); await dmAddMessage('received', 'الشهود ماتوا');
-    await dmAddMessage('received', 'بقيت أنا فقط');
-  }
-  await new Promise(r => setTimeout(r, 1000));
-  dmShowChoices([
-    { text: 'ماذا ستفعل بي؟', action: () => dmNextChapter9('h1') },
-    { text: 'هل ستقتلني؟', action: () => dmNextChapter9('h2') },
-    { text: 'هل هناك طريقة للتكفير؟', action: () => dmNextChapter9('h3') },
-    { text: 'أنا مستعد للعقاب', action: () => dmNextChapter9('h4') }
-  ]);
-}
+            function animateRock(now) {
+                if (!gameActive) { rock.remove(); return; }
+                const elapsed = now - startTime;
+                const progress = elapsed / speed;
 
-async function dmNextChapter9(choice) {
-  dmCurrentChapter = 9; dmChapterNum.textContent = '9';
-  await dmShowTyping();
-  if (choice === 'h1') {
-    await dmAddMessage('received', 'ماذا سأفعل؟'); await dmAddMessage('received', 'سأجعلك تفهم');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'ستفهم الألم'); await dmAddMessage('received', 'ستفهم الخوف');
-    await dmAddMessage('received', 'ستفهم...'); await dmAddMessage('received', 'الموت'); dmCreateBloodDrip();
-  } else if (choice === 'h2') {
-    await dmAddMessage('received', 'أقتلك؟'); await dmAddMessage('received', 'الموت...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'سهل جداً'); await dmAddMessage('received', 'أنا أريد شيئاً');
-    await dmAddMessage('received', 'أصعب');
-  } else if (choice === 'h3') {
-    await dmAddMessage('received', 'التكفير؟'); await dmAddMessage('received', 'ربما...');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'لكن الثمن'); await dmAddMessage('received', 'ليس مالاً');
-    await dmAddMessage('received', 'ليس وقتاً'); await dmAddMessage('received', 'الثمن...');
-    await dmAddMessage('received', 'أنت');
-  } else if (choice === 'h4') {
-    await dmAddMessage('received', 'مستعد؟'); await dmAddMessage('received', 'هذا جيد');
-    await new Promise(r => setTimeout(r, 1500));
-    await dmAddMessage('received', 'لأنه لا رجعة'); await dmAddMessage('received', 'لا عودة');
-    await dmAddMessage('received', 'لا نجاة'); dmAvatar.className = 'dm-avatar danger';
-    dmContactStatus.textContent = 'الحقيقة قريبة'; dmContactStatus.className = 'dm-contact-status danger';
-  }
-  await new Promise(r => setTimeout(r, 1000));
-  dmShowChoices([
-    { text: '【القرار النهائي】أقبل مصيري', action: () => dmStartEnding('accept') },
-    { text: '【القرار النهائي】أرفض وأقاتل', action: () => dmStartEnding('fight') },
-    { text: '【القرار النهائي】أهرب الآن', action: () => dmStartEnding('escape') },
-    { text: '【القرار النهائي】أكشف الحقيقة', action: () => dmStartEnding('truth') }
-  ]);
-}
+                if (progress >= 1) {
+                    rock.remove();
+                    return;
+                }
 
-async function dmStartEnding(type) {  dmCurrentChapter = 10; dmChapterNum.textContent = '10'; dmEndingReached = true;
-  await dmShowTyping();
-  if (type === 'accept') {
-    await dmAddMessage('received', 'تقبل مصيرك...', 0, true); await new Promise(r => setTimeout(r, 2000));
-    await dmAddMessage('received', 'حكيم...', 0, true); await new Promise(r => setTimeout(r, 2000));
-    await dmAddMessage('received', 'المقاومة تزيد الألم', 0, true); await new Promise(r => setTimeout(r, 2000));
-    await dmAddMessage('received', 'الاستسلام...', 0, true); await new Promise(r => setTimeout(r, 2000));
-    await dmAddMessage('received', 'يجلب السلام', 0, true); await new Promise(r => setTimeout(r, 3000));
-    await dmAddMessage('received', 'أغلق عينيك...', 0, true); await new Promise(r => setTimeout(r, 2000));
-    await dmAddMessage('received', 'تنفس بعمق...', 0, true); await new Promise(r => setTimeout(r, 2000));
-    await dmAddMessage('received', 'الظلام ليس عدوك...', 0, true); await new Promise(r => setTimeout(r, 2000));
-    await dmAddMessage('received', 'الظلام...', 0, true); await new Promise(r => setTimeout(r, 2000));
-    await dmAddMessage('received', 'هو بيتك الآن', 0, true); await new Promise(r => setTimeout(r, 3000));
-    await dmAddMessage('system', '📵 اتصل مقطوع', 0); await new Promise(r => setTimeout(r, 2000));
-    await dmAddMessage('received', '...', 0, true); await new Promise(r => setTimeout(r, 2000));
-    await dmAddMessage('received', 'أهلاً بك في العائلة', 0, true); await new Promise(r => setTimeout(r, 2000));
-    await dmAddMessage('received', 'الآن...', 0, true); await new Promise(r => setTimeout(r, 2000));
-    await dmAddMessage('received', 'دورك', 0, true); await new Promise(r => setTimeout(r, 2000));
-    await dmAddMessage('received', 'لتبحث عن الضحية التالية', 0, true); await new Promise(r => setTimeout(r, 3000));
-    await dmAddMessage('system', '👤 حالتك: متصل الآن', 0);
-    dmContactName.textContent = 'أنت الآن'; dmContactStatus.textContent = 'متصل الآن'; dmAvatar.textContent = '👁️';
-    await new Promise(r => setTimeout(r, 2000));
-    dmShowChoices([
-      { text: '🔄 ابدأ تجربة جديدة', action: () => dmRestartGame() },
-      { text: '💀 أنه المحادثة', action: () => dmEndConversation() }
-    ]);
-  } else {
-    await dmAddMessage('received', 'النهاية...', 0, true); await new Promise(r => setTimeout(r, 2000));
-    await dmAddMessage('received', 'شكراً للعب...', 0, true); await new Promise(r => setTimeout(r, 2000));
-    dmShowChoices([
-      { text: '🔄 ابدأ تجربة جديدة', action: () => dmRestartGame() },
-      { text: '💀 أنه المحادثة', action: () => dmEndConversation() }
-    ]);
-  }
-}
+                const x = fromLeft ? -50 + progress * (targetX + 50) : window.innerWidth + 50 - progress * (window.innerWidth + 110);
+                const wobble = Math.sin(progress * Math.PI * 4) * 10;
+                rock.style.left = x + 'px';
+                rock.style.top = (startY + wobble) + 'px';
+                rock.style.transform = `rotate(${progress * 360}deg)`;
 
-async function dmEndGameBattery() {
-  dmEndingReached = true;
-  await dmAddMessage('received', 'بطاريتك...', 0, true); await new Promise(r => setTimeout(r, 2000));
-  await dmAddMessage('received', 'تنفد', 0, true); await new Promise(r => setTimeout(r, 3000));
-  await dmAddMessage('received', 'مثل...', 0, true); await new Promise(r => setTimeout(r, 2000));
-  await dmAddMessage('received', 'كل شيء آخر', 0, true); await new Promise(r => setTimeout(r, 3000));
-  await dmAddMessage('received', 'لا تقلق', 0, true); await new Promise(r => setTimeout(r, 2000));
-  await dmAddMessage('received', 'أنا...', 0, true); await new Promise(r => setTimeout(r, 2000));
-  await dmAddMessage('received', 'لا أحتاج بطارية', 0, true); await new Promise(r => setTimeout(r, 3000));
-  await dmAddMessage('received', 'أنا...', 0, true); await new Promise(r => setTimeout(r, 2000));
-  await dmAddMessage('received', 'في الظلام', 0, true); await new Promise(r => setTimeout(r, 3000));
-  await dmAddMessage('received', 'والظلام...', 0, true); await new Promise(r => setTimeout(r, 2000));
-  await dmAddMessage('received', 'أبدي', 0, true); await new Promise(r => setTimeout(r, 3000));
-  await dmAddMessage('system', '🔋 0% - انطفأ الهاتف', 0);  dmBatteryFill.style.width = '0%'; dmPhone.style.opacity = '0.5';
-  await new Promise(r => setTimeout(r, 3000));
-  dmShowChoices([
-    { text: '🔄 ابدأ تجربة جديدة', action: () => dmRestartGame() },
-    { text: '💀 أنه المحادثة', action: () => dmEndConversation() }
-  ]);
-}
+                requestAnimationFrame(animateRock);
+            }
+            requestAnimationFrame(animateRock);
+        }
 
-function dmEndConversation() {
-  dmAddMessage('system', '💀 انتهت المحادثة... لكن هل انتهى حقاً؟', 0);
-  dmChoicesArea.classList.add('dm-hidden');
-  setTimeout(() => { dmAddMessage('received', '...', 2000); }, 3000);
-  setTimeout(() => { dmAddMessage('received', 'أراك قريباً...', 4000); }, 5000);
-}
+        function showConfusionText() {
+            playDistractor();
+            const texts = ['🤔 أي لون؟', 'لا تنخدع!', 'ركّز!', '⚡ أسرع!', '💫 وش اللون؟'];
+            const text = document.createElement('div');
+            text.className = 'confusion-text';
+            text.textContent = texts[Math.floor(Math.random() * texts.length)];
+            text.style.color = currentColors[Math.floor(Math.random() * currentColors.length)].hex;
+            text.style.fontSize = (1.5 + Math.random()) + 'rem';
+            text.style.top = (15 + Math.random() * 30) + '%';
+            text.style.left = (10 + Math.random() * 80) + '%';
+            text.style.textShadow = `0 0 20px ${text.style.color}`;
 
-function dmRestartGame() {
-  dmPhone.style.opacity = '1'; dmEndingReached = false; dmStartGame();
-}
+            document.body.appendChild(text);
+            text.style.opacity = '1';
+            text.style.transform = 'scale(1.2)';
 
-// ========== بدء ==========
-window.addEventListener('load', function(){
-  createStars(); createGoldDust(); loadGame(); renderUpgrades(); updateUI();
-  var coinBtn = document.getElementById('coin-btn');
-  coinBtn.addEventListener('click', function(e){ initSoundOnFirstClick(); clickCoin(e, false); });
-  SoundManager.init();
-});
-</script>
+            setTimeout(() => {
+                text.style.opacity = '0';
+                text.style.transform = 'scale(0.5)';
+                setTimeout(() => text.remove(), 300);
+            }, 800);
+        }
+
+        // ===== DRAG =====
+        function getSliderPos(e) {
+            const rect = colorsContainer.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            return clientX - rect.left;
+        }
+
+        function startDrag(e) {
+            if (!gameActive) return;
+            e.preventDefault();
+            initAudio();
+            isDragging = true;
+            dragStartX = getSliderPos(e);
+            sliderStartLeft = parseFloat(slider.style.left) || 0;
+            slider.style.transition = 'none';
+            slider.style.cursor = 'grabbing';
+        }
+        function drag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const containerWidth = colorsContainer.offsetWidth;
+            const sliderWidth = slider.offsetWidth;
+            const currentX = getSliderPos(e);
+            let newPos = sliderStartLeft + (currentX - dragStartX);
+            newPos = Math.max(0, Math.min(newPos, containerWidth - sliderWidth));
+            slider.style.left = newPos + 'px';
+        }
+
+        function endDrag(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            slider.style.transition = 'transform 0.1s';
+            slider.style.cursor = 'grab';
+            checkAnswer();
+        }
+
+        // Event Listeners for drag
+        slider.addEventListener('mousedown', startDrag);
+        slider.addEventListener('touchstart', startDrag, { passive: false });
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('touchmove', drag, { passive: false });
+        document.addEventListener('mouseup', endDrag);
+        document.addEventListener('touchend', endDrag);
+
+        // ===== UI =====
+        function updateUI() {
+            scoreEl.textContent = score;
+        }
+
+        function updateTimerUI() {
+            timerEl.textContent = Math.max(0, timeLeft).toFixed(1);
+            const pct = (timeLeft / totalTime) * 100;
+            timerFill.style.width = pct + '%';
+            if (timeLeft <= totalTime * 0.3) timerFill.classList.add('urgent');
+            else timerFill.classList.remove('urgent');
+        }
+
+        function showFeedback(text, color) {
+            feedbackEl.textContent = text;
+            feedbackEl.style.color = color;
+            feedbackEl.style.textShadow = `0 0 30px ${color}`;
+            feedbackEl.classList.remove('show');
+            void feedbackEl.offsetWidth;
+            feedbackEl.classList.add('show');
+        }
+
+        function flashScreen(color) {            screenFlash.style.backgroundColor = color;
+            setTimeout(() => screenFlash.style.backgroundColor = 'transparent', 200);
+        }
+
+        function spawnParticles(x, y, color, count) {
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = Math.random() * 6 + 3;
+                p.style.cssText = `left:${x}px;top:${y}px;width:${size}px;height:${size}px;background:${color};`;
+                document.body.appendChild(p);
+
+                const angle = (Math.PI * 2 * i) / count + Math.random() * 0.5;
+                const vel = Math.random() * 100 + 40;
+                let px = x, py = y, op = 1;
+                const vx = Math.cos(angle) * vel;
+                const vy = Math.sin(angle) * vel;
+
+                const anim = () => {
+                    px += vx * 0.016;
+                    py += vy * 0.016 + 1.5;
+                    op -= 0.03;
+                    p.style.left = px + 'px';
+                    p.style.top = py + 'px';
+                    p.style.opacity = op;
+                    if (op > 0) requestAnimationFrame(anim);
+                    else p.remove();
+                };
+                requestAnimationFrame(anim);
+            }
+        }
+
+        function spawnConfetti(x, y) {
+            const confettiColors = ['#ff1744', '#00e676', '#2979ff', '#ffea00', '#d500f9', '#ff9100'];
+            for (let i = 0; i < 12; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = Math.random() * 8 + 4;
+                p.style.cssText = `left:${x}px;top:${y}px;width:${size}px;height:${size * 0.6}px;background:${confettiColors[i % confettiColors.length]};border-radius:2px;`;
+                document.body.appendChild(p);
+
+                const angle = (Math.PI * 2 * i) / 12;
+                const vel = Math.random() * 120 + 60;
+                let px = x, py = y, op = 1, rot = 0;
+                let vy = Math.sin(angle) * vel - 50;
+                const vx = Math.cos(angle) * vel;
+
+                const anim = () => {
+                    px += vx * 0.016;
+                    py += vy * 0.016 + 2;                    vy += 3;
+                    op -= 0.02;
+                    rot += 5;
+                    p.style.left = px + 'px';
+                    p.style.top = py + 'px';
+                    p.style.opacity = op;
+                    p.style.transform = `rotate(${rot}deg)`;
+                    if (op > 0) requestAnimationFrame(anim);
+                    else p.remove();
+                };
+                requestAnimationFrame(anim);
+            }
+        }
+
+        function endGame() {
+            gameActive = false;
+            if (_timerInterval) clearInterval(_timerInterval);
+
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('maxStreak').textContent = maxStreak;
+            document.getElementById('correctCount').textContent = correctTotal;
+
+            const ratio = score / (correctTotal * 10 || 1);
+            let msg = '';
+            if (ratio >= 3) msg = '🏆 أسطوري! عقلك لا يُشوش!';
+            else if (ratio >= 2) msg = '🔥 ممتاز! تركيز عالي!';
+            else if (ratio >= 1) msg = '👍 جيد! استمر في التدريب';
+            else msg = '💪 لا تستسلم! المحاولة تصنع الفرق';
+
+            document.getElementById('finalMessage').textContent = msg;
+            gameOver.classList.remove('hidden');
+        }
+
+        function backToMenu() {
+            gameOver.classList.add('hidden');
+            mainMenu.classList.remove('hidden');
+            timerBar.style.display = 'none';
+            gameHeader.style.display = 'none';
+            wordContainer.style.display = 'none';
+            colorsContainer.style.display = 'none';
+            slider.style.display = 'none';
+        }
+
+        // Prevent default touch behavior
+        document.addEventListener('touchmove', (e) => {
+            if (isDragging) e.preventDefault();
+        }, { passive: false });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {            if (gameActive) resetSlider();
+        });
+    </script>
 </body>
-  </html>
+</html>

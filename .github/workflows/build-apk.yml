@@ -15,6 +15,13 @@ jobs:
         with:
           node-version: 20
 
+      # أضفنا هذه الخطوة لحل مشكلة Java 21
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
       - name: Install Essential Tools
         run: |
           npm install @capacitor/core @capacitor/cli @capacitor/android
@@ -23,19 +30,17 @@ jobs:
         run: |
           mkdir -p www
           cp index.html www/
-          # تم تغيير اسم التطبيق واسم الحزمة هنا
           npx cap init "ستروب قيم" "com.strobe.game" --web-dir www
           npx cap add android
           
-          # مسح أيقونات الأندرويد الافتراضية تماماً
+          # مسح أيقونات الأندرويد الافتراضية
           rm -rf android/app/src/main/res/mipmap-*
           
-          # إنشاء المجلدات من جديد ووضع صورتك فيها بالقوة
+          # إنشاء المجلدات ووضع الأيقونات
           mkdir -p android/app/src/main/res/mipmap-hdpi
           cp icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png
           cp icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
           
-          # تكرار العملية لضمان ظهورها في كل الهواتف
           mkdir -p android/app/src/main/res/mipmap-mdpi && cp icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher.png
           mkdir -p android/app/src/main/res/mipmap-xhdpi && cp icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
           mkdir -p android/app/src/main/res/mipmap-xxhdpi && cp icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
@@ -49,6 +54,5 @@ jobs:
       - name: Download APK
         uses: actions/upload-artifact@v4
         with:
-          # تم تحديث اسم الأداة الناتجة
           name: Strobe-Game-Final
           path: android/app/build/outputs/apk/debug/app-debug.apk

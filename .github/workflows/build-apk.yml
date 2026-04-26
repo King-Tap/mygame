@@ -1,4 +1,4 @@
-name: Build Strobe Game Final Boss
+name: Build Quran App APK
 on:
   push:
     branches: [ main ]
@@ -7,60 +7,46 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Source
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Setup Node & Java
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Setup JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
 
-      - name: Essential Clean Install
+      - name: Install Essential Tools
         run: |
-          # 1. تثبيت الأدوات
           npm install @capacitor/core @capacitor/cli @capacitor/android
           
-          # 2. إنشاء مجلد الويب فارغاً إذا لم يوجد لضمان عمل Capacitor
+      - name: Build Web and Android
+        run: |
           mkdir -p www
-          [ ! -f www/index.html ] && echo "<html><body>Strobe Game</body></html>" > www/index.html
-          
-          # 3. تهيئة المشروع من الصفر تماماً
-          npx cap init "Strobe Game" "com.strobe.game" --web-dir www
+          cp index.html www/
+          npx cap init "QuranApp" "com.quran.offline" --web-dir www
           npx cap add android
           
-          # 4. [الحل السحري] إجبار Gradle على استبعاد المكتبات المكررة
-          # هذا السطر سيقوم بحقن كود داخل build.gradle يمنع Kotlin من التكرار
-          cat <<EOF > fix_gradle.py
-          import os
-          path = 'android/app/build.gradle'
-          with open(path, 'r') as f:
-              content = f.read()
-          # إضافة استثناء للمكتبات المكررة في قسم dependencies
-          fix = "\nconfigurations.all { resolutionStrategy.force 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22' }\n"
-          if 'dependencies {' in content:
-              content = content.replace('dependencies {', fix + 'dependencies {')
-          with open(path, 'w') as f:
-              f.write(content)
-          EOF
-          python3 fix_gradle.py
+          # مسح أيقونات الأندرويد الافتراضية تماماً
+          rm -rf android/app/src/main/res/mipmap-*
+          
+          # إنشاء المجلدات من جديد ووضع صورتك فيها بالقوة
+          mkdir -p android/app/src/main/res/mipmap-hdpi
+          cp icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+          cp icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+          
+          # تكرار العملية لضمان ظهورها في كل الهواتف
+          mkdir -p android/app/src/main/res/mipmap-mdpi && cp icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+          mkdir -p android/app/src/main/res/mipmap-xhdpi && cp icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          mkdir -p android/app/src/main/res/mipmap-xxhdpi && cp icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          mkdir -p android/app/src/main/res/mipmap-xxxhdpi && cp icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
 
-          # 5. مزامنة الملفات (ضرورية جداً لإصلاح خطأ capacitor.settings.gradle)
-          npx cap sync android
-
-      - name: Force Build
+      - name: Final Compilation
         run: |
-          cd android
-          # إجبار Java 17 على مستوى الـ Build
-          echo "org.gradle.java.home=$JAVA_HOME" >> gradle.properties
-          ./gradlew clean assembleDebug
+          npx cap copy
+          cd android && ./gradlew assembleDebug
 
       - name: Download APK
         uses: actions/upload-artifact@v4
         with:
-          name: Strobe-Game-Final
+          name: Quran-Final-App
           path: android/app/build/outputs/apk/debug/app-debug.apk
